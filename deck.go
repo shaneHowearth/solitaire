@@ -1,6 +1,7 @@
 package solitaire
 
 import (
+	"math/rand/v2"
 	"slices"
 )
 
@@ -24,10 +25,40 @@ var deck = []SuitedCard{
 }
 
 // CreateDecks - Create a deck of cards.
-func CreateDecks(n int) Deck {
+func CreateDecks(n int) *Deck {
 	if n < 1 {
 		panic("cannot create zero decks")
 	}
 
-	return slices.Repeat(deck, n)
+	d := Deck(slices.Repeat(deck, n))
+	return &d
+}
+
+// Len - Length of the Deck.
+func (usedDeck *Deck) Len() int {
+	if usedDeck == nil {
+		return 0
+	}
+
+	return len((*usedDeck))
+}
+
+// Shuffle - Shuffles deck in place.
+func (usedDeck *Deck) Shuffle() {
+	rand.Shuffle(usedDeck.Len(), func(i, j int) {
+		(*usedDeck)[i], (*usedDeck)[j] = (*usedDeck)[j], (*usedDeck)[i]
+	})
+}
+
+// Deal returns and removes the final card in the deck.
+func (usedDeck *Deck) Deal() SuitedCard {
+	if usedDeck.Len() == 0 {
+		// Empty, shouldn't be here.
+	}
+
+	card := (*usedDeck)[(usedDeck.Len() - 1)]
+
+	*usedDeck = slices.Delete(*usedDeck, usedDeck.Len()-1, usedDeck.Len())
+
+	return card
 }
