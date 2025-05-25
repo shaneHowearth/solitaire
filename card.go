@@ -69,6 +69,7 @@ func (suit Suit) String() string {
 //
 //nolint:unused // The fields are used elsewhere.
 type SuitedCard struct {
-	Card Card
-	Suit Suit
+	Card    Card
+	Suit    Suit
+	Visible bool
 }
