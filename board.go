@@ -1,8 +1,5 @@
 package solitaire
 
-// Stack - the stack of cards that are yet to be dealt.
-type Stack []Card
-
 // Talon - the "waste" cards - those dealt from the stack but not yet used.
 type Talon []Card
 
