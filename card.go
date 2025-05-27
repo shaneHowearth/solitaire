@@ -49,10 +49,10 @@ type Suit int
 
 //nolint:revive // ignore need to comment this block of exported consts.
 const (
-	Heart Suit = iota
-	Club
-	Diamond
-	Spade
+	Hearts Suit = iota
+	Clubs
+	Diamonds
+	Spades
 )
 
 func (suit Suit) String() string {

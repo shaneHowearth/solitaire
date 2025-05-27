@@ -129,39 +129,39 @@ func Test_CardToString(t *testing.T) {
 
 func Test_SuitToString(t *testing.T) {
 	t.Parallel()
-	// Spade.
+	// Spades.
 	expectedSpadeString := "♠"
-	if solitaire.Spade.String() != expectedSpadeString {
+	if solitaire.Spades.String() != expectedSpadeString {
 		t.Errorf(
-			"unexpected result Spade.String got %q, want %q",
-			solitaire.Spade.String(),
+			"unexpected result Spades.String got %q, want %q",
+			solitaire.Spades.String(),
 			expectedSpadeString,
 		)
 	}
-	// Heart.
+	// Hearts.
 	expectedHeartString := "♥"
-	if solitaire.Heart.String() != expectedHeartString {
+	if solitaire.Hearts.String() != expectedHeartString {
 		t.Errorf(
-			"unexpected result Heart.String got %q, want %q",
-			solitaire.Heart.String(),
+			"unexpected result Hearts.String got %q, want %q",
+			solitaire.Hearts.String(),
 			expectedHeartString,
 		)
 	}
-	// Club.
+	// Clubs.
 	expectedClubString := "♣"
-	if solitaire.Club.String() != expectedClubString {
+	if solitaire.Clubs.String() != expectedClubString {
 		t.Errorf(
-			"unexpected result Club.String got %q, want %q",
-			solitaire.Club.String(),
+			"unexpected result Clubs.String got %q, want %q",
+			solitaire.Clubs.String(),
 			expectedClubString,
 		)
 	}
-	// Diamond.
+	// Diamonds.
 	expectedDiamondString := "♦"
-	if solitaire.Diamond.String() != expectedDiamondString {
+	if solitaire.Diamonds.String() != expectedDiamondString {
 		t.Errorf(
-			"unexpected result Diamond.String got %q, want %q",
-			solitaire.Diamond.String(),
+			"unexpected result Diamonds.String got %q, want %q",
+			solitaire.Diamonds.String(),
 			expectedDiamondString,
 		)
 	}
