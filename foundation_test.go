@@ -49,3 +49,30 @@ func Test_CreateFoundationss(t *testing.T) {
 		})
 	}
 }
+
+func Test_Full(t *testing.T) {
+	testcases := map[string]struct {
+		Count  int
+		IsFull bool
+	}{
+
+		"One":  {Count: 1},
+		"Full": {Count: solitaire.CardCount, IsFull: true},
+	}
+	for name, testCase := range testcases {
+		t.Run(name, func(t *testing.T) {})
+		card := solitaire.SuitedCard{
+			Card:    solitaire.Ace,
+			Suit:    solitaire.Diamonds,
+			Visible: true,
+		}
+
+		foundation := solitaire.CreateFoundations(solitaire.SuitCount, solitaire.Ace)
+
+		for x := 0; x < testCase.Count; x++ {
+			foundation[0].Add(card, true)
+		}
+
+		assert.Equalf(t, testCase.IsFull, foundation[0].Full(), "Foundation full error got %t want %t", foundation[0].Full(), testCase.IsFull)
+	}
+}

@@ -5,8 +5,8 @@ package solitaire
 // There are at least 4 Foundations per game, sometimes more (there will always
 // be a multiple of 4 foundations though).
 type Foundation struct {
-	SuitedCards []SuitedCard
-	Base        SuitedCard
+	Stack *Stack
+	Base  SuitedCard
 }
 
 // CreateFoundations - Create the foundations that will host the cards.
@@ -21,10 +21,11 @@ func CreateFoundations(number int, base Card) []Foundation {
 
 	foundations := make([]Foundation, 0, SuitCount*number)
 	for i := 0; i < number; i++ {
+		stack := make(Stack, 0, CardCount)
 		foundations = append(foundations,
 			Foundation{
-				SuitedCards: make([]SuitedCard, 0, CardCount),
-				Base:        SuitedCard{Card: base, Suit: Suit(i)},
+				Stack: &stack,
+				Base:  SuitedCard{Card: base, Suit: Suit(i)},
 			})
 	}
 
@@ -33,5 +34,10 @@ func CreateFoundations(number int, base Card) []Foundation {
 
 // Full - the foundation is full.
 func (foundation Foundation) Full() bool {
-	return len(foundation.SuitedCards) == CardCount
+	return foundation.Stack.Len() == CardCount
+}
+
+// Add - Add a card to the foundation.
+func (foundation Foundation) Add(card SuitedCard, visible bool) {
+	foundation.Stack.Add(card, visible)
 }
