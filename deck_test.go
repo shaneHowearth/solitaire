@@ -106,27 +106,28 @@ func Test_DeckDeal(t *testing.T) {
 	}
 	for name, testCase := range testcases {
 		t.Run(name, func(t *testing.T) {
-			standardDeck := solitaire.CreateDecks(testCase.Number)
-
 			shuffledDeck := solitaire.CreateDecks(testCase.Number)
 
 			shuffledDeck.Shuffle()
 
-			// Check that the first cards from the unshuffled deck are...
-			expected := solitaire.SuitedCard{
-				Card:    solitaire.King,
-				Suit:    solitaire.Diamonds,
-				Visible: false,
+			for idx := 1; idx <= testCase.Number*solitaire.CardCount*solitaire.SuitCount; idx++ {
+				expected := shuffledDeck.Top()
+
+				assert.Equal(t, solitaire.CardCount*solitaire.SuitCount*testCase.Number-(idx-1), shuffledDeck.Len())
+
+				actual := shuffledDeck.Deal()
+				assert.EqualExportedValues(t, expected, actual, "Wrong card returned got %v want %v", actual, expected)
+
+				// Check that the length of the deck reduces after each Deal.
+				assert.Equal(t, solitaire.CardCount*solitaire.SuitCount*testCase.Number-(idx), shuffledDeck.Len())
 			}
 
-			assert.Equal(t, solitaire.CardCount*solitaire.SuitCount*testCase.Number, standardDeck.Len())
-
-			actual := standardDeck.Deal()
+			// Deck should be empty.
+			expected := solitaire.SuitedCard{}
+			actual := shuffledDeck.Deal()
 			assert.EqualExportedValues(t, expected, actual, "Wrong card returned got %v want %v", actual, expected)
 
-			// Check that the length of the deck reduces after each Deal
-
-			// Can we get to the last card?
+			assert.Equal(t, 0, shuffledDeck.Len())
 		})
 	}
 }
