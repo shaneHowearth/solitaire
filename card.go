@@ -4,7 +4,7 @@ package solitaire
 const SuitCount = 4
 
 // CardCount - the number of unsuited cards.
-const CardCount = 12
+const CardCount = 13
 
 // Card - Enumeration of cards.
 type Card int
