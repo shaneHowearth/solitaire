@@ -36,11 +36,32 @@ func Test_CreateFoundationss(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			if testCase.WillPanic {
 				assert.PanicsWithValue(t, testCase.PanicMessage,
-					func() { solitaire.CreateFoundations(testCase.Number, BaseCard) })
+					func() {
+						solitaire.CreateFoundations(
+							testCase.Number,
+							BaseCard,
+							func(
+								solitaire.Foundation,
+								solitaire.SuitedCard,
+							) bool {
+								return false
+							},
+						)
+					},
+				)
 			}
 
 			if !testCase.WillPanic {
-				foundation := solitaire.CreateFoundations(testCase.Number, BaseCard)
+				foundation := solitaire.CreateFoundations(
+					testCase.Number,
+					BaseCard,
+					func(
+						solitaire.Foundation,
+						solitaire.SuitedCard,
+					) bool {
+						return false
+					},
+				)
 
 				// foundation has the correct number of elements.
 				assert.Equalf(t, testCase.Number, len(foundation),
@@ -60,19 +81,32 @@ func Test_Full(t *testing.T) {
 		"Full": {Count: solitaire.CardCount, IsFull: true},
 	}
 	for name, testCase := range testcases {
-		t.Run(name, func(t *testing.T) {})
-		card := solitaire.SuitedCard{
-			Card:    solitaire.Ace,
-			Suit:    solitaire.Diamonds,
-			Visible: true,
-		}
+		t.Run(name, func(t *testing.T) {
+			standardDeck := solitaire.CreateDecks(1)
+			card := standardDeck.Deal()
 
-		foundation := solitaire.CreateFoundations(solitaire.SuitCount, solitaire.Ace)
+			foundation := solitaire.CreateFoundations(
+				solitaire.SuitCount,
+				solitaire.Ace,
+				func(
+					solitaire.Foundation,
+					solitaire.SuitedCard,
+				) bool {
+					return true
+				},
+			)
 
-		for x := 0; x < testCase.Count; x++ {
-			foundation[0].Add(card, true)
-		}
+			for x := 0; x < testCase.Count; x++ {
+				foundation[0].Add(card, true)
+			}
 
-		assert.Equalf(t, testCase.IsFull, foundation[0].Full(), "Foundation full error got %t want %t", foundation[0].Full(), testCase.IsFull)
+			assert.Equalf(
+				t, testCase.IsFull,
+				foundation[0].Full(),
+				"Foundation full error got %t want %t",
+				foundation[0].Full(),
+				testCase.IsFull,
+			)
+		})
 	}
 }
