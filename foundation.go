@@ -58,9 +58,5 @@ func (foundation Foundation) Len() int {
 
 // Top - the top most card on the stack inside the foundation.
 func (foundation Foundation) Top() SuitedCard {
-	if foundation.Stack.Len() == 0 {
-		return SuitedCard{}
-	}
-
-	return (*foundation.Stack)[foundation.Stack.Len()-1]
+	return foundation.Stack.Top()
 }
