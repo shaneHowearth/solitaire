@@ -19,3 +19,12 @@ func (stack *Stack) Add(card SuitedCard, visible bool) {
 func (stack *Stack) Len() int {
 	return len((*stack))
 }
+
+// Top - the card that can be accessed immediately.
+func (stack *Stack) Top() SuitedCard {
+	if stack.Len() == 0 {
+		return SuitedCard{}
+	}
+
+	return (*stack)[stack.Len()-1]
+}
