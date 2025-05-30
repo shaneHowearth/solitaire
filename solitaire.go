@@ -32,8 +32,33 @@ func NewGame(decks, foundations int, foundationBase Card) *Game {
 	deck.Shuffle()
 
 	return &Game{
-		Deck:        deck,
-		Foundations: CreateFoundations(foundations, foundationBase),
+		Deck: deck,
+		Foundations: CreateFoundations(foundations, foundationBase, func(foundation Foundation, card SuitedCard) bool {
+			// Card must be in the same suit.
+			if card.Suit != foundation.Base.Suit {
+				return false
+			}
+
+			// If no cards have been added to the foundation then the card must
+			// be the same as the base card.
+			if foundation.Len() == 0 && card.Card != foundation.Base.Card {
+				return false
+			}
+
+			// Handle solitaire.Ace being put on top of a solitaire.King - can
+			// only happen when more than one deck is in the Deck.
+			if (card.Card == Ace) && (foundation.Top().Card == King) {
+				return true
+			}
+
+			// Card being added must be rank 1 higher than the latest on the
+			// foundation stack.
+			if card.Card == (foundation.Top().Card + 1) {
+				return true
+			}
+
+			return false
+		}),
 	}
 }
 
