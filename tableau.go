@@ -49,6 +49,6 @@ func (tableau Tableau) Len() int {
 }
 
 // Top - the top most card on the stack inside the tableau.
-func (tableau Tableau) Top() SuitedCard {
+func (tableau Tableau) Top() (SuitedCard, error) {
 	return tableau.Stack.Top()
 }

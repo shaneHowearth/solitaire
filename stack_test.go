@@ -17,7 +17,7 @@ func Test_Add(t *testing.T) {
 	}{
 		"Add one":         {Number: 1},
 		"Add ten":         {Number: 10},
-		"Add teb visible": {Number: 10, Visible: true},
+		"Add ten visible": {Number: 10, Visible: true},
 	}
 	for name, testCase := range testcases {
 		t.Run(name, func(t *testing.T) {

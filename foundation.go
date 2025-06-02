@@ -57,6 +57,6 @@ func (foundation Foundation) Len() int {
 }
 
 // Top - the top most card on the stack inside the foundation.
-func (foundation Foundation) Top() SuitedCard {
+func (foundation Foundation) Top() (SuitedCard, error) {
 	return foundation.Stack.Top()
 }

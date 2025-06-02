@@ -47,13 +47,18 @@ func NewGame(decks, foundations int, foundationBase Card) *Game {
 
 			// Handle solitaire.Ace being put on top of a solitaire.King - can
 			// only happen when more than one deck is in the Deck.
-			if (card.Card == Ace) && (foundation.Top().Card == King) {
+			topCard, err := foundation.Top()
+			if err != nil {
+				return false
+			}
+
+			if (card.Card == Ace) && (topCard.Card == King) {
 				return true
 			}
 
 			// Card being added must be rank 1 higher than the latest on the
 			// foundation stack.
-			if card.Card == (foundation.Top().Card + 1) {
+			if card.Card == (topCard.Card + 1) {
 				return true
 			}
 
