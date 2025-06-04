@@ -4,7 +4,6 @@ package solitaire
 // depots i.e. places where columns of overlapping cards may be formed.
 type Tableau struct {
 	Stack *Stack
-	Rule  func(Tableau, SuitedCard) bool
 }
 
 // CreateTableaus - Create the tableaus that will host the cards.
@@ -20,13 +19,14 @@ func CreateTableaus(number int, rule func(Tableau, SuitedCard) bool) []Tableau {
 	tableaus := make([]Tableau, 0, number)
 
 	for i := 0; i < number; i++ {
+		tableau := Tableau{}
 		stack := NewStack(CardCount)
+		stack.Rule = func(card SuitedCard) bool {
+			return rule(tableau, card)
+		}
+		tableau.Stack = stack
 
-		tableaus = append(tableaus,
-			Tableau{
-				Stack: stack,
-				Rule:  rule,
-			})
+		tableaus = append(tableaus, tableau)
 	}
 
 	return tableaus
@@ -39,7 +39,7 @@ func (tableau Tableau) Empty() bool {
 
 // Add - Add a card to the tableau.
 func (tableau Tableau) Add(card SuitedCard, visible bool) {
-	if tableau.Rule(tableau, card) {
+	if tableau.Stack.Rule(card) {
 		tableau.Stack.Add(card, visible)
 	}
 }

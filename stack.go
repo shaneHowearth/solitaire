@@ -9,7 +9,7 @@ import (
 // the topmost card, whether face up or face down is visible.[5]
 type Stack struct {
 	cards *[]SuitedCard
-	Rule  func(Stack, SuitedCard) bool
+	Rule  func(SuitedCard) bool
 }
 
 // ErrEmpty - Error emitted when the stack is empty.
