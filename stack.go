@@ -5,10 +5,12 @@ import (
 	"slices"
 )
 
-// Stack (or Pile)
-// A stack of cards one on top of the other and squared such that only the topmost card,
-// whether face up or face down is visible.[5]
-type Stack []SuitedCard
+// Stack - A stack of cards one on top of the other and squared such that only
+// the topmost card, whether face up or face down is visible.[5]
+type Stack struct {
+	cards *[]SuitedCard
+	Rule  func(Stack, SuitedCard) bool
+}
 
 // ErrEmpty - Error emitted when the stack is empty.
 var ErrEmpty = errors.New("Empty")
@@ -16,16 +18,26 @@ var ErrEmpty = errors.New("Empty")
 // There are two types of stack, the one that holds the reserve of cards that
 // are yet to be played, and the ones that are on the tableau.
 
+// NewStack - Create a new stack with an empty slice of SuitedCards that has a
+// capacity of n.
+func NewStack(number int) *Stack {
+	cards := make([]SuitedCard, 0, number)
+
+	return &Stack{
+		cards: &cards,
+	}
+}
+
 // Add - add a suited card to the stack.
 func (stack *Stack) Add(card SuitedCard, visible bool) {
 	card.Visible = visible
 
-	*stack = append(*stack, card)
+	*stack.cards = append(*stack.cards, card)
 }
 
 // Len - return the length of the stack.
 func (stack *Stack) Len() int {
-	return len((*stack))
+	return len((*stack.cards))
 }
 
 // Top - the card that can be accessed immediately.
@@ -34,7 +46,7 @@ func (stack *Stack) Top() (SuitedCard, error) {
 		return SuitedCard{}, ErrEmpty
 	}
 
-	return (*stack)[stack.Len()-1], nil
+	return (*stack.cards)[(*stack).Len()-1], nil
 }
 
 // Deal returns and removes the final card in the deck.
@@ -45,9 +57,9 @@ func (stack *Stack) Deal() (SuitedCard, error) {
 		return SuitedCard{}, ErrEmpty
 	}
 
-	card := (*stack)[(stack.Len() - 1)]
+	card := (*stack.cards)[((*stack).Len() - 1)]
 
-	*stack = slices.Delete(*stack, stack.Len()-1, stack.Len())
+	*stack.cards = slices.Delete(*stack.cards, (*stack).Len()-1, (*stack).Len())
 
 	return card, nil
 }

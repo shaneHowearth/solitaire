@@ -27,10 +27,11 @@ func CreateFoundations(number int, base Card, rule func(Foundation, SuitedCard) 
 	foundations := make([]Foundation, 0, SuitCount*number)
 
 	for i := 0; i < number; i++ {
-		stack := make(Stack, 0, CardCount)
+		stack := NewStack(CardCount)
+
 		foundations = append(foundations,
 			Foundation{
-				Stack: &stack,
+				Stack: stack,
 				Base:  SuitedCard{Card: base, Suit: Suit(i)},
 				Rule:  rule,
 			})
