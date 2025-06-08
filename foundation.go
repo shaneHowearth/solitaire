@@ -7,7 +7,6 @@ package solitaire
 type Foundation struct {
 	Stack *Stack
 	Base  SuitedCard
-	Rule  func(SuitedCard) bool
 }
 
 // CreateFoundations - Create the foundations that will host the cards.
@@ -31,14 +30,11 @@ func CreateFoundations(number int, base Card, rule func(Foundation, SuitedCard) 
 			Base: SuitedCard{Card: base, Suit: Suit(i)},
 		}
 
-		stack := NewStack(CardCount)
-		stack.Rule = func(card SuitedCard) bool {
-			return rule(foundation, card)
-		}
+		stack := NewStack(CardCount,
+			func(card SuitedCard) bool {
+				return rule(foundation, card)
+			})
 
-		foundation.Rule = func(card SuitedCard) bool {
-			return rule(foundation, card)
-		}
 		foundation.Stack = stack
 
 		foundations = append(foundations, foundation)

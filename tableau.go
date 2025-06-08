@@ -20,10 +20,11 @@ func CreateTableaus(number int, rule func(Tableau, SuitedCard) bool) []Tableau {
 
 	for i := 0; i < number; i++ {
 		tableau := Tableau{}
-		stack := NewStack(CardCount)
-		stack.Rule = func(card SuitedCard) bool {
-			return rule(tableau, card)
-		}
+		stack := NewStack(CardCount,
+			func(card SuitedCard) bool {
+				return rule(tableau, card)
+			},
+		)
 		tableau.Stack = stack
 
 		tableaus = append(tableaus, tableau)

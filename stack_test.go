@@ -21,7 +21,7 @@ func Test_Add(t *testing.T) {
 	}
 	for name, testCase := range testcases {
 		t.Run(name, func(t *testing.T) {
-			stack := solitaire.NewStack(testCase.Number)
+			stack := solitaire.NewStack(testCase.Number, func(solitaire.SuitedCard) bool { return true })
 
 			for x := 1; x <= testCase.Number; x++ {
 				card := shuffledDeck.Deal()

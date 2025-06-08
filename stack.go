@@ -20,11 +20,12 @@ var ErrEmpty = errors.New("Empty")
 
 // NewStack - Create a new stack with an empty slice of SuitedCards that has a
 // capacity of n.
-func NewStack(number int) *Stack {
+func NewStack(number int, rule func(SuitedCard) bool) *Stack {
 	cards := make([]SuitedCard, 0, number)
 
 	return &Stack{
 		cards: &cards,
+		Rule:  rule,
 	}
 }
 
