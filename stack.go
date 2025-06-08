@@ -64,3 +64,28 @@ func (stack *Stack) Deal() (SuitedCard, error) {
 
 	return card, nil
 }
+
+// Move - Move n cards on the tableau stack to the nominated pile (foundation or
+// tableau).
+func (stack *Stack) Move(number int, destination *Stack) bool {
+	if stack.cards == destination.cards {
+		return false
+	}
+
+	topcard, err := stack.Top()
+	if err != nil {
+		return false
+	}
+
+	// If the card can be added to the destination add it, and drop it from the
+	// source.
+	if destination.Rule(topcard) {
+		destination.Add(topcard, true)
+		// Pull the top card off the source stack.
+		stack.Deal()
+		return true
+	}
+
+	// TODO return an error.
+	return false
+}

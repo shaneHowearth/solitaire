@@ -39,3 +39,53 @@ func Test_Add(t *testing.T) {
 		})
 	}
 }
+
+func Test_Move(t *testing.T) {
+	source := solitaire.NewStack(4, func(solitaire.SuitedCard) bool { return true })
+	standardDeck := solitaire.CreateDecks(1)
+	for idx := 0; idx < 10; idx++ {
+		source.Add(standardDeck.Deal(), true)
+	}
+	testcases := map[string]struct {
+		// Number of cards to move
+		number int
+		// source
+		sourceStack *solitaire.Stack
+		// destination
+		destinationStack *solitaire.Stack
+		// output
+		output bool
+	}{
+		// Cannot move card to the same stack as it came from.
+		"Should not be able to move a card to the same stack that it came from": {
+			number:           1,
+			sourceStack:      source,
+			destinationStack: source,
+			output:           false,
+		},
+		"Move to an empty stack where the rule allows the move": {
+			number:           1,
+			sourceStack:      source,
+			destinationStack: solitaire.NewStack(0, func(solitaire.SuitedCard) bool { return true }),
+			output:           true,
+		},
+		"Move to an empty stack where the rule denies the move": {
+			number:           1,
+			sourceStack:      source,
+			destinationStack: solitaire.NewStack(0, func(solitaire.SuitedCard) bool { return false }),
+			output:           false,
+		},
+		// Waste to Empty Foundation.
+		// Waste to partially filled Foundation.
+		// Waste to nominated Tableau.
+		// Waste to empty Tableau.
+		// Tableau to Foundation.
+		// Foundation to nominated tableau.
+	}
+	for name, testCase := range testcases {
+		t.Run(name, func(t *testing.T) {
+			output := testCase.sourceStack.Move(testCase.number, testCase.destinationStack)
+			assert.Equalf(t, testCase.output, output, "got %t want %t", output, testCase.output)
+		})
+	}
+}
