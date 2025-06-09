@@ -28,26 +28,26 @@ func Test_CreateDecks(t *testing.T) {
 			"WHEN Create Decks is called " +
 			"THEN Ten decks will be created.": {Number: 10},
 	}
-	for name, testCase := range testcases {
+	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {
 			var deck *solitaire.Deck
 
-			if testCase.WillPanic {
-				assert.PanicsWithValue(t, testCase.PanicMessage, func() { solitaire.CreateDecks(testCase.Number) })
+			if testcase.WillPanic {
+				assert.PanicsWithValue(t, testcase.PanicMessage, func() { solitaire.CreateDecks(testcase.Number) })
 			}
 
-			if !testCase.WillPanic {
-				deck = solitaire.CreateDecks(testCase.Number)
+			if !testcase.WillPanic {
+				deck = solitaire.CreateDecks(testcase.Number)
 			}
 
-			expected := testCase.Number * 52
+			expected := testcase.Number * 52
 
 			// Deck has the correct number of elements.
 			assert.Equalf(t, expected, deck.Len(),
 				"Deck has incorrect number of elements, want: %d, got: %d", expected, deck.Len())
 
 			// Deck has the right cards in each subdeck.
-			for i := 1; i < testCase.Number; i++ {
+			for i := 1; i < testcase.Number; i++ {
 				start := (i - 1) * 52
 				stop := i * 52
 				assert.ElementsMatchf(t, *standardDeck, (*deck)[start:stop],
@@ -65,12 +65,12 @@ func Test_ShuffleDecks(t *testing.T) {
 		"two": {Number: 2},
 		"ten": {Number: 10},
 	}
-	for name, testCase := range testcases {
+	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {
-			standardDeck := solitaire.CreateDecks(testCase.Number)
+			standardDeck := solitaire.CreateDecks(testcase.Number)
 
-			shuffledDeck := solitaire.CreateDecks(testCase.Number)
-			expected := testCase.Number * 52
+			shuffledDeck := solitaire.CreateDecks(testcase.Number)
+			expected := testcase.Number * 52
 
 			shuffledDeck.Shuffle()
 
@@ -84,7 +84,7 @@ func Test_ShuffleDecks(t *testing.T) {
 			// TODO: Is there a stronger test available?
 			shuffled := false
 
-			for i := 0; i < testCase.Number*52; i++ {
+			for i := 0; i < testcase.Number*52; i++ {
 				if (*shuffledDeck)[i] != (*standardDeck)[i] {
 					shuffled = true
 					break
@@ -104,22 +104,22 @@ func Test_DeckDeal(t *testing.T) {
 		"two": {Number: 2},
 		"ten": {Number: 10},
 	}
-	for name, testCase := range testcases {
+	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {
-			shuffledDeck := solitaire.CreateDecks(testCase.Number)
+			shuffledDeck := solitaire.CreateDecks(testcase.Number)
 
 			shuffledDeck.Shuffle()
 
-			for idx := 1; idx <= testCase.Number*solitaire.CardCount*solitaire.SuitCount; idx++ {
+			for idx := 1; idx <= testcase.Number*solitaire.CardCount*solitaire.SuitCount; idx++ {
 				expected := shuffledDeck.Top()
 
-				assert.Equal(t, solitaire.CardCount*solitaire.SuitCount*testCase.Number-(idx-1), shuffledDeck.Len())
+				assert.Equal(t, solitaire.CardCount*solitaire.SuitCount*testcase.Number-(idx-1), shuffledDeck.Len())
 
 				actual := shuffledDeck.Deal()
 				assert.EqualExportedValues(t, expected, actual, "Wrong card returned got %v want %v", actual, expected)
 
 				// Check that the length of the deck reduces after each Deal.
-				assert.Equal(t, solitaire.CardCount*solitaire.SuitCount*testCase.Number-(idx), shuffledDeck.Len())
+				assert.Equal(t, solitaire.CardCount*solitaire.SuitCount*testcase.Number-(idx), shuffledDeck.Len())
 			}
 
 			// Deck should be empty.

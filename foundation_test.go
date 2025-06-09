@@ -32,13 +32,13 @@ func Test_CreateFoundationss(t *testing.T) {
 			"WHEN Create foundation is called " +
 			"THEN Four foundations will be created.": {Number: 8},
 	}
-	for name, testCase := range testcases {
+	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {
-			if testCase.WillPanic {
-				assert.PanicsWithValue(t, testCase.PanicMessage,
+			if testcase.WillPanic {
+				assert.PanicsWithValue(t, testcase.PanicMessage,
 					func() {
 						solitaire.CreateFoundations(
-							testCase.Number,
+							testcase.Number,
 							BaseCard,
 							func(
 								solitaire.Foundation,
@@ -51,9 +51,9 @@ func Test_CreateFoundationss(t *testing.T) {
 				)
 			}
 
-			if !testCase.WillPanic {
+			if !testcase.WillPanic {
 				foundation := solitaire.CreateFoundations(
-					testCase.Number,
+					testcase.Number,
 					BaseCard,
 					func(
 						solitaire.Foundation,
@@ -64,8 +64,8 @@ func Test_CreateFoundationss(t *testing.T) {
 				)
 
 				// foundation has the correct number of elements.
-				assert.Equalf(t, testCase.Number, len(foundation),
-					"foundation has incorrect number of elements, want: %d, got: %d", testCase.Number, len(foundation))
+				assert.Equalf(t, testcase.Number, len(foundation),
+					"foundation has incorrect number of elements, want: %d, got: %d", testcase.Number, len(foundation))
 			}
 		})
 	}
@@ -80,7 +80,7 @@ func Test_Full(t *testing.T) {
 		"One":  {Count: 1},
 		"Full": {Count: solitaire.CardCount, IsFull: true},
 	}
-	for name, testCase := range testcases {
+	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {
 			standardDeck := solitaire.CreateDecks(1)
 			card := standardDeck.Deal()
@@ -96,16 +96,16 @@ func Test_Full(t *testing.T) {
 				},
 			)
 
-			for x := 0; x < testCase.Count; x++ {
+			for x := 0; x < testcase.Count; x++ {
 				foundation[0].Add(card, true)
 			}
 
 			assert.Equalf(
-				t, testCase.IsFull,
+				t, testcase.IsFull,
 				foundation[0].Full(),
 				"Foundation full error got %t want %t",
 				foundation[0].Full(),
-				testCase.IsFull,
+				testcase.IsFull,
 			)
 		})
 	}

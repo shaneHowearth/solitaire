@@ -42,28 +42,28 @@ func Test_CreateTableaus(t *testing.T) {
 			},
 		},
 	}
-	for name, testCase := range testcases {
+	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {
-			if testCase.WillPanic {
-				assert.PanicsWithValue(t, testCase.PanicMessage,
+			if testcase.WillPanic {
+				assert.PanicsWithValue(t, testcase.PanicMessage,
 					func() {
 						solitaire.CreateTableaus(
-							testCase.Number,
-							testCase.Rule,
+							testcase.Number,
+							testcase.Rule,
 						)
 					},
 				)
 			}
 
-			if !testCase.WillPanic {
+			if !testcase.WillPanic {
 				tableau := solitaire.CreateTableaus(
-					testCase.Number,
-					testCase.Rule,
+					testcase.Number,
+					testcase.Rule,
 				)
 
 				// tableau has the correct number of elements.
-				assert.Equalf(t, testCase.Number, len(tableau),
-					"tableau has incorrect number of elements, want: %d, got: %d", testCase.Number, len(tableau))
+				assert.Equalf(t, testcase.Number, len(tableau),
+					"tableau has incorrect number of elements, want: %d, got: %d", testcase.Number, len(tableau))
 			}
 		})
 	}
@@ -78,7 +78,7 @@ func Test_Empty(t *testing.T) {
 		"Empty":     {Number: 0, Expected: true},
 	}
 
-	for name, testCase := range testcases {
+	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {
 			tableaus := solitaire.CreateTableaus(
 				2,
@@ -93,18 +93,18 @@ func Test_Empty(t *testing.T) {
 
 			standardDeck := solitaire.CreateDecks(1)
 
-			for idx := 0; idx < testCase.Number; idx++ {
+			for idx := 0; idx < testcase.Number; idx++ {
 				card := standardDeck.Deal()
 				tableaus[0].Add(card, true)
 			}
 
 			assert.Equalf(
 				t,
-				testCase.Expected,
+				testcase.Expected,
 				tableaus[0].Empty(),
 				"tableaus emptiness got %t want %t",
 				tableaus[0].Empty(),
-				testCase.Expected,
+				testcase.Expected,
 			)
 		})
 	}

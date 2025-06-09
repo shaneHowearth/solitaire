@@ -19,14 +19,14 @@ func Test_Add(t *testing.T) {
 		"Add ten":         {Number: 10},
 		"Add ten visible": {Number: 10, Visible: true},
 	}
-	for name, testCase := range testcases {
+	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {
-			stack := solitaire.NewStack(testCase.Number, func(solitaire.SuitedCard) bool { return true })
+			stack := solitaire.NewStack(testcase.Number, func(solitaire.SuitedCard) bool { return true })
 
-			for x := 1; x <= testCase.Number; x++ {
+			for x := 1; x <= testcase.Number; x++ {
 				card := shuffledDeck.Deal()
-				card.Visible = testCase.Visible
-				stack.Add(card, testCase.Visible)
+				card.Visible = testcase.Visible
+				stack.Add(card, testcase.Visible)
 				assert.Equalf(t, x, stack.Len(), "Stack length error got %d want %d", stack.Len(), x)
 				topCard, err := stack.Top()
 				assert.Nilf(t, err, "Getting the top card errored %v", err)
@@ -43,18 +43,16 @@ func Test_Add(t *testing.T) {
 func Test_Move(t *testing.T) {
 	source := solitaire.NewStack(4, func(solitaire.SuitedCard) bool { return true })
 	standardDeck := solitaire.CreateDecks(1)
+
 	for idx := 0; idx < 10; idx++ {
 		source.Add(standardDeck.Deal(), true)
 	}
+
 	testcases := map[string]struct {
-		// Number of cards to move
-		number int
-		// source
-		sourceStack *solitaire.Stack
-		// destination
+		number           int
+		sourceStack      *solitaire.Stack
 		destinationStack *solitaire.Stack
-		// output
-		output bool
+		output           bool
 	}{
 		// Cannot move card to the same stack as it came from.
 		"Should not be able to move a card to the same stack that it came from": {
@@ -82,10 +80,10 @@ func Test_Move(t *testing.T) {
 		// Tableau to Foundation.
 		// Foundation to nominated tableau.
 	}
-	for name, testCase := range testcases {
+	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {
-			output := testCase.sourceStack.Move(testCase.number, testCase.destinationStack)
-			assert.Equalf(t, testCase.output, output, "got %t want %t", output, testCase.output)
+			output := testcase.sourceStack.Move(testcase.number, testcase.destinationStack)
+			assert.Equalf(t, testcase.output, output, "got %t want %t", output, testcase.output)
 		})
 	}
 }
