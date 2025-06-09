@@ -15,8 +15,28 @@ type Talon struct {
 	PerDealCount int // How many cards are dealt per deal.
 }
 
+// NewTalon - Create a new talon.
+func NewTalon(
+	stockSize, dealCount, perDealCount int,
+	rule func(SuitedCard) bool,
+) *Talon {
+	stock := NewStack(stockSize, func(SuitedCard) bool {
+		// Let anything on.
+		return true
+	})
+
+	waste := NewStack(stockSize, rule)
+
+	return &Talon{
+		Stock:        stock,
+		Waste:        waste,
+		DealCount:    dealCount,
+		PerDealCount: perDealCount,
+	}
+}
+
 // Deal - Deal the top card of the Stock to the Waste pile.
-func (talon Talon) Deal() {
+func (talon *Talon) Deal() bool {
 	// If there are cards left on the Stock pile, shift the top one onto the
 	// Waste pile.
 	if talon.Stock.Len() > 0 {
@@ -28,7 +48,7 @@ func (talon Talon) Deal() {
 
 		talon.Waste.Add(card, true)
 
-		return
+		return true
 	}
 
 	// If the Count of deals remaining is greater than 1, and there are cards on
