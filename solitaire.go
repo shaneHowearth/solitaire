@@ -25,7 +25,7 @@ func (solitaireGames Versions) String() string {
 type Game struct {
 	Deck        *Deck
 	Foundations []Foundation
-	Tableau     []Tableau
+	Tableau     []*Tableau
 }
 
 // NewGame - Create a new Game.
@@ -75,7 +75,7 @@ func NewGame(decks, foundations, tableaus int, foundationBase, tableauBase Card)
 		Tableau: CreateTableaus(
 			tableaus,
 			func(
-				tableau Tableau,
+				tableau *Tableau,
 				card SuitedCard,
 			) bool {
 				topCard, err := tableau.Top()
@@ -132,7 +132,7 @@ func (game Game) Start(name Versions) {
 func (game Game) StartKlondike() {
 	// Klondike has 7 stacks in its tableau.
 	const numStacks = 7
-	game.Tableau = make([]Tableau, 0, numStacks)
+	game.Tableau = make([]*Tableau, 0, numStacks)
 
 	counter := 0
 	for idx := 0; idx <= numStacks; idx++ {

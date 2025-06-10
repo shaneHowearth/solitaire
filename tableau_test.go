@@ -12,14 +12,14 @@ func Test_CreateTableaus(t *testing.T) {
 		WillPanic    bool
 		PanicMessage string
 		Number       int
-		Rule         func(solitaire.Tableau, solitaire.SuitedCard) bool
+		Rule         func(*solitaire.Tableau, solitaire.SuitedCard) bool
 	}{
 		"Zero tableaus": {
 			WillPanic:    true,
 			PanicMessage: "Cannot have zero tableaus",
 			Number:       0,
 			Rule: func(
-				solitaire.Tableau,
+				*solitaire.Tableau,
 				solitaire.SuitedCard,
 			) bool {
 				// Allow everything to be added.
@@ -34,7 +34,7 @@ func Test_CreateTableaus(t *testing.T) {
 		"Seven tableaus (klondike)": {
 			Number: 7,
 			Rule: func(
-				solitaire.Tableau,
+				*solitaire.Tableau,
 				solitaire.SuitedCard,
 			) bool {
 				// Allow everything to be added.
@@ -83,7 +83,7 @@ func Test_Empty(t *testing.T) {
 			tableaus := solitaire.CreateTableaus(
 				2,
 				func(
-					solitaire.Tableau,
+					*solitaire.Tableau,
 					solitaire.SuitedCard,
 				) bool {
 					// Allow everything to be added.
