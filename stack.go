@@ -68,6 +68,10 @@ func (stack *Stack) Deal() (SuitedCard, error) {
 // Move - Move n cards on the tableau stack to the nominated pile (foundation or
 // tableau).
 func (stack *Stack) Move(_ int, destination *Stack) bool {
+	if destination == nil {
+		return false
+	}
+
 	if stack.cards == destination.cards {
 		return false
 	}
