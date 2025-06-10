@@ -77,7 +77,7 @@ func Test_Deal(t *testing.T) {
 			}
 
 			for dc := 1; dc < testcase.DealCount; dc++ {
-				// No-op, purely to use up dealcount
+				// No-op, purely to use up dealcount.
 				_ = talon.Deal()
 			}
 
@@ -95,6 +95,67 @@ func Test_Deal(t *testing.T) {
 				"Unexpected final waste count got %d, want %d",
 				talon.Waste.Len(), testcase.FinalWasteCount,
 			)
+		})
+	}
+}
+
+func Test_MoveTalon(t *testing.T) {
+	stockSize := 52
+	dealCount := 1
+	perDealCount := 3
+
+	testcases := map[string]struct {
+		WasteCount      int
+		FinalWasteCount int
+		Destination     *solitaire.Stack
+		Output          bool
+		Rule            func(solitaire.SuitedCard) bool
+	}{
+		"Waste moves": {
+			WasteCount:      5,
+			FinalWasteCount: 4,
+			Destination:     solitaire.NewStack(5, func(solitaire.SuitedCard) bool { return true }),
+			Output:          true,
+			Rule:            func(solitaire.SuitedCard) bool { return true },
+		},
+
+		"Waste doesn't move": {
+			WasteCount:      5,
+			FinalWasteCount: 5,
+			Destination:     solitaire.NewStack(5, func(solitaire.SuitedCard) bool { return false }),
+			Output:          false,
+			Rule:            func(solitaire.SuitedCard) bool { return true },
+		},
+		"Waste is empty": {
+			WasteCount:      0,
+			FinalWasteCount: 0,
+			Destination:     solitaire.NewStack(5, func(solitaire.SuitedCard) bool { return false }),
+			Output:          false,
+			Rule:            func(solitaire.SuitedCard) bool { return true },
+		},
+		"No destination": {
+			WasteCount:      5,
+			FinalWasteCount: 5,
+			Output:          false,
+			Rule:            func(solitaire.SuitedCard) bool { return true },
+		},
+	}
+	for name, testcase := range testcases {
+		t.Run(name, func(t *testing.T) {
+			standardDeck := solitaire.CreateDecks(1)
+			talon := solitaire.NewTalon(stockSize, dealCount, perDealCount, testcase.Rule)
+
+			// Add cards to the talon waste pile.
+			for sc := 0; sc < testcase.WasteCount; sc++ {
+				card := standardDeck.Deal()
+
+				talon.Waste.Add(card, false)
+			}
+
+			output := talon.Move(testcase.Destination)
+
+			assert.Equalf(t, testcase.Output, output, "movement gave wrong result got %t want %t", output, testcase.Output)
+			assert.Equalf(t, testcase.FinalWasteCount, talon.Waste.Len(), "")
 		})
 	}
 }

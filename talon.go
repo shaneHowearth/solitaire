@@ -71,10 +71,21 @@ func (talon *Talon) Deal() bool {
 
 		// Deal the first card onto the Waste.
 		talon.Deal()
+
+		return true
 	}
+
+	// Tell the caller that nothing was done.
+	return false
 }
 
 // Top - the top card on the waste stack.
-func (talon Talon) Top() (SuitedCard, error) {
+func (talon *Talon) Top() (SuitedCard, error) {
 	return talon.Waste.Top()
+}
+
+// Move - Move the top card on the waste stack to the nominated pile
+// (foundation or tableau).
+func (talon *Talon) Move(destination *Stack) bool {
+	return talon.Waste.Move(1, destination)
 }
