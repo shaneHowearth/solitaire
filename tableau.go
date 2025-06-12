@@ -9,6 +9,7 @@ import (
 // depots i.e. places where columns of overlapping cards may be formed.
 type Tableau struct {
 	Stack *Stack
+	Base  Rank
 }
 
 // CreateTableaus - Create the tableaus that will host the cards.
@@ -25,7 +26,7 @@ func CreateTableaus(number int, rule func(*Tableau, SuitedCard) bool) []*Tableau
 
 	for i := 0; i < number; i++ {
 		tableau := Tableau{}
-		stack := NewStack(CardCount,
+		stack := NewStack(RankCount,
 			func(card SuitedCard) bool {
 				return rule(&tableau, card)
 			},

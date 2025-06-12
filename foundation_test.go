@@ -78,7 +78,7 @@ func Test_Full(t *testing.T) {
 	}{
 
 		"One":  {Count: 1},
-		"Full": {Count: solitaire.CardCount, IsFull: true},
+		"Full": {Count: solitaire.RankCount, IsFull: true},
 	}
 	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {

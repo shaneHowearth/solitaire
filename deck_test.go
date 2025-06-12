@@ -110,16 +110,16 @@ func Test_DeckDeal(t *testing.T) {
 
 			shuffledDeck.Shuffle()
 
-			for idx := 1; idx <= testcase.Number*solitaire.CardCount*solitaire.SuitCount; idx++ {
+			for idx := 1; idx <= testcase.Number*solitaire.RankCount*solitaire.SuitCount; idx++ {
 				expected := shuffledDeck.Top()
 
-				assert.Equal(t, solitaire.CardCount*solitaire.SuitCount*testcase.Number-(idx-1), shuffledDeck.Len())
+				assert.Equal(t, solitaire.RankCount*solitaire.SuitCount*testcase.Number-(idx-1), shuffledDeck.Len())
 
 				actual := shuffledDeck.Deal()
 				assert.EqualExportedValues(t, expected, actual, "Wrong card returned got %v want %v", actual, expected)
 
 				// Check that the length of the deck reduces after each Deal.
-				assert.Equal(t, solitaire.CardCount*solitaire.SuitCount*testcase.Number-(idx), shuffledDeck.Len())
+				assert.Equal(t, solitaire.RankCount*solitaire.SuitCount*testcase.Number-(idx), shuffledDeck.Len())
 			}
 
 			// Deck should be empty.
