@@ -29,7 +29,7 @@ type Game struct {
 }
 
 // NewGame - Create a new Game.
-func NewGame(decks, foundations, tableaus int, foundationBase, tableauBase Card) *Game {
+func NewGame(decks, foundations, tableaus int, foundationBase, tableauBase Rank) *Game {
 	deck := CreateDecks(decks)
 	deck.Shuffle()
 
@@ -49,7 +49,7 @@ func NewGame(decks, foundations, tableaus int, foundationBase, tableauBase Card)
 
 				// If no cards have been added to the foundation then the card must
 				// be the same as the base card.
-				if foundation.Len() == 0 && card.Card != foundation.Base.Card {
+				if foundation.Len() == 0 && card.Rank != foundation.Base.Rank {
 					return false
 				}
 
@@ -60,13 +60,13 @@ func NewGame(decks, foundations, tableaus int, foundationBase, tableauBase Card)
 					return false
 				}
 
-				if (card.Card == Ace) && (topCard.Card == King) {
+				if (card.Rank == Ace) && (topCard.Rank == King) {
 					return true
 				}
 
 				// Card being added must be rank 1 higher than the latest on the
 				// foundation stack.
-				if card.Card == (topCard.Card + 1) {
+				if card.Rank == (topCard.Rank + 1) {
 					return true
 				}
 
@@ -99,19 +99,19 @@ func NewGame(decks, foundations, tableaus int, foundationBase, tableauBase Card)
 				}
 
 				// If the tableau is empty, only the tableau base can be put on it.
-				if tableau.Len() == 0 && card.Card != tableauBase {
+				if tableau.Len() == 0 && card.Rank != tableauBase {
 					return false
 				}
 
 				// Handle solitaire.King being put on top of a solitaire.Ace - can
 				// only happen when more than one deck is in the Deck.
-				if (card.Card == King) && (topCard.Card == Ace) {
+				if (card.Rank == King) && (topCard.Rank == Ace) {
 					return true
 				}
 
 				// Card being added must be rank 1 lower than the latest on the
 				// foundation stack.
-				if card.Card == (topCard.Card - 1) {
+				if card.Rank == (topCard.Rank - 1) {
 					return true
 				}
 

@@ -9,19 +9,19 @@ import (
 type Deck []SuitedCard
 
 var deck = []SuitedCard{
-	{Card: Ace, Suit: Spades}, {Card: Ace, Suit: Hearts}, {Card: Ace, Suit: Clubs}, {Card: Ace, Suit: Diamonds},
-	{Card: Two, Suit: Spades}, {Card: Two, Suit: Hearts}, {Card: Two, Suit: Clubs}, {Card: Two, Suit: Diamonds},
-	{Card: Three, Suit: Spades}, {Card: Three, Suit: Hearts}, {Card: Three, Suit: Clubs}, {Card: Three, Suit: Diamonds},
-	{Card: Four, Suit: Spades}, {Card: Four, Suit: Hearts}, {Card: Four, Suit: Clubs}, {Card: Four, Suit: Diamonds},
-	{Card: Five, Suit: Spades}, {Card: Five, Suit: Hearts}, {Card: Five, Suit: Clubs}, {Card: Five, Suit: Diamonds},
-	{Card: Six, Suit: Spades}, {Card: Six, Suit: Hearts}, {Card: Six, Suit: Clubs}, {Card: Six, Suit: Diamonds},
-	{Card: Seven, Suit: Spades}, {Card: Seven, Suit: Hearts}, {Card: Seven, Suit: Clubs}, {Card: Seven, Suit: Diamonds},
-	{Card: Eight, Suit: Spades}, {Card: Eight, Suit: Hearts}, {Card: Eight, Suit: Clubs}, {Card: Eight, Suit: Diamonds},
-	{Card: Nine, Suit: Spades}, {Card: Nine, Suit: Hearts}, {Card: Nine, Suit: Clubs}, {Card: Nine, Suit: Diamonds},
-	{Card: Ten, Suit: Spades}, {Card: Ten, Suit: Hearts}, {Card: Ten, Suit: Clubs}, {Card: Ten, Suit: Diamonds},
-	{Card: Jack, Suit: Spades}, {Card: Jack, Suit: Hearts}, {Card: Jack, Suit: Clubs}, {Card: Jack, Suit: Diamonds},
-	{Card: Queen, Suit: Spades}, {Card: Queen, Suit: Hearts}, {Card: Queen, Suit: Clubs}, {Card: Queen, Suit: Diamonds},
-	{Card: King, Suit: Spades}, {Card: King, Suit: Hearts}, {Card: King, Suit: Clubs}, {Card: King, Suit: Diamonds},
+	{Rank: Ace, Suit: Spades}, {Rank: Ace, Suit: Hearts}, {Rank: Ace, Suit: Clubs}, {Rank: Ace, Suit: Diamonds},
+	{Rank: Two, Suit: Spades}, {Rank: Two, Suit: Hearts}, {Rank: Two, Suit: Clubs}, {Rank: Two, Suit: Diamonds},
+	{Rank: Three, Suit: Spades}, {Rank: Three, Suit: Hearts}, {Rank: Three, Suit: Clubs}, {Rank: Three, Suit: Diamonds},
+	{Rank: Four, Suit: Spades}, {Rank: Four, Suit: Hearts}, {Rank: Four, Suit: Clubs}, {Rank: Four, Suit: Diamonds},
+	{Rank: Five, Suit: Spades}, {Rank: Five, Suit: Hearts}, {Rank: Five, Suit: Clubs}, {Rank: Five, Suit: Diamonds},
+	{Rank: Six, Suit: Spades}, {Rank: Six, Suit: Hearts}, {Rank: Six, Suit: Clubs}, {Rank: Six, Suit: Diamonds},
+	{Rank: Seven, Suit: Spades}, {Rank: Seven, Suit: Hearts}, {Rank: Seven, Suit: Clubs}, {Rank: Seven, Suit: Diamonds},
+	{Rank: Eight, Suit: Spades}, {Rank: Eight, Suit: Hearts}, {Rank: Eight, Suit: Clubs}, {Rank: Eight, Suit: Diamonds},
+	{Rank: Nine, Suit: Spades}, {Rank: Nine, Suit: Hearts}, {Rank: Nine, Suit: Clubs}, {Rank: Nine, Suit: Diamonds},
+	{Rank: Ten, Suit: Spades}, {Rank: Ten, Suit: Hearts}, {Rank: Ten, Suit: Clubs}, {Rank: Ten, Suit: Diamonds},
+	{Rank: Jack, Suit: Spades}, {Rank: Jack, Suit: Hearts}, {Rank: Jack, Suit: Clubs}, {Rank: Jack, Suit: Diamonds},
+	{Rank: Queen, Suit: Spades}, {Rank: Queen, Suit: Hearts}, {Rank: Queen, Suit: Clubs}, {Rank: Queen, Suit: Diamonds},
+	{Rank: King, Suit: Spades}, {Rank: King, Suit: Hearts}, {Rank: King, Suit: Clubs}, {Rank: King, Suit: Diamonds},
 }
 
 // CreateDecks - Create a deck of cards.

@@ -3,15 +3,15 @@ package solitaire
 // SuitCount - the number of suits.
 const SuitCount = 4
 
-// CardCount - the number of unsuited cards.
-const CardCount = 13
+// RankCount - the number of unsuited cards.
+const RankCount = 13
 
-// Card - Enumeration of cards.
-type Card int
+// Rank - Enumeration of cards.
+type Rank int
 
 //nolint:revive // ignore need to comment this block of exported consts.
 const (
-	Ace Card = iota
+	Ace Rank = iota
 	Two
 	Three
 	Four
@@ -26,7 +26,7 @@ const (
 	King
 )
 
-func (card Card) String() string {
+func (rank Rank) String() string {
 	return [...]string{
 		"A",
 		"2",
@@ -41,7 +41,7 @@ func (card Card) String() string {
 		"J",
 		"Q",
 		"K",
-	}[card]
+	}[rank]
 }
 
 // Suit - Enumeration of suits.
@@ -69,7 +69,7 @@ func (suit Suit) String() string {
 //
 //nolint:unused // The fields are used elsewhere.
 type SuitedCard struct {
-	Card    Card
+	Rank    Rank
 	Suit    Suit
 	Visible bool
 }

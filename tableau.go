@@ -25,7 +25,7 @@ func CreateTableaus(number int, rule func(*Tableau, SuitedCard) bool) []*Tableau
 
 	for i := 0; i < number; i++ {
 		tableau := Tableau{}
-		stack := NewStack(CardCount,
+		stack := NewStack(RankCount,
 			func(card SuitedCard) bool {
 				return rule(&tableau, card)
 			},
