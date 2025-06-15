@@ -44,4 +44,7 @@ type Variant interface {
 			solitaire.SuitedCard,
 		) bool,
 	)
+
+	// SetupDeal - deal all the cards ready for the player to begin playing.
+	SetupDeal()
 }

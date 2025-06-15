@@ -5,13 +5,16 @@ import "github.com/shanehowearth/solitaire"
 // Klondike - https://en.wikipedia.org/wiki/Klondike_(solitaire)
 type Klondike struct{}
 
+// Ensure that Klondike implements game.Variant
+var _ Variant = (*Klondike)(nil)
+
 // Name - name of the variant.
-func (Klondike) Name() string {
+func (*Klondike) Name() string {
 	return "Klondike"
 }
 
 // GridSize - The size of the grid required by klondike.
-func (Klondike) GridSize() (int, int) {
+func (*Klondike) GridSize() (int, int) {
 	const height = 1
 
 	const width = 7
@@ -20,14 +23,14 @@ func (Klondike) GridSize() (int, int) {
 }
 
 // Decks - How many decks of cards are required to play klondike.
-func (Klondike) Decks() int {
+func (*Klondike) Decks() int {
 	return 1
 }
 
 const numKlondikeTableau = 7
 
 // Tableau - how the tableau are defined.
-func (Klondike) Tableau() (
+func (*Klondike) Tableau() (
 	number int,
 	basecard solitaire.Rank,
 	addRule func(solitaire.Tableau, solitaire.SuitedCard) bool,
@@ -38,7 +41,7 @@ func (Klondike) Tableau() (
 // Layout - Where does each tableau go in the grid, and what angle (relative to
 // straight up and down) should the tableau be twisted.
 // Tableau and Grid are 0 indexed.
-func (Klondike) Layout(tableauNumber int) (int, int, int) {
+func (*Klondike) Layout(tableauNumber int) (int, int, int) {
 	const x = 0
 
 	const angle = 0
@@ -47,11 +50,16 @@ func (Klondike) Layout(tableauNumber int) (int, int, int) {
 }
 
 // Foundations - how the foundations are defined.
-func (Klondike) Foundations() (
+func (*Klondike) Foundations() (
 	number int,
 	basecard solitaire.Rank,
 	addRule func(solitaire.Foundation, solitaire.SuitedCard) bool,
 ) {
 	const foundationCount = 4
 	return foundationCount, solitaire.Ace, PlusOneRule
+}
+
+// SetupDeal - deal all the cards into the right piles ready to start a game.
+func (*Klondike) SetupDeal() {
+	panic("Not Implemented")
 }

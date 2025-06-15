@@ -28,7 +28,7 @@ card UP in rank".
 
 example:
 ```Go
-func (card solitaire.SuitedCard) bool {
+func (foundation solitaire.Foundation, card solitaire.SuitedCard) bool {
     // Handle when the foundation is empty.
     if foundation.Len() == 0 {
         if card.Suit == foundation.BaseCard.Suit && card.Rank == foundation.BaseCard.Rank {
@@ -64,10 +64,10 @@ What is the rule for adding a card to a given tableau.
 
 example:
 ```Go
-func (card solitaire.SuitedCard) bool {
+func (tableau solitaire.Tableau, card solitaire.SuitedCard) bool {
     // Handle when the tableau is empty.
     if tableau.Len() == 0 {
-        if card.Rank == tableau.BaseCard.Rank {
+        if card.Rank == tableau.Card.Rank {
             return true
         }
     }
@@ -78,11 +78,11 @@ func (card solitaire.SuitedCard) bool {
         return false
     }
 
-    // If the card is the same suit, and is one down in rank
-    // then it can go onto the tableau.
-    if card.Suit == tableau.BaseCard.Suit && (topCard.Rank - card.Rank) == 1 {
-        return true
-    }
+	// If the card is the opposite colour, and is one down in rank
+	// then it can go onto the tableau.
+	if ((card.Suit+topCard.Suit)%2 == 1) && (topCard.Rank-card.Rank) == 1 {
+		return true
+	}
 
     // All other cases the card should not be added to the tableau.
     return false

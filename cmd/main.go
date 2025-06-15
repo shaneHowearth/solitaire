@@ -1,18 +1,20 @@
 package main
 
 import (
-	"fmt"
-
-	"github.com/shanehowearth/solitaire"
+	"github.com/shanehowearth/solitaire/game"
+	"github.com/shanehowearth/solitaire/screen/tui"
 )
 
 func main() {
-	for i := 1; i < solitaire.SuitCount; i++ {
-		deck := solitaire.CreateDecks(i)
-		fmt.Println(deck)
-		fmt.Println("-----------------------------------------")
-		deck.Shuffle()
-		fmt.Println(deck)
-		fmt.Println("-----------------------------------------")
-	}
+	// Which variants of solitaire are available to play.
+	variants := []game.Variant{}
+	variants = append(variants, &game.Klondike{})
+
+	// select which display is going to be used.
+	display := tui.Display{}
+
+	// Splash screen - has options for user to choose which variant of solitaire
+	// they wish to play.
+	display.Splash(variants)
+
 }
