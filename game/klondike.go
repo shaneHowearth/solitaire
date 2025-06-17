@@ -13,8 +13,8 @@ func (*Klondike) Name() string {
 	return "Klondike"
 }
 
-// GridSize - The size of the grid required by klondike.
-func (*Klondike) GridSize() (int, int) {
+// TableauGridSize - The size of the grid required by klondike.
+func (*Klondike) TableauGridSize() (int, int) {
 	const height = 1
 
 	const width = 7
@@ -38,10 +38,10 @@ func (*Klondike) Tableau() (
 	return numKlondikeTableau, solitaire.King, MinusOneRule
 }
 
-// Layout - Where does each tableau go in the grid, and what angle (relative to
+// TableauPosition - Where does each tableau go in the grid, and what angle (relative to
 // straight up and down) should the tableau be twisted.
 // Tableau and Grid are 0 indexed.
-func (*Klondike) Layout(tableauNumber int) (int, int, int) {
+func (*Klondike) TableauPosition(tableauNumber int) (int, int, int) {
 	const x = 0
 
 	const angle = 0

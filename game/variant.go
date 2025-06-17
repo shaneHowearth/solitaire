@@ -7,8 +7,8 @@ type Variant interface {
 	// Name of the Variant.
 	Name() string
 
-	// GridSize - How big is the grid that the tableau needs.
-	GridSize() (height, width int)
+	// TableauGridSize - How big is the grid that the tableau needs.
+	TableauGridSize() (height, width int)
 
 	// Decks - How many decks of cards are required to play the variant.
 	Decks() int
@@ -23,11 +23,11 @@ type Variant interface {
 		) bool,
 	)
 
-	// Layout of tableau.
+	// TableauPosition - the position of the the tableau.
 	// The number of each tableau is passed to a function that returns the
 	// x, y position on the grid, and the orientation of the pile (in degrees).
 	// tableaus are to be 1 indexed.
-	Layout(tableauNumber int) (
+	TableauPosition(tableauNumber int) (
 		x,
 		y,
 		orientation int,

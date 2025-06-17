@@ -28,7 +28,7 @@ const (
 
 func (rank Rank) String() string {
 	return [...]string{
-		"A",
+		"Ace",
 		"2",
 		"3",
 		"4",
@@ -38,9 +38,9 @@ func (rank Rank) String() string {
 		"8",
 		"9",
 		"10",
-		"J",
-		"Q",
-		"K",
+		"Jack",
+		"Queen",
+		"King",
 	}[rank]
 }
 
