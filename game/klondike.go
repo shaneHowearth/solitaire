@@ -17,9 +17,7 @@ func (*Klondike) Name() string {
 func (*Klondike) TableauGridSize() (int, int) {
 	const height = 1
 
-	const width = 7
-
-	return height, width
+	return height, numKlondikeTableau
 }
 
 // Decks - How many decks of cards are required to play klondike.

@@ -3,17 +3,26 @@ package tui
 import (
 	"fmt"
 
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/shanehowearth/solitaire/game"
 )
 
+// Display -
 type Display struct {
-	app *tview.Application
+	app         *tview.Application
+	stack       []*tview.TextView
+	waste       []*tview.TextView
+	foundations []*tview.TextView
+	tableau     [][]*tview.TextView // Row, Column
 }
 
+// Splash - Start up screen, currently lists all variants of games that the
+// application knows about, allowing the user to select which variant to play.
 func (display *Display) Splash(games []game.Variant) {
 	display.app = tview.NewApplication()
 	list := tview.NewList()
+
 	for idx, game := range games {
 		list.AddItem(game.Name(), "", []rune(fmt.Sprintf("%d", idx+1))[0], func() { display.Board(game) })
 	}
@@ -23,15 +32,29 @@ func (display *Display) Splash(games []game.Variant) {
 	}
 }
 
+// Board - Create the board that the game will use.
 func (display *Display) Board(variant game.Variant) {
-	// How big is the tableau.
-	// How big is the foundation.
 	tableauHeight, tableauWidth := variant.TableauGridSize()
 	foundationCount, baseRank, _ := variant.Foundations()
-	// variant.TableauPosition
+
+	display.foundations = make([]*tview.TextView, 0, foundationCount)
+	display.tableau = make([][]*tview.TextView, tableauHeight)
+
+	for idx := range display.tableau {
+		display.tableau[idx] = make([]*tview.TextView, 0, tableauWidth)
+	}
 
 	// There are two rows, the top one with the Talon and Foundations, and
 	// the bottom one with the Tableaus.
+	stackFunc := func(
+		screen tcell.Screen,
+		x, y, width, height int,
+	) (
+		int, int, int, int,
+	) {
+		tview.Print(screen, "I am the stack", x, height/2-1, width, tview.AlignCenter, tcell.ColorDefault)
+		return x, y, width, height
+	}
 
 	mainRows := tview.NewFlex().SetDirection(tview.FlexRow)
 	// The top row.
@@ -39,19 +62,29 @@ func (display *Display) Board(variant game.Variant) {
 	topRow := tview.NewFlex().SetDirection(tview.FlexColumn)
 
 	// Add a box for the stack.
+	stack := tview.NewTextView()
+	display.stack = append(display.stack, stack)
+
 	topRow.AddItem(
-		tview.NewBox().SetBorder(true).SetTitle("Talon"), 0, 1, false,
+		stack.SetWordWrap(true).SetDrawFunc(stackFunc).SetBorder(true).SetTitle("Talon"), 0, 1, false,
 	)
 
 	// Add a box for the waste.
+	waste := tview.NewTextView()
+	display.waste = append(display.waste, waste)
+
 	topRow.AddItem(
-		tview.NewBox().SetBorder(true).SetTitle("Waste"), 0, 1, false,
+		waste.SetBorder(true).SetTitle("Waste"), 0, 1, false,
 	)
 
 	// Add a box for each foundation.
 	for idx := 0; idx < foundationCount; idx++ {
+		foundation := tview.NewTextView()
+
+		display.foundations = append(display.foundations, foundation)
+
 		topRow.AddItem(
-			tview.NewBox().SetBorder(true).SetTitle(baseRank.String()), 0, 1, false,
+			foundation.Box.SetBorder(true).SetTitle(baseRank.String()), 0, 1, false,
 		)
 	}
 
@@ -60,14 +93,19 @@ func (display *Display) Board(variant game.Variant) {
 
 	// The tableau.
 	tableau := tview.NewFlex().SetDirection(tview.FlexRow)
+
 	for idx := 0; idx < tableauHeight; idx++ {
 		// Create a new row for the tableau.
 		tableauRow := tview.NewFlex().SetDirection(tview.FlexColumn)
 
 		// Add columns to the row.
 		for colIdx := 0; colIdx < tableauWidth; colIdx++ {
+			tableauCell := tview.NewTextView()
+
+			display.tableau[idx] = append(display.tableau[idx], tableauCell)
+
 			tableauRow.AddItem(
-				tview.NewBox().SetBorder(true).SetTitle("Box"), 0, 1, false,
+				tableauCell.SetBorder(true).SetTitle("Box"), 0, 1, false,
 			)
 		}
 
@@ -87,4 +125,12 @@ func (display *Display) Board(variant game.Variant) {
 	if err := display.app.SetRoot(mainWindow, true).SetFocus(mainWindow).Run(); err != nil {
 		panic(err)
 	}
+
+	display.FirstDeal(variant)
+}
+
+// FirstDeal -
+func (*Display) FirstDeal(variant game.Variant) {
+	// TODO Marry the position of the stacks with cells in the display.
+	variant.SetupDeal()
 }
