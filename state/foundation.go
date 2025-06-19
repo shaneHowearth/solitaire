@@ -1,4 +1,4 @@
-package solitaire
+package state
 
 // Foundation - The final place for cards. Cards are built up in piles from the
 // (nominated) base card.

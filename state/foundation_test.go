@@ -1,14 +1,14 @@
-package solitaire_test
+package state_test
 
 import (
 	"testing"
 
-	"github.com/shanehowearth/solitaire"
+	"github.com/shanehowearth/solitaire/state"
 	"github.com/stretchr/testify/assert"
 )
 
 func Test_CreateFoundationss(t *testing.T) {
-	BaseCard := solitaire.Ace
+	BaseCard := state.Ace
 
 	testcases := map[string]struct {
 		Number       int
@@ -37,12 +37,12 @@ func Test_CreateFoundationss(t *testing.T) {
 			if testcase.WillPanic {
 				assert.PanicsWithValue(t, testcase.PanicMessage,
 					func() {
-						solitaire.CreateFoundations(
+						state.CreateFoundations(
 							testcase.Number,
 							BaseCard,
 							func(
-								solitaire.Foundation,
-								solitaire.SuitedCard,
+								state.Foundation,
+								state.SuitedCard,
 							) bool {
 								return false
 							},
@@ -52,12 +52,12 @@ func Test_CreateFoundationss(t *testing.T) {
 			}
 
 			if !testcase.WillPanic {
-				foundation := solitaire.CreateFoundations(
+				foundation := state.CreateFoundations(
 					testcase.Number,
 					BaseCard,
 					func(
-						solitaire.Foundation,
-						solitaire.SuitedCard,
+						state.Foundation,
+						state.SuitedCard,
 					) bool {
 						return false
 					},
@@ -78,19 +78,19 @@ func Test_Full(t *testing.T) {
 	}{
 
 		"One":  {Count: 1},
-		"Full": {Count: solitaire.RankCount, IsFull: true},
+		"Full": {Count: state.RankCount, IsFull: true},
 	}
 	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {
-			standardDeck := solitaire.CreateDecks(1)
+			standardDeck := state.CreateDecks(1)
 			card := standardDeck.Deal()
 
-			foundation := solitaire.CreateFoundations(
-				solitaire.SuitCount,
-				solitaire.Ace,
+			foundation := state.CreateFoundations(
+				state.SuitCount,
+				state.Ace,
 				func(
-					solitaire.Foundation,
-					solitaire.SuitedCard,
+					state.Foundation,
+					state.SuitedCard,
 				) bool {
 					return true
 				},

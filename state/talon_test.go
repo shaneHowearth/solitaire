@@ -1,9 +1,9 @@
-package solitaire_test
+package state_test
 
 import (
 	"testing"
 
-	"github.com/shanehowearth/solitaire"
+	"github.com/shanehowearth/solitaire/state"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,7 +19,7 @@ func Test_Deal(t *testing.T) {
 		FinalWasteCount int
 		Output          bool
 		DealCount       int
-		Rule            func(solitaire.SuitedCard) bool
+		Rule            func(state.SuitedCard) bool
 	}{
 		"Stack has multiple cards, Waste is empty": {
 			StockCount:      5,
@@ -27,7 +27,7 @@ func Test_Deal(t *testing.T) {
 			FinalWasteCount: 1,
 			DealCount:       1,
 			Output:          true,
-			Rule:            func(solitaire.SuitedCard) bool { return true },
+			Rule:            func(state.SuitedCard) bool { return true },
 		},
 		"Stack and waste both have multiple cards": {
 			StockCount:      5,
@@ -36,7 +36,7 @@ func Test_Deal(t *testing.T) {
 			FinalWasteCount: 6,
 			DealCount:       1,
 			Output:          true,
-			Rule:            func(solitaire.SuitedCard) bool { return true },
+			Rule:            func(state.SuitedCard) bool { return true },
 		},
 		"Stock is empty and Waste has multiple cards": {
 			StockCount:      0,
@@ -45,7 +45,7 @@ func Test_Deal(t *testing.T) {
 			FinalWasteCount: 1,
 			DealCount:       1,
 			Output:          true,
-			Rule:            func(solitaire.SuitedCard) bool { return true },
+			Rule:            func(state.SuitedCard) bool { return true },
 		},
 		"Stock is empty and Waste only has one card": {
 			StockCount:      0,
@@ -54,13 +54,13 @@ func Test_Deal(t *testing.T) {
 			FinalWasteCount: 1,
 			DealCount:       1,
 			Output:          false,
-			Rule:            func(solitaire.SuitedCard) bool { return true },
+			Rule:            func(state.SuitedCard) bool { return true },
 		},
 	}
 	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {
-			standardDeck := solitaire.CreateDecks(1)
-			talon := solitaire.NewTalon(stockSize, dealCount, perDealCount, testcase.Rule)
+			standardDeck := state.CreateDecks(1)
+			talon := state.NewTalon(stockSize, dealCount, perDealCount, testcase.Rule)
 
 			// Add cards to the talon stock pile.
 			for sc := 0; sc < testcase.StockCount; sc++ {
@@ -107,43 +107,43 @@ func Test_MoveTalon(t *testing.T) {
 	testcases := map[string]struct {
 		WasteCount      int
 		FinalWasteCount int
-		Destination     *solitaire.Stack
+		Destination     *state.Stack
 		Output          bool
-		Rule            func(solitaire.SuitedCard) bool
+		Rule            func(state.SuitedCard) bool
 	}{
 		"Waste moves": {
 			WasteCount:      5,
 			FinalWasteCount: 4,
-			Destination:     solitaire.NewStack(5, func(solitaire.SuitedCard) bool { return true }),
+			Destination:     state.NewStack(5, func(state.SuitedCard) bool { return true }),
 			Output:          true,
-			Rule:            func(solitaire.SuitedCard) bool { return true },
+			Rule:            func(state.SuitedCard) bool { return true },
 		},
 
 		"Waste doesn't move": {
 			WasteCount:      5,
 			FinalWasteCount: 5,
-			Destination:     solitaire.NewStack(5, func(solitaire.SuitedCard) bool { return false }),
+			Destination:     state.NewStack(5, func(state.SuitedCard) bool { return false }),
 			Output:          false,
-			Rule:            func(solitaire.SuitedCard) bool { return true },
+			Rule:            func(state.SuitedCard) bool { return true },
 		},
 		"Waste is empty": {
 			WasteCount:      0,
 			FinalWasteCount: 0,
-			Destination:     solitaire.NewStack(5, func(solitaire.SuitedCard) bool { return false }),
+			Destination:     state.NewStack(5, func(state.SuitedCard) bool { return false }),
 			Output:          false,
-			Rule:            func(solitaire.SuitedCard) bool { return true },
+			Rule:            func(state.SuitedCard) bool { return true },
 		},
 		"No destination": {
 			WasteCount:      5,
 			FinalWasteCount: 5,
 			Output:          false,
-			Rule:            func(solitaire.SuitedCard) bool { return true },
+			Rule:            func(state.SuitedCard) bool { return true },
 		},
 	}
 	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {
-			standardDeck := solitaire.CreateDecks(1)
-			talon := solitaire.NewTalon(stockSize, dealCount, perDealCount, testcase.Rule)
+			standardDeck := state.CreateDecks(1)
+			talon := state.NewTalon(stockSize, dealCount, perDealCount, testcase.Rule)
 
 			// Add cards to the talon waste pile.
 			for sc := 0; sc < testcase.WasteCount; sc++ {

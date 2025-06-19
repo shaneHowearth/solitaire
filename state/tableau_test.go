@@ -1,9 +1,9 @@
-package solitaire_test
+package state_test
 
 import (
 	"testing"
 
-	"github.com/shanehowearth/solitaire"
+	"github.com/shanehowearth/solitaire/state"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -12,15 +12,15 @@ func Test_CreateTableaus(t *testing.T) {
 		WillPanic    bool
 		PanicMessage string
 		Number       int
-		Rule         func(*solitaire.Tableau, solitaire.SuitedCard) bool
+		Rule         func(*state.Tableau, state.SuitedCard) bool
 	}{
 		"Zero tableaus": {
 			WillPanic:    true,
 			PanicMessage: "Cannot have zero tableaus",
 			Number:       0,
 			Rule: func(
-				*solitaire.Tableau,
-				solitaire.SuitedCard,
+				*state.Tableau,
+				state.SuitedCard,
 			) bool {
 				// Allow everything to be added.
 				return true
@@ -34,8 +34,8 @@ func Test_CreateTableaus(t *testing.T) {
 		"Seven tableaus (klondike)": {
 			Number: 7,
 			Rule: func(
-				*solitaire.Tableau,
-				solitaire.SuitedCard,
+				*state.Tableau,
+				state.SuitedCard,
 			) bool {
 				// Allow everything to be added.
 				return true
@@ -47,7 +47,7 @@ func Test_CreateTableaus(t *testing.T) {
 			if testcase.WillPanic {
 				assert.PanicsWithValue(t, testcase.PanicMessage,
 					func() {
-						solitaire.CreateTableaus(
+						state.CreateTableaus(
 							testcase.Number,
 							testcase.Rule,
 						)
@@ -56,7 +56,7 @@ func Test_CreateTableaus(t *testing.T) {
 			}
 
 			if !testcase.WillPanic {
-				tableau := solitaire.CreateTableaus(
+				tableau := state.CreateTableaus(
 					testcase.Number,
 					testcase.Rule,
 				)
@@ -80,18 +80,18 @@ func Test_Empty(t *testing.T) {
 
 	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {
-			tableaus := solitaire.CreateTableaus(
+			tableaus := state.CreateTableaus(
 				2,
 				func(
-					*solitaire.Tableau,
-					solitaire.SuitedCard,
+					*state.Tableau,
+					state.SuitedCard,
 				) bool {
 					// Allow everything to be added.
 					return true
 				},
 			)
 
-			standardDeck := solitaire.CreateDecks(1)
+			standardDeck := state.CreateDecks(1)
 
 			for idx := 0; idx < testcase.Number; idx++ {
 				card := standardDeck.Deal()

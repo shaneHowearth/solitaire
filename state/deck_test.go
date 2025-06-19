@@ -1,14 +1,14 @@
-package solitaire_test
+package state_test
 
 import (
 	"testing"
 
-	"github.com/shanehowearth/solitaire"
+	"github.com/shanehowearth/solitaire/state"
 	"github.com/stretchr/testify/assert"
 )
 
 func Test_CreateDecks(t *testing.T) {
-	standardDeck := solitaire.CreateDecks(1)
+	standardDeck := state.CreateDecks(1)
 
 	testcases := map[string]struct {
 		Number       int
@@ -30,14 +30,14 @@ func Test_CreateDecks(t *testing.T) {
 	}
 	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {
-			var deck *solitaire.Deck
+			var deck *state.Deck
 
 			if testcase.WillPanic {
-				assert.PanicsWithValue(t, testcase.PanicMessage, func() { solitaire.CreateDecks(testcase.Number) })
+				assert.PanicsWithValue(t, testcase.PanicMessage, func() { state.CreateDecks(testcase.Number) })
 			}
 
 			if !testcase.WillPanic {
-				deck = solitaire.CreateDecks(testcase.Number)
+				deck = state.CreateDecks(testcase.Number)
 			}
 
 			expected := testcase.Number * 52
@@ -67,9 +67,9 @@ func Test_ShuffleDecks(t *testing.T) {
 	}
 	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {
-			standardDeck := solitaire.CreateDecks(testcase.Number)
+			standardDeck := state.CreateDecks(testcase.Number)
 
-			shuffledDeck := solitaire.CreateDecks(testcase.Number)
+			shuffledDeck := state.CreateDecks(testcase.Number)
 			expected := testcase.Number * 52
 
 			shuffledDeck.Shuffle()
@@ -106,24 +106,24 @@ func Test_DeckDeal(t *testing.T) {
 	}
 	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {
-			shuffledDeck := solitaire.CreateDecks(testcase.Number)
+			shuffledDeck := state.CreateDecks(testcase.Number)
 
 			shuffledDeck.Shuffle()
 
-			for idx := 1; idx <= testcase.Number*solitaire.RankCount*solitaire.SuitCount; idx++ {
+			for idx := 1; idx <= testcase.Number*state.RankCount*state.SuitCount; idx++ {
 				expected := shuffledDeck.Top()
 
-				assert.Equal(t, solitaire.RankCount*solitaire.SuitCount*testcase.Number-(idx-1), shuffledDeck.Len())
+				assert.Equal(t, state.RankCount*state.SuitCount*testcase.Number-(idx-1), shuffledDeck.Len())
 
 				actual := shuffledDeck.Deal()
 				assert.EqualExportedValues(t, expected, actual, "Wrong card returned got %v want %v", actual, expected)
 
 				// Check that the length of the deck reduces after each Deal.
-				assert.Equal(t, solitaire.RankCount*solitaire.SuitCount*testcase.Number-(idx), shuffledDeck.Len())
+				assert.Equal(t, state.RankCount*state.SuitCount*testcase.Number-(idx), shuffledDeck.Len())
 			}
 
 			// Deck should be empty.
-			expected := solitaire.SuitedCard{}
+			expected := state.SuitedCard{}
 			actual := shuffledDeck.Deal()
 			assert.EqualExportedValues(t, expected, actual, "Wrong card returned got %v want %v", actual, expected)
 

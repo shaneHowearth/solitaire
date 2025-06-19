@@ -1,14 +1,14 @@
-package solitaire_test
+package state_test
 
 import (
 	"testing"
 
-	"github.com/shanehowearth/solitaire"
+	"github.com/shanehowearth/solitaire/state"
 	"github.com/stretchr/testify/assert"
 )
 
 func Test_Add(t *testing.T) {
-	shuffledDeck := solitaire.CreateDecks(1)
+	shuffledDeck := state.CreateDecks(1)
 	shuffledDeck.Shuffle()
 
 	testcases := map[string]struct {
@@ -21,7 +21,7 @@ func Test_Add(t *testing.T) {
 	}
 	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {
-			stack := solitaire.NewStack(testcase.Number, func(solitaire.SuitedCard) bool { return true })
+			stack := state.NewStack(testcase.Number, func(state.SuitedCard) bool { return true })
 
 			for x := 1; x <= testcase.Number; x++ {
 				card := shuffledDeck.Deal()
@@ -41,8 +41,8 @@ func Test_Add(t *testing.T) {
 }
 
 func Test_Move(t *testing.T) {
-	source := solitaire.NewStack(4, func(solitaire.SuitedCard) bool { return true })
-	standardDeck := solitaire.CreateDecks(1)
+	source := state.NewStack(4, func(state.SuitedCard) bool { return true })
+	standardDeck := state.CreateDecks(1)
 
 	for idx := 0; idx < 10; idx++ {
 		source.Add(standardDeck.Deal(), true)
@@ -50,8 +50,8 @@ func Test_Move(t *testing.T) {
 
 	testcases := map[string]struct {
 		number           int
-		sourceStack      *solitaire.Stack
-		destinationStack *solitaire.Stack
+		sourceStack      *state.Stack
+		destinationStack *state.Stack
 		output           bool
 	}{
 		// Cannot move card to the same stack as it came from.
@@ -64,13 +64,13 @@ func Test_Move(t *testing.T) {
 		"Move to an empty stack where the rule allows the move": {
 			number:           1,
 			sourceStack:      source,
-			destinationStack: solitaire.NewStack(0, func(solitaire.SuitedCard) bool { return true }),
+			destinationStack: state.NewStack(0, func(state.SuitedCard) bool { return true }),
 			output:           true,
 		},
 		"Move to an empty stack where the rule denies the move": {
 			number:           1,
 			sourceStack:      source,
-			destinationStack: solitaire.NewStack(0, func(solitaire.SuitedCard) bool { return false }),
+			destinationStack: state.NewStack(0, func(state.SuitedCard) bool { return false }),
 			output:           false,
 		},
 		// Waste to Empty Foundation.

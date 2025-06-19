@@ -1,4 +1,4 @@
-package solitaire
+package state
 
 import (
 	"math/rand/v2"

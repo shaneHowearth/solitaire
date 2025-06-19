@@ -1,4 +1,4 @@
-package solitaire
+package state
 
 // SuitCount - the number of suits.
 const SuitCount = 4
