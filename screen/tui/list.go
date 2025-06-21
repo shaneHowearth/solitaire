@@ -125,8 +125,6 @@ func (display *Display) Board(variant game.Variant) {
 	if err := display.app.SetRoot(mainWindow, true).SetFocus(mainWindow).Run(); err != nil {
 		panic(err)
 	}
-
-	display.FirstDeal(variant)
 }
 
 // FirstDeal -

@@ -1,6 +1,6 @@
 package game
 
-import "github.com/shanehowearth/solitaire"
+import "github.com/shanehowearth/solitaire/state"
 
 // Variant - The variant of solitaire being defined.
 type Variant interface {
@@ -16,10 +16,10 @@ type Variant interface {
 	// Tableau.
 	Tableau() (
 		number int,
-		basecard solitaire.Rank,
+		basecard state.Rank,
 		addRule func(
-			solitaire.Tableau,
-			solitaire.SuitedCard,
+			state.Tableau,
+			state.SuitedCard,
 		) bool,
 	)
 
@@ -38,10 +38,10 @@ type Variant interface {
 	// card can be added to the tableau.
 	Foundations() (
 		number int,
-		basecard solitaire.Rank,
+		basecard state.Rank,
 		addRule func(
-			solitaire.Foundation,
-			solitaire.SuitedCard,
+			state.Foundation,
+			state.SuitedCard,
 		) bool,
 	)
 

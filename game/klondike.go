@@ -1,6 +1,6 @@
 package game
 
-import "github.com/shanehowearth/solitaire"
+import "github.com/shanehowearth/solitaire/state"
 
 // Klondike - https://en.wikipedia.org/wiki/Klondike_(solitaire)
 type Klondike struct{}
@@ -30,10 +30,10 @@ const numKlondikeTableau = 7
 // Tableau - how the tableau are defined.
 func (*Klondike) Tableau() (
 	number int,
-	basecard solitaire.Rank,
-	addRule func(solitaire.Tableau, solitaire.SuitedCard) bool,
+	basecard state.Rank,
+	addRule func(state.Tableau, state.SuitedCard) bool,
 ) {
-	return numKlondikeTableau, solitaire.King, MinusOneRule
+	return numKlondikeTableau, state.King, MinusOneRule
 }
 
 // TableauPosition - Where does each tableau go in the grid, and what angle (relative to
@@ -50,11 +50,11 @@ func (*Klondike) TableauPosition(tableauNumber int) (int, int, int) {
 // Foundations - how the foundations are defined.
 func (*Klondike) Foundations() (
 	number int,
-	basecard solitaire.Rank,
-	addRule func(solitaire.Foundation, solitaire.SuitedCard) bool,
+	basecard state.Rank,
+	addRule func(state.Foundation, state.SuitedCard) bool,
 ) {
 	const foundationCount = 4
-	return foundationCount, solitaire.Ace, PlusOneRule
+	return foundationCount, state.Ace, PlusOneRule
 }
 
 // SetupDeal - deal all the cards into the right piles ready to start a game.
