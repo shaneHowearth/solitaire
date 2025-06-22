@@ -1,9 +1,13 @@
 package screen
 
-import "github.com/shanehowearth/solitaire/game"
+import (
+	"github.com/shanehowearth/solitaire/game"
+	"github.com/shanehowearth/solitaire/state"
+)
 
 // Display - defines what a display of the game needs to do.
 type Display interface {
-	// Splash screen - opportunity to show user all of the variants available.
-	Splash([]game.Variant)
+	Show(string)
+	GetSelected() game.Variant
+	CreateBoard(name string, tableauHeight, tableauWidth, foundationCount int, foundationBase state.Rank)
 }

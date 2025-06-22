@@ -6,36 +6,74 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/shanehowearth/solitaire/game"
+	"github.com/shanehowearth/solitaire/state"
 )
 
 // Display -
 type Display struct {
 	app         *tview.Application
+	root        *tview.Flex
 	stack       []*tview.TextView
 	waste       []*tview.TextView
 	foundations []*tview.TextView
 	tableau     [][]*tview.TextView // Row, Column
+	Selected    game.Variant
+	games       []game.Variant
+	screens     map[string]tview.Primitive
 }
 
-// Splash - Start up screen, currently lists all variants of games that the
-// application knows about, allowing the user to select which variant to play.
-func (display *Display) Splash(games []game.Variant) {
-	display.app = tview.NewApplication()
+func New(games []game.Variant) *Display {
+	app := tview.NewApplication()
+
+	display := &Display{
+		app:     app,
+		games:   games,
+		screens: make(map[string]tview.Primitive),
+	}
+	display.screens["Games"] = display.CreateGameListPage(games)
+	display.app.SetRoot(display.screens["Games"], true)
+
+	return display
+}
+
+// Show - show the named screen.
+func (display *Display) Show(name string) {
+	display.app.SetRoot(display.screens[name], true).SetFocus(display.screens[name]).Run()
+}
+
+func (display *Display) Switch(page string) {
+	fmt.Println("Called")
+}
+
+// CreateGameListPage - Lists all variants of games that the application knows about,
+// allowing the user to select which variant to play.
+func (display *Display) CreateGameListPage(games []game.Variant) *tview.List {
 	list := tview.NewList()
 
 	for idx, game := range games {
-		list.AddItem(game.Name(), "", []rune(fmt.Sprintf("%d", idx+1))[0], func() { display.Board(game) })
+		list.AddItem(game.Name(),
+			"",
+			[]rune(fmt.Sprintf("%d", idx+1))[0],
+			func() {
+				display.Selected = game
+				display.app.Stop()
+			},
+		)
 	}
 
-	if err := display.app.SetRoot(list, true).SetFocus(list).Run(); err != nil {
-		panic(err)
-	}
+	// Add a quit option.
+	list.AddItem("Quit", "", 'q', func() { display.app.Stop() })
+
+	return list
+}
+
+// GetSelected -
+func (display *Display) GetSelected() game.Variant {
+	return display.Selected
 }
 
 // Board - Create the board that the game will use.
-func (display *Display) Board(variant game.Variant) {
-	tableauHeight, tableauWidth := variant.TableauGridSize()
-	foundationCount, baseRank, _ := variant.Foundations()
+func (display *Display) CreateBoard(name string, tableauHeight, tableauWidth, foundationCount int, foundationBase state.Rank) {
 
 	display.foundations = make([]*tview.TextView, 0, foundationCount)
 	display.tableau = make([][]*tview.TextView, tableauHeight)
@@ -84,7 +122,7 @@ func (display *Display) Board(variant game.Variant) {
 		display.foundations = append(display.foundations, foundation)
 
 		topRow.AddItem(
-			foundation.Box.SetBorder(true).SetTitle(baseRank.String()), 0, 1, false,
+			foundation.Box.SetBorder(true).SetTitle(foundationBase.String()), 0, 1, false,
 		)
 	}
 
@@ -119,12 +157,10 @@ func (display *Display) Board(variant game.Variant) {
 	mainWindow := tview.NewFlex()
 
 	// Add the main rows to the window container.
-	mainWindow.AddItem(mainRows, 0, 2, false)
+	mainWindow.AddItem(mainRows, 0, 2, true)
 
-	// Display the window container.
-	if err := display.app.SetRoot(mainWindow, true).SetFocus(mainWindow).Run(); err != nil {
-		panic(err)
-	}
+	display.screens[name] = mainWindow
+
 }
 
 // FirstDeal -
