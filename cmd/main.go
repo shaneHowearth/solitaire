@@ -11,15 +11,7 @@ func main() {
 	variants := []game.Variant{}
 	variants = append(variants, &game.Klondike{})
 
-	instance := &solitaire.Instance{}
+	instance := solitaire.New(tui.New(variants))
 
-	instance.Display = tui.New(variants)
-	// select which display is going to be used.
-
-	instance.Display.Show("Games")
-	instance.ChooseGame(variants)
-	if instance.Game != nil {
-		instance.CreateBoard(instance.Game)
-		instance.Display.Show(instance.Game.Name())
-	}
+	instance.Start()
 }
