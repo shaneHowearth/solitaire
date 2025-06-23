@@ -8,7 +8,6 @@ import (
 )
 
 func Test_Deal(t *testing.T) {
-	stockSize := 52
 	dealCount := 1
 	perDealCount := 3
 
@@ -60,7 +59,7 @@ func Test_Deal(t *testing.T) {
 	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {
 			standardDeck := state.CreateDecks(1)
-			talon := state.NewTalon(stockSize, dealCount, perDealCount, testcase.Rule)
+			talon := state.NewTalon(dealCount, perDealCount, testcase.Rule)
 
 			// Add cards to the talon stock pile.
 			for sc := 0; sc < testcase.StockCount; sc++ {
@@ -100,7 +99,6 @@ func Test_Deal(t *testing.T) {
 }
 
 func Test_MoveTalon(t *testing.T) {
-	stockSize := 52
 	dealCount := 1
 	perDealCount := 3
 
@@ -143,7 +141,7 @@ func Test_MoveTalon(t *testing.T) {
 	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {
 			standardDeck := state.CreateDecks(1)
-			talon := state.NewTalon(stockSize, dealCount, perDealCount, testcase.Rule)
+			talon := state.NewTalon(dealCount, perDealCount, testcase.Rule)
 
 			// Add cards to the talon waste pile.
 			for sc := 0; sc < testcase.WasteCount; sc++ {

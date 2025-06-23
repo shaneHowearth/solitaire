@@ -5,7 +5,7 @@ import "github.com/shanehowearth/solitaire/state"
 // Klondike - https://en.wikipedia.org/wiki/Klondike_(solitaire)
 type Klondike struct{}
 
-// Ensure that Klondike implements game.Variant
+// Ensure that Klondike implements game.Variant.
 var _ Variant = (*Klondike)(nil)
 
 // Name - name of the variant.

@@ -22,27 +22,30 @@ type Instance struct {
 	Talon       state.Talon
 }
 
+// New - create a new instance.
 func New(display screen.Display) *Instance {
 	return &Instance{
 		Display: display,
 	}
 }
 
+// Start - start the game.
 func (instance *Instance) Start() {
 	instance.Display.Show("Games")
 	instance.ChooseGame()
+
 	if instance.Game != nil {
 		instance.CreateBoard(instance.Game)
 		instance.Display.Show(instance.Game.Name())
 	}
 }
 
-// Get the game choice from the user.
+// ChooseGame - Get the game choice from the user.
 func (instance *Instance) ChooseGame() {
 	instance.Game = instance.Display.GetSelected()
 }
 
-// Create game display
+// CreateBoard - game display
 // Create tableaus, foundations, and talons.
 // Get the cards into the right places to begin.
 func (instance *Instance) CreateBoard(game game.Variant) {

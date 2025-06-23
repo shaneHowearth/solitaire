@@ -12,16 +12,16 @@ import (
 // Display -
 type Display struct {
 	app         *tview.Application
-	root        *tview.Flex
 	stack       []*tview.TextView
 	waste       []*tview.TextView
 	foundations []*tview.TextView
-	tableau     [][]*tview.TextView // Row, Column
+	tableau     [][]*tview.TextView // Row, Column.
 	Selected    game.Variant
 	games       []game.Variant
 	screens     map[string]tview.Primitive
 }
 
+// New - create a new display.
 func New(games []game.Variant) *Display {
 	app := tview.NewApplication()
 
@@ -38,11 +38,14 @@ func New(games []game.Variant) *Display {
 
 // Show - show the named screen.
 func (display *Display) Show(name string) {
-	display.app.SetRoot(display.screens[name], true).SetFocus(display.screens[name]).Run()
+	if err := display.app.SetRoot(display.screens[name], true).SetFocus(display.screens[name]).Run(); err != nil {
+		panic(err)
+	}
 }
 
-func (display *Display) Switch(page string) {
-	fmt.Println("Called")
+// Switch - TODO.
+func (*Display) Switch(page string) {
+	fmt.Println("Called", page)
 }
 
 // CreateGameListPage - Lists all variants of games that the application knows about,
@@ -72,9 +75,12 @@ func (display *Display) GetSelected() game.Variant {
 	return display.Selected
 }
 
-// Board - Create the board that the game will use.
-func (display *Display) CreateBoard(name string, tableauHeight, tableauWidth, foundationCount int, foundationBase state.Rank) {
-
+// CreateBoard - Create the board that the game will use.
+func (display *Display) CreateBoard(
+	name string,
+	tableauHeight, tableauWidth, foundationCount int,
+	foundationBase state.Rank,
+) {
 	display.foundations = make([]*tview.TextView, 0, foundationCount)
 	display.tableau = make([][]*tview.TextView, tableauHeight)
 
@@ -160,7 +166,6 @@ func (display *Display) CreateBoard(name string, tableauHeight, tableauWidth, fo
 	mainWindow.AddItem(mainRows, 0, 2, true)
 
 	display.screens[name] = mainWindow
-
 }
 
 // FirstDeal -
