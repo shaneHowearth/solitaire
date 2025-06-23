@@ -31,7 +31,7 @@ const numKlondikeTableau = 7
 func (*Klondike) Tableau() (
 	number int,
 	basecard state.Rank,
-	addRule func(state.Tableau, state.SuitedCard) bool,
+	addRule func(*state.Tableau, state.SuitedCard) bool,
 ) {
 	return numKlondikeTableau, state.King, MinusOneRule
 }

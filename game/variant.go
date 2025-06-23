@@ -18,7 +18,7 @@ type Variant interface {
 		number int,
 		basecard state.Rank,
 		addRule func(
-			state.Tableau,
+			*state.Tableau,
 			state.SuitedCard,
 		) bool,
 	)

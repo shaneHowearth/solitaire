@@ -31,16 +31,16 @@ var PlusOneRule = func(foundation state.Foundation, card state.SuitedCard) bool 
 // MinusOneRule - A rule for tableau where the card being added must be the
 // opposite colour, and a rank of one less, than the existing top card on that
 // tableau.
-var MinusOneRule = func(tableau state.Tableau, card state.SuitedCard) bool {
+var MinusOneRule = func(tableau *state.Tableau, card state.SuitedCard) bool {
 	// Handle when the tableau is empty.
-	if tableau.Len() == 0 {
-		if card.Rank == tableau.Base {
+	if (*tableau).Len() == 0 {
+		if card.Rank == (*tableau).Base {
 			return true
 		}
 	}
 
 	// Get the card currently at the top of the tableau.
-	topCard, err := tableau.Top()
+	topCard, err := (*tableau).Top()
 	if err != nil {
 		return false
 	}
