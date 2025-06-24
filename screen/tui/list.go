@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/shanehowearth/solitaire/game"
 	"github.com/shanehowearth/solitaire/state"
@@ -16,7 +15,7 @@ type Display struct {
 	stack       []*tview.TextView
 	waste       []*tview.TextView
 	foundations []*tview.TextView
-	tableau     [][]*tview.TextView // Row, Column.
+	tableau     []*tview.TextView
 	Selected    game.Variant
 	games       []game.Variant
 	screens     map[string]tview.Primitive
@@ -83,23 +82,10 @@ func (display *Display) CreateBoard(
 	foundationBase state.Rank,
 ) {
 	display.foundations = make([]*tview.TextView, 0, foundationCount)
-	display.tableau = make([][]*tview.TextView, tableauHeight)
-
-	for idx := range display.tableau {
-		display.tableau[idx] = make([]*tview.TextView, 0, tableauWidth)
-	}
+	display.tableau = make([]*tview.TextView, 0, tableauHeight*tableauWidth)
 
 	// There are two rows, the top one with the Talon and Foundations, and
 	// the bottom one with the Tableaus.
-	stackFunc := func(
-		screen tcell.Screen,
-		x, y, width, height int,
-	) (
-		int, int, int, int,
-	) {
-		tview.Print(screen, "I am the stack", x, height/2-1, width, tview.AlignCenter, tcell.ColorDefault)
-		return x, y, width, height
-	}
 
 	mainRows := tview.NewFlex().SetDirection(tview.FlexRow)
 	// The top row.
@@ -109,9 +95,10 @@ func (display *Display) CreateBoard(
 	// Add a box for the stack.
 	stack := tview.NewTextView()
 	display.stack = append(display.stack, stack)
+	stack.SetWordWrap(true).SetBorder(true).SetTitle("Talon")
 
 	topRow.AddItem(
-		stack.SetWordWrap(true).SetDrawFunc(stackFunc).SetBorder(true).SetTitle("Talon"), 0, 1, false,
+		stack, 0, 1, false,
 	)
 
 	// Add a box for the waste.
@@ -150,10 +137,11 @@ func (display *Display) CreateBoard(
 		for colIdx := 0; colIdx < tableauWidth; colIdx++ {
 			tableauCell := tview.NewTextView()
 
-			display.tableau[idx] = append(display.tableau[idx], tableauCell)
+			display.tableau = append(display.tableau, tableauCell)
+			tableauCell.SetBorder(true)
 
 			tableauRow.AddItem(
-				tableauCell.SetBorder(true).SetTitle("Box"), 0, 1, false,
+				tableauCell, 0, 1, false,
 			)
 		}
 
