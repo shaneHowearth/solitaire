@@ -57,7 +57,11 @@ func (*Klondike) Foundations() (
 	return foundationCount, state.Ace, PlusOneRule
 }
 
-// SetupDeal - deal all the cards into the right piles ready to start a game.
-func (*Klondike) SetupDeal() {
-	panic("Not Implemented")
+// SetupDeal - Should return a list of ints, the first int will be the
+// number of cards going into the first tableau, the second will be how many
+// cards are visible in that tableau. The third and fourth ints will apply
+// to the second tableau, etc.
+func (*Klondike) SetupDeal() []int {
+	//nolint:revive // Ignore the constant complaint.
+	return []int{1, 1, 2, 1, 3, 1, 4, 1, 5, 1, 6, 1, 7, 1}
 }
