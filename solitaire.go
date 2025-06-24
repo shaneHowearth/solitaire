@@ -1,6 +1,8 @@
 package solitaire
 
 import (
+	"fmt"
+
 	"github.com/shanehowearth/solitaire/game"
 	"github.com/shanehowearth/solitaire/screen"
 	"github.com/shanehowearth/solitaire/state"
@@ -18,8 +20,8 @@ type Instance struct {
 	Display     screen.Display
 	Game        game.Variant
 	Foundations []state.Foundation
-	Tableau     state.Tableau
-	Talon       state.Talon
+	Tableau     []*state.Tableau
+	Talon       *state.Talon
 }
 
 // New - create a new instance.
@@ -35,7 +37,73 @@ func (instance *Instance) Start() {
 	instance.ChooseGame()
 
 	if instance.Game != nil {
+		numFoundations, foundationBase, foundationRule := instance.Game.Foundations()
+		numTableau, _, tableauRule := instance.Game.Tableau()
+		gameState := state.New(
+			instance.Game.Decks(),
+			numFoundations,
+			foundationBase,
+			foundationRule,
+			numTableau,
+			tableauRule,
+			1,
+			1,
+			// Talon rule is to allow everythign to be added to its stacks.
+			func(state.SuitedCard) bool { return true },
+		)
+
+		instance.Foundations = gameState.Foundations
+		instance.Tableau = gameState.Tableau
+		instance.Talon = gameState.Talon
+		counts := instance.Game.SetupDeal()
+
+		gameState.Deck.Shuffle()
+
+		for idx := 0; idx < numTableau; idx++ {
+			// Grab a copy of the existing rule on the stack and rplace it with
+			// one that will allow us to deal.
+			rule := instance.Tableau[idx].Stack.Rule
+			instance.Tableau[idx].Stack.Rule = func(state.SuitedCard) bool { return true }
+			countIdx := idx * 2
+			numCards := counts[countIdx]
+			numOpen := counts[countIdx+1]
+
+			for dealIdx := 0; dealIdx < numCards-numOpen; dealIdx++ {
+				card := gameState.Deck.Deal()
+				instance.Tableau[idx].Add(card, false)
+			}
+
+			for openIdx := 0; openIdx < numOpen; openIdx++ {
+				card := gameState.Deck.Deal()
+				instance.Tableau[idx].Add(card, true)
+			}
+
+			// Return the rule to its correct state.
+			instance.Tableau[idx].Stack.Rule = rule
+		}
+
 		instance.CreateBoard(instance.Game)
+
+		// Tell the board what to display in each box.
+		for idx := range instance.Foundations {
+			instance.Display.FoundationTitle(idx,
+				fmt.Sprintf("%s %s",
+					instance.Foundations[idx].Base.Rank.String(),
+					instance.Foundations[idx].Base.Suit.String(),
+				),
+			)
+			instance.Display.FoundationPrint(idx,
+				instance.Foundations[idx].Stack.Cards(),
+			)
+		}
+
+		// TODO - need this to be row/col?
+		for idx := range instance.Tableau {
+			instance.Display.TableauPrint(idx,
+				instance.Tableau[idx].Stack.Cards(),
+			)
+		}
+
 		instance.Display.Show(instance.Game.Name())
 	}
 }
