@@ -34,7 +34,7 @@ var PlusOneRule = func(foundation state.Foundation, card state.SuitedCard) bool 
 var MinusOneRule = func(tableau *state.Tableau, card state.SuitedCard) bool {
 	// Handle when the tableau is empty.
 	if (*tableau).Len() == 0 {
-		if card.Rank == (*tableau).Base {
+		if card.Rank == tableau.Base {
 			return true
 		}
 	}

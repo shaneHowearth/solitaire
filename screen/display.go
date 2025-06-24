@@ -10,4 +10,7 @@ type Display interface {
 	Show(string)
 	GetSelected() game.Variant
 	CreateBoard(name string, tableauHeight, tableauWidth, foundationCount int, foundationBase state.Rank)
+	FoundationTitle(num int, value string)
+	FoundationPrint(num int, value []string)
+	TableauPrint(row, col int, value []string)
 }

@@ -2,6 +2,7 @@ package state
 
 import (
 	"errors"
+	"fmt"
 	"slices"
 )
 
@@ -93,4 +94,23 @@ func (stack *Stack) Move(_ int, destination *Stack) bool {
 
 	// TODO return an error.
 	return false
+}
+
+// Cards - a string representation of the ards in the stack.
+func (stack *Stack) Cards() []string {
+	cardPile := []string{}
+
+	for _, card := range *stack.cards {
+		cardStr := ""
+		if card.Visible {
+			cardStr = fmt.Sprintf("%s %s",
+				card.Rank.String(),
+				card.Suit.String(),
+			)
+		}
+
+		cardPile = append(cardPile, cardStr)
+	}
+
+	return cardPile
 }
