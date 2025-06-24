@@ -12,5 +12,5 @@ type Display interface {
 	CreateBoard(name string, tableauHeight, tableauWidth, foundationCount int, foundationBase state.Rank)
 	FoundationTitle(num int, value string)
 	FoundationPrint(num int, value []string)
-	TableauPrint(row, col int, value []string)
+	TableauPrint(idx int, value []string)
 }

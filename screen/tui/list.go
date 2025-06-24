@@ -181,9 +181,9 @@ func (display *Display) FoundationPrint(num int, value []string) {
 }
 
 // TableauPrint -
-func (display *Display) TableauPrint(row, col int, value []string) {
+func (display *Display) TableauPrint(idx int, value []string) {
 	if len(value) > 0 {
-		display.tableau[row][col].SetText(
+		display.tableau[idx].SetText(
 			strings.Join(value, "\n"),
 		)
 	}
