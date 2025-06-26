@@ -109,3 +109,26 @@ func Test_Empty(t *testing.T) {
 		})
 	}
 }
+
+// func Test_MultiMove(t *testing.T) {
+// 	testcases := map[string]struct {
+// 	}{
+// 		"Move 1 card": {},
+// 		// Move 3 cards.
+// 		// Move to empty.
+// 		// No move possible.
+// 		// Move all visible.
+// 		// Leave nothing.
+// 		// Leave mix visible/invisible.
+// 		// Leave only invisible.
+// 	}
+// 	for name, testcase := range testcases {
+// 		t.Run(name, func(t *testing.T) {
+// 			standardDeck := state.CreateDecks(1)
+// 			// create some tableaus.
+// 			// fill each tableau.
+// 			// try and move n cards.
+// 			// check results.
+// 		})
+// 	}
+// }

@@ -87,3 +87,20 @@ func Test_Move(t *testing.T) {
 		})
 	}
 }
+
+// func Test_Top(t *testing.T) {
+// 	testcases := map[string]struct {
+// 		stackLen int
+// 		card     state.SuitedCard
+// 		err      error
+// 	}{
+// 		"empty stack":          {stackLen: 0, err: state.ErrEmpty},
+// 		"more than 2 in stack": {stackLen: 2},
+// 		"1 in stack":           {stackLen: 1},
+// 	}
+// 	for name, testcase := range testcases {
+// 		t.Run(name, func(t *testing.T) {
+// 			deck := state.CreateDecks(1)
+// 		})
+// 	}
+// }

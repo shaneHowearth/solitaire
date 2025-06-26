@@ -127,3 +127,9 @@ func (instance *Instance) CreateBoard(game game.Variant) {
 		foundationBase,
 	)
 }
+
+// React to each move that the user makes.
+// Splash when winning, followed by asking if the user wants to quit, play the
+// same variant again, or a new one.
+// One day, ask if the user wants to save the current state on exit.
+// TODO: Points?

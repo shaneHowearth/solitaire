@@ -98,6 +98,14 @@ func Test_Deal(t *testing.T) {
 	}
 }
 
+// func Test_Top(t *testing.T) {
+// 	testcases := map[string]struct {
+// 	}{}
+// 	for name, testcase := range testcases {
+// 		t.Run(name, func(t *testing.T) {})
+// 	}
+// }
+
 func Test_MoveTalon(t *testing.T) {
 	dealCount := 1
 	perDealCount := 3
