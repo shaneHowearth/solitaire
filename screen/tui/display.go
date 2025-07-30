@@ -7,7 +7,7 @@ import (
 
 // Display -
 type Display struct {
-	app         *tview.Application
+	App         *tview.Application
 	stack       []*tview.TextView
 	waste       []*tview.TextView
 	foundations []*tview.TextView
@@ -22,21 +22,19 @@ func New(games []game.Variant) *Display {
 	app := tview.NewApplication()
 
 	display := &Display{
-		app:     app,
+		App:     app,
 		games:   games,
 		screens: make(map[string]tview.Primitive),
 	}
 	display.screens["Games"] = display.CreateGameListPage(games)
-	display.app.SetRoot(display.screens["Games"], true).EnableMouse(true)
+	display.App.SetRoot(display.screens["Games"], true).EnableMouse(true)
 
 	return display
 }
 
 // Show - show the named screen.
 func (display *Display) Show(name string) {
-	if err := display.app.SetRoot(display.screens[name], true).
-		SetFocus(display.screens[name]).
-		EnableMouse(true).Run(); err != nil {
-		panic(err)
-	}
+	display.App.SetRoot(display.screens[name], true)
+
+	display.App.ForceDraw()
 }

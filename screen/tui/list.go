@@ -21,13 +21,22 @@ func (display *Display) CreateGameListPage(games []game.Variant) *tview.List {
 			[]rune(fmt.Sprintf("%d", idx+1))[0],
 			func() {
 				display.Selected = game
-				display.app.Stop()
+				tableauHeight, tableauWidth := game.TableauGridSize()
+				foundationCount, foundationBase, _ := game.Foundations()
+				display.CreateBoard(
+					game.Name(),
+					tableauHeight,
+					tableauWidth,
+					foundationCount,
+					foundationBase,
+				)
+				display.Show(game.Name())
 			},
 		)
 	}
 
 	// Add a quit option.
-	list.AddItem("Quit", "", 'q', func() { display.app.Stop() })
+	list.AddItem("Quit", "", 'q', func() { display.App.Stop() })
 
 	return list
 }
