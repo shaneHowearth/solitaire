@@ -33,12 +33,20 @@ func New(display screen.Display) *Instance {
 
 // Start - start the game.
 func (instance *Instance) Start() {
+	// Show the list of games available to play.
 	instance.Display.Show("Games")
+
+	// Wait for the user to choose a game.
 	instance.ChooseGame()
 
+	// Display the chosen game.
 	if instance.Game != nil {
+		// Get the foundation information for the game.
 		numFoundations, foundationBase, foundationRule := instance.Game.Foundations()
+		// Get the tableau information for the game.
 		numTableau, _, tableauRule := instance.Game.Tableau()
+
+		// Create the state/model for the game.
 		gameState := state.New(
 			instance.Game.Decks(),
 			numFoundations,
@@ -48,20 +56,25 @@ func (instance *Instance) Start() {
 			tableauRule,
 			1,
 			1,
-			// Talon rule is to allow everythign to be added to its stacks.
+			// Talon rule is to allow everything to be added to its stacks.
 			func(state.SuitedCard) bool { return true },
 		)
 
+		// Copy the game state instantiated model into the current instance.
 		instance.Foundations = gameState.Foundations
 		instance.Tableau = gameState.Tableau
 		instance.Talon = gameState.Talon
 		counts := instance.Game.SetupDeal()
 
+		// Shuffle the cards.
 		gameState.Deck.Shuffle()
 
+		// Deal the cards out onto the different stacks (talon, tableau).
 		for idx := 0; idx < numTableau; idx++ {
-			// Grab a copy of the existing rule on the stack and rplace it with
-			// one that will allow us to deal.
+			// Grab a copy of the existing rule on the stack and replace it with
+			// one that will allow us to deal anything.
+			// FTR the existing rule prevents a deal because the cards being
+			// dealt most definitely do not adhere to it (the rule).
 			rule := instance.Tableau[idx].Stack.Rule
 			instance.Tableau[idx].Stack.Rule = func(state.SuitedCard) bool { return true }
 			countIdx := idx * 2
@@ -82,6 +95,7 @@ func (instance *Instance) Start() {
 			instance.Tableau[idx].Stack.Rule = rule
 		}
 
+		// Create the board that will be displayed.
 		instance.CreateBoard(instance.Game)
 
 		// Tell the board what to display in each box.
@@ -97,13 +111,14 @@ func (instance *Instance) Start() {
 			)
 		}
 
-		// TODO - need this to be row/col?
+		// Display each tableau.
 		for idx := range instance.Tableau {
 			instance.Display.TableauPrint(idx,
 				instance.Tableau[idx].Stack.Cards(),
 			)
 		}
 
+		// Show the whole thing to the user.
 		instance.Display.Show(instance.Game.Name())
 	}
 }
