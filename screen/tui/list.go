@@ -12,31 +12,24 @@ import (
 
 // CreateGameListPage - Lists all variants of games that the application knows about,
 // allowing the user to select which variant to play.
-func (display *Display) CreateGameListPage(games []game.Variant) *tview.List {
+func (display *Display) createGameListPage(games []game.Variant) *tview.List {
 	list := tview.NewList()
+	list.SetTitle("Select a Solitaire Game").SetBorder(true)
 
 	for idx, game := range games {
 		list.AddItem(game.Name(),
 			"",
 			[]rune(fmt.Sprintf("%d", idx+1))[0],
 			func() {
-				display.Selected = game
-				tableauHeight, tableauWidth := game.TableauGridSize()
-				foundationCount, foundationBase, _ := game.Foundations()
-				display.CreateBoard(
-					game.Name(),
-					tableauHeight,
-					tableauWidth,
-					foundationCount,
-					foundationBase,
-				)
-				display.Show(game.Name())
+				display.onGameSelected(game)
 			},
 		)
 	}
 
 	// Add a quit option.
-	list.AddItem("Quit", "", 'q', func() { display.App.Stop() })
+	list.AddItem("Quit", "Exit the application", 'q', func() {
+		display.App.Stop()
+	})
 
 	return list
 }
@@ -44,4 +37,14 @@ func (display *Display) CreateGameListPage(games []game.Variant) *tview.List {
 // GetSelected - Get the game that was selected by the user.
 func (display *Display) GetSelected() game.Variant {
 	return display.Selected
+}
+
+// onGameSelected - handle game selection
+func (display *Display) onGameSelected(selectedGame game.Variant) {
+	display.Selected = selectedGame
+
+	// Call the callback if set
+	if display.gameSelectedCallback != nil {
+		display.gameSelectedCallback(selectedGame)
+	}
 }

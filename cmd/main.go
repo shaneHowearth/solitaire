@@ -5,8 +5,6 @@ import (
 	"os"
 
 	"github.com/shanehowearth/solitaire"
-	"github.com/shanehowearth/solitaire/game"
-	"github.com/shanehowearth/solitaire/screen/tui"
 )
 
 func main() {
@@ -22,21 +20,10 @@ func main() {
 
 	// You can also set log flags if you want timestamps, file/line numbers etc.
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
-	// Which variants of state are available to play.
-	variants := []game.Variant{}
-	variants = append(variants, &game.Klondike{})
-	variants = append(variants, &game.Klondike2{})
 
-	instance := solitaire.New(tui.New(variants))
-	concreteDisplay, ok := instance.Display.(*tui.Display)
-	if !ok {
-		// This should theoretically not happen if solitaire.New always returns *tui.Display
-		// but it's good practice for type assertions.
-		log.Fatalf("Error: The Display implementation is not of type *tui.Display")
-	}
+	instance := solitaire.New()
 
-	// Now you can access 'App' on the concrete type
-	if err := concreteDisplay.App.Run(); err != nil {
-		log.Fatalf("Error running tview application: %v", err)
+	if err := instance.Start(); err != nil {
+		log.Fatalf("Error running application: %v", err)
 	}
 }

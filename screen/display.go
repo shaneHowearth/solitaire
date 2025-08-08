@@ -7,9 +7,16 @@ import (
 
 // Display - defines what a display of the game needs to do.
 type Display interface {
-	Show(string)
-	GetSelected() game.Variant
+	Run() error
+	Show(name string)
+
+	// Game selection.
+	SetGameSelectedCallback(callback func(game.Variant))
+
+	// Board creation.
 	CreateBoard(name string, tableauHeight, tableauWidth, foundationCount int, foundationBase state.Rank)
+
+	// Display updates.
 	FoundationTitle(num int, value string)
 	FoundationPrint(num int, value []string)
 	TableauPrint(idx int, value []string)

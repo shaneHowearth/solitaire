@@ -7,14 +7,15 @@ import (
 
 // Display -
 type Display struct {
-	App         *tview.Application
-	stack       []*tview.TextView
-	waste       []*tview.TextView
-	foundations []*tview.TextView
-	tableau     []*tview.TextView
-	Selected    game.Variant
-	games       []game.Variant
-	screens     map[string]tview.Primitive
+	App                  *tview.Application
+	stack                []*tview.TextView
+	waste                []*tview.TextView
+	foundations          []*tview.TextView
+	tableau              []*tview.TextView
+	Selected             game.Variant
+	games                []game.Variant
+	screens              map[string]tview.Primitive
+	gameSelectedCallback func(game.Variant)
 }
 
 // New - create a new display.
@@ -26,15 +27,23 @@ func New(games []game.Variant) *Display {
 		games:   games,
 		screens: make(map[string]tview.Primitive),
 	}
-	display.screens["Games"] = display.CreateGameListPage(games)
-	display.App.SetRoot(display.screens["Games"], true).EnableMouse(true)
+
+	display.screens["Games"] = display.createGameListPage(games)
+	// display.App.SetRoot(display.screens["Games"], true).EnableMouse(true)
 
 	return display
 }
 
+func (display *Display) Run() error {
+	return display.App.Run()
+}
+
 // Show - show the named screen.
 func (display *Display) Show(name string) {
-	display.App.SetRoot(display.screens[name], true)
+	display.App.SetRoot(display.screens[name], true).EnableMouse(true)
+}
 
-	display.App.ForceDraw()
+// SetGameSelectedCallback - set the callback for when a game is selected
+func (display *Display) SetGameSelectedCallback(callback func(game.Variant)) {
+	display.gameSelectedCallback = callback
 }

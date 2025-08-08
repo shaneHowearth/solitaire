@@ -45,9 +45,9 @@ type Variant interface {
 		) bool,
 	)
 
-	// SetupDeal - Should return a list of ints, the first int will be the
+	// SetupDealCardCounts - Should return a list of ints, the first int will be the
 	// number of cards going into the first tableau, the second will be how many
 	// cards are visible in that tableau. The third and fourth ints will apply
 	// to the second tableau, etc.
-	SetupDeal() []int
+	SetupDealCardCounts() []int
 }
