@@ -1,21 +1,31 @@
 package tui
 
 import (
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/shanehowearth/solitaire/game"
+	"github.com/shanehowearth/solitaire/screen"
 )
 
 // Display -
 type Display struct {
-	App                  *tview.Application
-	stack                []*tview.TextView
-	waste                []*tview.TextView
-	foundations          []*tview.TextView
-	tableau              []*tview.TextView
-	Selected             game.Variant
-	games                []game.Variant
-	screens              map[string]tview.Primitive
-	gameSelectedCallback func(game.Variant)
+	App                       *tview.Application
+	stack                     []*tview.TextView
+	waste                     []*tview.TextView
+	foundations               []*tview.TextView
+	tableau                   []*tview.TextView
+	Selected                  game.Variant
+	games                     []game.Variant
+	screens                   map[string]tview.Primitive
+	gameSelectedCallback      func(game.Variant)
+	componentSelectedCallback func(screen.ComponentType, int)
+
+	selectedComponentType screen.ComponentType
+	selectedIndex         int
+	defaultBgColor        tcell.Color
+	selectedBgColor       tcell.Color
+
+	processingClick bool
 }
 
 // New - create a new display.
@@ -23,15 +33,24 @@ func New(games []game.Variant) *Display {
 	app := tview.NewApplication()
 
 	display := &Display{
-		App:     app,
-		games:   games,
-		screens: make(map[string]tview.Primitive),
+		App:                   app,
+		games:                 games,
+		screens:               make(map[string]tview.Primitive),
+		selectedComponentType: screen.ComponentFoundation,
+		selectedIndex:         -1, // No selection initially
+		defaultBgColor:        tcell.ColorDefault,
+		selectedBgColor:       tcell.ColorRed,
 	}
 
 	display.screens["Games"] = display.createGameListPage(games)
 	// display.App.SetRoot(display.screens["Games"], true).EnableMouse(true)
 
 	return display
+}
+
+// Add this method to the TUI Display:
+func (display *Display) SetComponentSelectedCallback(callback func(screen.ComponentType, int)) {
+	display.componentSelectedCallback = callback
 }
 
 func (display *Display) Run() error {

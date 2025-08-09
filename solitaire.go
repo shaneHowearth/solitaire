@@ -26,11 +26,19 @@ type Instance struct {
 	Tableau     []*state.Tableau
 	Talon       *state.Talon
 	Deck        *state.Deck
+
+	// Track first selection for move operations
+	firstSelection     bool
+	firstComponentType screen.ComponentType
+	firstIndex         int
 }
 
 // New - create a new instance.
 func New() *Instance {
-	return &Instance{}
+	return &Instance{
+		firstSelection: false,
+		firstIndex:     -1,
+	}
 }
 
 // Start - start the game.
@@ -43,6 +51,10 @@ func (instance *Instance) Start() error {
 	instance.Display = tui.New(variants)
 
 	instance.Display.SetGameSelectedCallback(instance.onGameSelected)
+	// Set up component selection callback
+	if tuiDisplay, ok := instance.Display.(*tui.Display); ok {
+		tuiDisplay.SetComponentSelectedCallback(instance.onComponentSelected)
+	}
 
 	// Show the list of games available to play.
 	instance.Display.Show("Games")
@@ -61,6 +73,25 @@ func (instance *Instance) onGameSelected(selectedGame game.Variant) {
 
 	// Switch to the game page
 	instance.Display.Show(instance.Game.Name())
+}
+
+// onComponentSelected - handle component selection events
+func (instance *Instance) onComponentSelected(componentType screen.ComponentType, index int) {
+	if !instance.firstSelection {
+		// First selection - just mark the source
+		instance.firstSelection = true
+		instance.firstComponentType = componentType
+		instance.firstIndex = index
+		return
+	}
+
+	// Second selection - attempt to move from first to second
+	defer func() {
+		// Always clear selection state after attempting a move
+		instance.firstSelection = false
+		instance.firstIndex = -1
+		instance.Display.ClearSelection()
+	}()
 }
 
 func (instance *Instance) setupGameState() {

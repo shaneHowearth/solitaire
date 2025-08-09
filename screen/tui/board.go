@@ -3,10 +3,10 @@ package tui
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
+	"github.com/shanehowearth/solitaire/screen"
 	"github.com/shanehowearth/solitaire/state"
 )
 
@@ -39,16 +39,31 @@ func (display *Display) createGamePage(
 	/// FOUNDATIONS ///
 	///////////////////
 	foundationsRow := tview.NewFlex().SetDirection(tview.FlexColumn)
+
 	display.foundations = make([]*tview.TextView, foundationCount)
+
 	for idx := 0; idx < foundationCount; idx++ {
 		foundation := tview.NewTextView()
 
 		// Add some decorations to the box.
+		foundationIdx := idx
 		foundation.Box.SetBorder(true).SetTitle(foundationBase.String())
-		display.foundations[idx] = foundation
+		foundation.SetBackgroundColor(display.defaultBgColor)
+
+		// For foundations - replace your current foundation mouse handler:
+		foundation.SetMouseCapture(func(action tview.MouseAction, event *tcell.EventMouse) (tview.MouseAction, *tcell.EventMouse) {
+			if action == tview.MouseLeftClick && foundation.HasFocus() {
+				display.selectComponent(screen.ComponentFoundation, foundationIdx)
+				// Return nil, nil to completely consume the event
+				return tview.MouseConsumed, nil
+			}
+			return action, event
+		})
+
+		display.foundations[foundationIdx] = foundation
 
 		foundationsRow.AddItem(
-			foundation, 0, 1, false,
+			foundation, 0, 1, true,
 		)
 	}
 
@@ -63,10 +78,20 @@ func (display *Display) createGamePage(
 		tableau := tview.NewTextView()
 
 		tableau.SetBorder(true).SetTitle(fmt.Sprintf(""))
-		display.tableau[idx] = tableau
+		tableau.SetBackgroundColor(display.defaultBgColor)
+		tableauIdx := idx
+		display.tableau[tableauIdx] = tableau
+
+		tableau.SetMouseCapture(func(action tview.MouseAction, event *tcell.EventMouse) (tview.MouseAction, *tcell.EventMouse) {
+			if action == tview.MouseLeftClick && tableau.HasFocus() {
+				display.selectComponent(screen.ComponentTableau, tableauIdx)
+				return action, nil
+			}
+			return action, event
+		})
 
 		// Add the row to the tableau.
-		tableauArea.AddItem(tableau, 0, 1, false)
+		tableauArea.AddItem(tableau, 0, 1, true)
 	}
 
 	// Controls/Help
@@ -89,18 +114,19 @@ func (display *Display) createGamePage(
 	/////////////
 	/// TALON ///
 	/////////////
+	talonIndex := 0 // There's typically only one talon
 	talon := tview.NewTextView().SetDynamicColors(true)
+	talon.SetWordWrap(true).SetBorder(true).SetTitle("Talon")
+	talon.SetMouseCapture(func(action tview.MouseAction, event *tcell.EventMouse) (tview.MouseAction, *tcell.EventMouse) {
+		if action == tview.MouseLeftClick {
+			display.selectComponent(screen.ComponentTalon, talonIndex)
+			return action, nil
+		}
+		return action, event
+	})
+
+	talon.SetBackgroundColor(display.defaultBgColor)
 	display.stack = append(display.stack, talon)
-	talon.SetWordWrap(true).SetBorder(true).SetTitle("Talon").
-		SetFocusFunc(func() {
-			switch talon.GetBackgroundColor() {
-			case tcell.ColorRed:
-				talon.SetBackgroundColor(tcell.ColorDefault)
-			default:
-				talon.SetBackgroundColor(tcell.ColorRed)
-			}
-		},
-		)
 
 	topRow.AddItem(
 		talon, 0, 1, true,
@@ -113,11 +139,24 @@ func (display *Display) createGamePage(
 	waste := tview.NewTextView()
 	display.waste = append(display.waste, waste)
 	waste.SetBorder(true).SetTitle("Waste")
+	// Add waste selection capability
+	wasteIndex := 0 // There's typically only one waste pile
+
+	waste.SetMouseCapture(func(action tview.MouseAction, event *tcell.EventMouse) (tview.MouseAction, *tcell.EventMouse) {
+		if action == tview.MouseLeftClick {
+			display.selectComponent(screen.ComponentWaste, wasteIndex)
+			return action, nil
+		}
+		return action, event
+	})
+
+	waste.SetBackgroundColor(display.defaultBgColor)
+	topRow.AddItem(waste, 0, 1, true)
 
 	// Add the top row to the main rows container.
 	mainRows.
 		AddItem(title, 0, 1, false).
-		AddItem(foundationsRow, 8, 0, false).
+		AddItem(foundationsRow, 8, 0, true).
 		AddItem(tableauArea, 0, 1, true).
 		AddItem(controls, 3, 0, false)
 
@@ -139,10 +178,6 @@ func (display *Display) createGamePage(
 // FoundationTitle -
 func (display *Display) FoundationTitle(num int, value string) {
 	display.foundations[num].SetTitle(value)
-	go func() {
-		time.Sleep(1 * time.Millisecond)
-		display.App.ForceDraw()
-	}()
 }
 
 // FoundationPrint -
@@ -161,4 +196,107 @@ func (display *Display) TableauPrint(idx int, value []string) {
 			strings.Join(value, "\n"),
 		)
 	}
+}
+
+// Update the selectComponent method to use the callback:
+func (display *Display) selectComponent(componentType screen.ComponentType, index int) {
+	if display.processingClick {
+		return
+	}
+	display.processingClick = true
+	defer func() {
+		display.processingClick = false
+	}()
+
+	// Validate the selection first
+	var component *tview.TextView
+	switch componentType {
+	case screen.ComponentFoundation:
+		if index < 0 || index >= len(display.foundations) || display.foundations[index] == nil {
+			return
+		}
+		component = display.foundations[index]
+	case screen.ComponentTableau:
+		if index < 0 || index >= len(display.tableau) || display.tableau[index] == nil {
+			return
+		}
+		component = display.tableau[index]
+	case screen.ComponentTalon:
+		if index < 0 || index >= len(display.stack) || display.stack[index] == nil {
+			return
+		}
+		component = display.stack[index]
+	case screen.ComponentWaste:
+		if index < 0 || index >= len(display.waste) || display.waste[index] == nil {
+			return
+		}
+		component = display.waste[index]
+	default:
+		return
+	}
+
+	// Clear previous selection
+	display.clearCurrentSelection()
+	// Set the new selection
+	display.selectedComponentType = componentType
+	display.selectedIndex = index
+	component.SetBackgroundColor(display.selectedBgColor)
+
+}
+
+// clearCurrentSelection - helper to clear the current selection
+func (display *Display) clearCurrentSelection() {
+	if display.selectedIndex < 0 {
+		return
+	}
+
+	var component *tview.TextView
+	switch display.selectedComponentType {
+	case screen.ComponentFoundation:
+		if display.selectedIndex < len(display.foundations) && display.foundations[display.selectedIndex] != nil {
+			component = display.foundations[display.selectedIndex]
+		}
+	case screen.ComponentTableau:
+		if display.selectedIndex < len(display.tableau) && display.tableau[display.selectedIndex] != nil {
+			component = display.tableau[display.selectedIndex]
+		}
+	}
+
+	if component != nil {
+		component.SetBackgroundColor(display.defaultBgColor)
+	}
+}
+
+// getComponentName - helper to get component name for display
+func (display *Display) getComponentName(componentType screen.ComponentType) string {
+	switch componentType {
+	case screen.ComponentFoundation:
+		return "foundation"
+	case screen.ComponentTableau:
+		return "tableau"
+	case screen.ComponentTalon:
+		return "talon"
+	case screen.ComponentWaste:
+		return "waste"
+	default:
+		return "component"
+	}
+}
+
+// GetSelectedComponent - get the currently selected component type and index
+func (display *Display) GetSelectedComponent() (screen.ComponentType, int) {
+	return display.selectedComponentType, display.selectedIndex
+}
+
+// ClearSelection - clear the current selection
+func (display *Display) ClearSelection() {
+	display.App.QueueUpdate(func() {
+		display.clearCurrentSelection()
+		display.selectedIndex = -1
+	})
+}
+
+// HasSelection - check if there's currently a selection
+func (display *Display) HasSelection() bool {
+	return display.selectedIndex >= 0
 }

@@ -3,6 +3,7 @@ module github.com/shanehowearth/solitaire
 go 1.24.1
 
 require (
+	github.com/gdamore/tcell v1.4.0
 	github.com/gdamore/tcell/v2 v2.8.1
 	github.com/rivo/tview v0.0.0-20250625164341-a4a78f1e05cb
 	github.com/stretchr/testify v1.10.0
