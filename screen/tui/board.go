@@ -34,12 +34,53 @@ func (display *Display) createGamePage(
 		SetTextColor(tview.Styles.PrimaryTextColor)
 	title.SetBorder(true)
 
+	foundationsRow := tview.NewFlex().SetDirection(tview.FlexColumn)
+
+	/////////////
+	/// TALON ///
+	/////////////
+	talonIndex := 0 // There's typically only one talon
+	talon := tview.NewTextView().SetDynamicColors(true)
+	talon.SetWordWrap(true).SetBorder(true).SetTitle("Talon")
+	talon.SetMouseCapture(func(action tview.MouseAction, event *tcell.EventMouse) (tview.MouseAction, *tcell.EventMouse) {
+		if action == tview.MouseLeftClick && talon.HasFocus() {
+			display.selectComponent(screen.ComponentTalon, talonIndex)
+			return tview.MouseConsumed, nil
+		}
+		return action, event
+	})
+
+	talon.SetBackgroundColor(display.defaultBgColor)
+	display.stack = append(display.stack, talon)
+
+	foundationsRow.AddItem(
+		talon, 0, 1, true,
+	)
+
+	/////////////
+	/// WASTE ///
+	/////////////
+	waste := tview.NewTextView()
+	display.waste = append(display.waste, waste)
+	waste.SetBorder(true).SetTitle("Waste")
+	waste.SetBackgroundColor(display.defaultBgColor)
+	// Add waste selection capability
+	wasteIndex := 0 // There's typically only one waste pile
+
+	waste.SetMouseCapture(func(action tview.MouseAction, event *tcell.EventMouse) (tview.MouseAction, *tcell.EventMouse) {
+		if action == tview.MouseLeftClick && waste.HasFocus() {
+			display.selectComponent(screen.ComponentWaste, wasteIndex)
+			return tview.MouseConsumed, nil
+		}
+		return action, event
+	})
+
+	foundationsRow.AddItem(waste, 0, 1, true)
+
 	// Add a box for each foundation.
 	///////////////////
 	/// FOUNDATIONS ///
 	///////////////////
-	foundationsRow := tview.NewFlex().SetDirection(tview.FlexColumn)
-
 	display.foundations = make([]*tview.TextView, foundationCount)
 
 	for idx := 0; idx < foundationCount; idx++ {
@@ -100,60 +141,9 @@ func (display *Display) createGamePage(
 		SetTextAlign(tview.AlignCenter)
 	controls.SetBorder(true).SetTitle("Controls")
 
-	display.stack = make([]*tview.TextView, 0, 1)
-	display.waste = make([]*tview.TextView, 0, 1)
-
-	// There are two rows, the top one with the Talon and Foundations, and
-	// the bottom one with the Tableaus.
-	// The top row.
-	topRow := tview.NewFlex().SetDirection(tview.FlexColumn)
-
 	display.App.EnableMouse(true)
 
-	// Add a box for the talon.
-	/////////////
-	/// TALON ///
-	/////////////
-	talonIndex := 0 // There's typically only one talon
-	talon := tview.NewTextView().SetDynamicColors(true)
-	talon.SetWordWrap(true).SetBorder(true).SetTitle("Talon")
-	talon.SetMouseCapture(func(action tview.MouseAction, event *tcell.EventMouse) (tview.MouseAction, *tcell.EventMouse) {
-		if action == tview.MouseLeftClick {
-			display.selectComponent(screen.ComponentTalon, talonIndex)
-			return action, nil
-		}
-		return action, event
-	})
-
-	talon.SetBackgroundColor(display.defaultBgColor)
-	display.stack = append(display.stack, talon)
-
-	topRow.AddItem(
-		talon, 0, 1, true,
-	)
-
-	// Add a box for the waste.
-	/////////////
-	/// WASTE ///
-	/////////////
-	waste := tview.NewTextView()
-	display.waste = append(display.waste, waste)
-	waste.SetBorder(true).SetTitle("Waste")
-	// Add waste selection capability
-	wasteIndex := 0 // There's typically only one waste pile
-
-	waste.SetMouseCapture(func(action tview.MouseAction, event *tcell.EventMouse) (tview.MouseAction, *tcell.EventMouse) {
-		if action == tview.MouseLeftClick {
-			display.selectComponent(screen.ComponentWaste, wasteIndex)
-			return action, nil
-		}
-		return action, event
-	})
-
-	waste.SetBackgroundColor(display.defaultBgColor)
-	topRow.AddItem(waste, 0, 1, true)
-
-	// Add the top row to the main rows container.
+	// Add the rows to the main rows container.
 	mainRows.
 		AddItem(title, 0, 1, false).
 		AddItem(foundationsRow, 8, 0, true).
@@ -236,12 +226,14 @@ func (display *Display) selectComponent(componentType screen.ComponentType, inde
 	}
 
 	// Clear previous selection
-	display.clearCurrentSelection()
-	// Set the new selection
-	display.selectedComponentType = componentType
-	display.selectedIndex = index
-	component.SetBackgroundColor(display.selectedBgColor)
-
+	if display.selectedIndex > -1 {
+		display.clearCurrentSelection()
+	} else {
+		// Set the new selection
+		display.selectedComponentType = componentType
+		display.selectedIndex = index
+		component.SetBackgroundColor(display.selectedBgColor)
+	}
 }
 
 // clearCurrentSelection - helper to clear the current selection
@@ -260,10 +252,19 @@ func (display *Display) clearCurrentSelection() {
 		if display.selectedIndex < len(display.tableau) && display.tableau[display.selectedIndex] != nil {
 			component = display.tableau[display.selectedIndex]
 		}
+	case screen.ComponentTalon:
+		if display.selectedIndex < len(display.stack) && display.stack[display.selectedIndex] != nil {
+			component = display.stack[display.selectedIndex]
+		}
+	case screen.ComponentWaste:
+		if display.selectedIndex < len(display.waste) && display.waste[display.selectedIndex] != nil {
+			component = display.waste[display.selectedIndex]
+		}
 	}
 
 	if component != nil {
 		component.SetBackgroundColor(display.defaultBgColor)
+		display.selectedIndex = -1
 	}
 }
 
