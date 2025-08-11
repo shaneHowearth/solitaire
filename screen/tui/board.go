@@ -226,13 +226,16 @@ func (display *Display) selectComponent(componentType screen.ComponentType, inde
 	}
 
 	// Clear previous selection
-	if display.selectedIndex > -1 {
+	if display.selectedIndex != -1 {
 		display.clearCurrentSelection()
 	} else {
 		// Set the new selection
 		display.selectedComponentType = componentType
 		display.selectedIndex = index
 		component.SetBackgroundColor(display.selectedBgColor)
+		go func() {
+			display.App.Draw() // Call from a goroutine to avoid blocking
+		}()
 	}
 }
 
@@ -264,7 +267,11 @@ func (display *Display) clearCurrentSelection() {
 
 	if component != nil {
 		component.SetBackgroundColor(display.defaultBgColor)
+		display.selectedComponentType = -1
 		display.selectedIndex = -1
+		go func() {
+			display.App.Draw() // Call from a goroutine to avoid blocking
+		}()
 	}
 }
 
