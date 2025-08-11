@@ -76,22 +76,42 @@ func (instance *Instance) onGameSelected(selectedGame game.Variant) {
 }
 
 // onComponentSelected - handle component selection events
-func (instance *Instance) onComponentSelected(componentType screen.ComponentType, index int) {
-	if !instance.firstSelection {
-		// First selection - just mark the source
-		instance.firstSelection = true
-		instance.firstComponentType = componentType
-		instance.firstIndex = index
+func (instance *Instance) onComponentSelected(
+	fromComponentType screen.ComponentType, fromIndex int,
+	toComponentType screen.ComponentType, toIndex int,
+) {
+
+	if fromComponentType == toComponentType && fromIndex == toIndex {
+		// Nothing to do.
 		return
 	}
 
-	// Second selection - attempt to move from first to second
-	defer func() {
-		// Always clear selection state after attempting a move
-		instance.firstSelection = false
-		instance.firstIndex = -1
-		instance.Display.ClearSelection()
-	}()
+	var fromStack *state.Stack
+	switch fromComponentType {
+	case screen.ComponentFoundation:
+		fromStack = instance.Foundations[fromIndex].Stack
+	case screen.ComponentTableau:
+		fromStack = instance.Tableau[fromIndex].Stack
+	case screen.ComponentTalon:
+		fromStack = instance.Talon.Stock
+	case screen.ComponentWaste:
+		fromStack = instance.Talon.Waste
+	}
+
+	var toStack *state.Stack
+	switch toComponentType {
+	case screen.ComponentFoundation:
+		toStack = instance.Foundations[toIndex].Stack
+	case screen.ComponentTableau:
+		toStack = instance.Tableau[toIndex].Stack
+	case screen.ComponentTalon:
+		toStack = instance.Talon.Stock
+	case screen.ComponentWaste:
+		toStack = instance.Talon.Waste
+	}
+
+	fromStack.Move(toStack)
+	instance.updateDisplay()
 }
 
 func (instance *Instance) setupGameState() {
