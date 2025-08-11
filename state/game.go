@@ -18,6 +18,7 @@ func New(
 	foundationRule func(Foundation, SuitedCard) bool,
 	// Tableau Setup.
 	numTableau int,
+	tableauBase Rank,
 	tableauRule func(*Tableau, SuitedCard) bool,
 	// Talon Setup.
 	dealCount int,
@@ -33,6 +34,7 @@ func New(
 		),
 		Tableau: CreateTableaus(
 			numTableau,
+			tableauBase,
 			tableauRule,
 		),
 		Talon: NewTalon(

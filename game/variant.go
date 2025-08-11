@@ -16,7 +16,7 @@ type Variant interface {
 	// Tableau.
 	Tableau() (
 		number int,
-		basecard state.Rank,
+		base state.Rank,
 		addRule func(
 			*state.Tableau,
 			state.SuitedCard,

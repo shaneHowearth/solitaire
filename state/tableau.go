@@ -13,7 +13,7 @@ type Tableau struct {
 }
 
 // CreateTableaus - Create the tableaus that will host the cards.
-func CreateTableaus(number int, rule func(*Tableau, SuitedCard) bool) []*Tableau {
+func CreateTableaus(number int, base Rank, rule func(*Tableau, SuitedCard) bool) []*Tableau {
 	if number < 1 {
 		panic("Cannot have zero tableaus")
 	}
@@ -32,6 +32,7 @@ func CreateTableaus(number int, rule func(*Tableau, SuitedCard) bool) []*Tableau
 			},
 		)
 		tableau.Stack = stack
+		tableau.Base = base
 
 		tableaus = append(tableaus, &tableau)
 	}

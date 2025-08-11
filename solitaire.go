@@ -110,15 +110,18 @@ func (instance *Instance) onComponentSelected(
 		toStack = instance.Talon.Waste
 	}
 
-	fromStack.Move(toStack)
+	log.Printf("%t", fromStack.Move(toStack))
+	log.Printf("To: %v\n", toStack.Cards())
+	log.Printf("From: %v\n", fromStack.Cards())
 	instance.updateDisplay()
+
 }
 
 func (instance *Instance) setupGameState() {
 	// Get the foundation information for the game.
 	numFoundations, foundationBase, foundationRule := instance.Game.Foundations()
 	// Get the tableau information for the game.
-	numTableau, _, tableauRule := instance.Game.Tableau()
+	numTableau, tableauBase, tableauRule := instance.Game.Tableau()
 
 	// Create the state/model for the game.
 	gameState := state.New(
@@ -127,6 +130,7 @@ func (instance *Instance) setupGameState() {
 		foundationBase,
 		foundationRule,
 		numTableau,
+		tableauBase,
 		tableauRule,
 		1,
 		1,
