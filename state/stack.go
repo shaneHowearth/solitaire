@@ -88,11 +88,17 @@ func (stack *Stack) Move(_ int, destination *Stack) bool {
 		destination.Add(topcard, true)
 		// Pull the top card off the source stack.
 		_, _ = stack.Deal()
+		// Make the top card visible.
+		topcard, err = stack.Top()
+		if err != nil {
+			return true
+		}
+		stack.Add(topcard, true)
 
-		return true
+	} else {
+		return false
 	}
 
-	// TODO return an error.
 	return false
 }
 
