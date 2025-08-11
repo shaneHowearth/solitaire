@@ -18,7 +18,7 @@ type Display struct {
 	games                     []game.Variant
 	screens                   map[string]tview.Primitive
 	gameSelectedCallback      func(game.Variant)
-	componentSelectedCallback func(screen.ComponentType, int)
+	componentSelectedCallback func(screen.ComponentType, int, screen.ComponentType, int)
 
 	selectedComponentType screen.ComponentType
 	selectedIndex         int
@@ -43,13 +43,12 @@ func New(games []game.Variant) *Display {
 	}
 
 	display.screens["Games"] = display.createGameListPage(games)
-	// display.App.SetRoot(display.screens["Games"], true).EnableMouse(true)
 
 	return display
 }
 
 // Add this method to the TUI Display:
-func (display *Display) SetComponentSelectedCallback(callback func(screen.ComponentType, int)) {
+func (display *Display) SetComponentSelectedCallback(callback func(screen.ComponentType, int, screen.ComponentType, int)) {
 	display.componentSelectedCallback = callback
 }
 

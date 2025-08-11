@@ -24,7 +24,7 @@ type Display interface {
 	SetGameSelectedCallback(callback func(game.Variant))
 
 	// Component selection callback
-	SetComponentSelectedCallback(callback func(ComponentType, int))
+	SetComponentSelectedCallback(callback func(ComponentType, int, ComponentType, int))
 
 	// Board creation.
 	CreateBoard(name string, tableauHeight, tableauWidth, foundationCount int, foundationBase state.Rank)

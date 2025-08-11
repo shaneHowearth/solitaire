@@ -227,12 +227,17 @@ func (display *Display) selectComponent(componentType screen.ComponentType, inde
 
 	// Clear previous selection
 	if display.selectedIndex != -1 {
+		// Tell the controller.
+		display.componentSelectedCallback(display.selectedComponentType, display.selectedIndex, componentType, index)
+
 		display.clearCurrentSelection()
 	} else {
 		// Set the new selection
 		display.selectedComponentType = componentType
 		display.selectedIndex = index
 		component.SetBackgroundColor(display.selectedBgColor)
+
+		// Update the display (use a different goroutine to prevent a lockup).
 		go func() {
 			display.App.Draw() // Call from a goroutine to avoid blocking
 		}()

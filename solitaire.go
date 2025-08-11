@@ -118,7 +118,6 @@ func (instance *Instance) setupGameState() {
 	instance.Foundations = gameState.Foundations
 	instance.Tableau = gameState.Tableau
 	instance.Talon = gameState.Talon
-	// counts := instance.Game.SetupDealCardCounts()
 	instance.Deck = gameState.Deck
 
 	instance.dealCards()
