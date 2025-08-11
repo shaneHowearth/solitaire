@@ -61,14 +61,19 @@ func (stack *Stack) Deal() (SuitedCard, error) {
 
 	card := (*stack.cards)[((*stack).Len() - 1)]
 
-	*stack.cards = slices.Delete(*stack.cards, (*stack).Len()-1, (*stack).Len())
+	cards := make([]SuitedCard, (*stack).Len()-1)
+	for idx := 0; idx < (*stack).Len()-1; idx++ {
+		cards[idx] = (*stack.cards)[idx]
+	}
+
+	stack.cards = &cards
 
 	return card, nil
 }
 
 // Move - Move n cards on the tableau stack to the nominated pile (foundation or
 // tableau).
-func (stack *Stack) Move(_ int, destination *Stack) bool {
+func (stack *Stack) Move(destination *Stack) bool {
 	if destination == nil {
 		return false
 	}
