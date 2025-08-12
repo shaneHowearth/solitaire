@@ -1,8 +1,6 @@
 package solitaire
 
 import (
-	"fmt"
-
 	"github.com/shanehowearth/solitaire/game"
 	"github.com/shanehowearth/solitaire/screen"
 	"github.com/shanehowearth/solitaire/screen/tui"
@@ -29,7 +27,7 @@ type Instance struct {
 
 	// Track first selection for move operations
 	firstSelection     bool
-	firstComponentType screen.ComponentType
+	firstComponentType state.StackType
 	firstIndex         int
 }
 
@@ -75,9 +73,10 @@ func (instance *Instance) onGameSelected(selectedGame game.Variant) {
 }
 
 // onComponentSelected - handle component selection events
+// Moving cards from one stack to another.
 func (instance *Instance) onComponentSelected(
-	fromComponentType screen.ComponentType, fromIndex int,
-	toComponentType screen.ComponentType, toIndex int,
+	fromComponentType state.StackType, fromIndex int,
+	toComponentType state.StackType, toIndex int,
 ) {
 
 	if fromComponentType == toComponentType && fromIndex == toIndex {
@@ -87,61 +86,29 @@ func (instance *Instance) onComponentSelected(
 
 	var fromStack *state.Stack
 	switch fromComponentType {
-	case screen.ComponentFoundation:
+	case state.StackFoundation:
 		fromStack = instance.Foundations[fromIndex].Stack
-	case screen.ComponentTableau:
+	case state.StackTableau:
 		fromStack = instance.Tableau[fromIndex].Stack
-	case screen.ComponentTalon:
+	case state.StackTalon:
 		fromStack = instance.Talon.Stock
-	case screen.ComponentWaste:
+	case state.StackWaste:
 		fromStack = instance.Talon.Waste
 	}
 
 	var toStack *state.Stack
 	switch toComponentType {
-	case screen.ComponentFoundation:
+	case state.StackFoundation:
 		toStack = instance.Foundations[toIndex].Stack
-	case screen.ComponentTableau:
+	case state.StackTableau:
 		toStack = instance.Tableau[toIndex].Stack
-	case screen.ComponentTalon:
-		toStack = instance.Talon.Stock
-	case screen.ComponentWaste:
+	case state.StackWaste:
 		toStack = instance.Talon.Waste
 	}
 
 	fromStack.Move(toStack)
 	instance.updateDisplay()
 
-}
-
-func (instance *Instance) setupGameState() {
-	// Get the foundation information for the game.
-	numFoundations, foundationBase, foundationRule := instance.Game.Foundations()
-	// Get the tableau information for the game.
-	numTableau, tableauBase, tableauRule := instance.Game.Tableau()
-
-	// Create the state/model for the game.
-	gameState := state.New(
-		instance.Game.Decks(),
-		numFoundations,
-		foundationBase,
-		foundationRule,
-		numTableau,
-		tableauBase,
-		tableauRule,
-		1,
-		1,
-		// Talon rule is to allow everything to be added to its stacks.
-		func(state.SuitedCard) bool { return true },
-	)
-
-	// Copy the game state instantiated model into the current instance.
-	instance.Foundations = gameState.Foundations
-	instance.Tableau = gameState.Tableau
-	instance.Talon = gameState.Talon
-	instance.Deck = gameState.Deck
-
-	instance.dealCards()
 }
 
 // dealCards - deal cards to tableau
@@ -178,57 +145,17 @@ func (instance *Instance) dealCards() {
 		instance.Tableau[idx].Stack.Rule = rule
 	}
 
-}
+	// Put one card onto the Waste.
+	card := instance.Deck.Deal()
+	instance.Talon.Waste.Add(card, true)
 
-// createGamePage - create the game board page dynamically
-func (instance *Instance) createGamePage() {
-	// Create the board that will be displayed.
-	// instance.CreateBoard(instance.Game)
-	tableauHeight, tableauWidth := instance.Game.TableauGridSize()
-	foundationCount, foundationBase, _ := instance.Game.Foundations()
-
-	// Create the board layout
-	instance.Display.CreateBoard(
-		instance.Game.Name(),
-		tableauHeight,
-		tableauWidth,
-		foundationCount,
-		foundationBase,
-	)
-
-	// Update the display with current game state
-	instance.updateDisplay()
-}
-
-// updateDisplay - update the display with current game state
-func (instance *Instance) updateDisplay() {
-
-	// Tell the board what to display in each box.
-	for idx := range instance.Foundations {
-		// Set the foundation title.
-		instance.Display.FoundationTitle(idx,
-			fmt.Sprintf("%s %s",
-				instance.Foundations[idx].Base.Rank.String(),
-				instance.Foundations[idx].Base.Suit.String(),
-			),
-		)
-
-		// Tell the foundation what cards it is holding.
-		instance.Display.FoundationPrint(idx,
-			instance.Foundations[idx].Stack.Cards(),
-		)
+	// Put the rest of the cards onto the talon.
+	for {
+		if instance.Deck.Len() == 0 {
+			break
+		}
+		card := instance.Deck.Deal()
+		instance.Talon.Stock.Add(card, false)
 	}
 
-	// Tell each Tableau what cards it is holding.
-	for idx := range instance.Tableau {
-		instance.Display.TableauPrint(idx,
-			instance.Tableau[idx].Stack.Cards(),
-		)
-	}
-
-	// Display the Talon.
-	instance.Display.TalonPrint(instance.Talon.Stock.Cards())
-
-	// Display the Waste.
-	instance.Display.WastePrint(instance.Talon.Waste.Cards())
 }
