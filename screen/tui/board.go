@@ -91,7 +91,6 @@ func (display *Display) createGamePage(
 		foundation.Box.SetBorder(true).SetTitle(foundationBase.String())
 		foundation.SetBackgroundColor(display.defaultBgColor)
 
-		// For foundations - replace your current foundation mouse handler:
 		foundation.SetMouseCapture(func(action tview.MouseAction, event *tcell.EventMouse) (tview.MouseAction, *tcell.EventMouse) {
 			if action == tview.MouseLeftClick && foundation.HasFocus() {
 				display.selectComponent(screen.ComponentFoundation, foundationIdx)
@@ -165,6 +164,24 @@ func (display *Display) createGamePage(
 	return mainRows
 }
 
+// TalonPrint -
+func (display *Display) TalonPrint(value []string) {
+	if len(value) > 0 {
+		display.stack[0].SetText(
+			value[len(value)-1],
+		)
+	}
+}
+
+// WastePrint -
+func (display *Display) WastePrint(value []string) {
+	if len(value) > 0 {
+		display.waste[0].SetText(
+			value[len(value)-1],
+		)
+	}
+}
+
 // FoundationTitle -
 func (display *Display) FoundationTitle(num int, value string) {
 	display.foundations[num].SetTitle(value)
@@ -173,17 +190,24 @@ func (display *Display) FoundationTitle(num int, value string) {
 // FoundationPrint -
 func (display *Display) FoundationPrint(num int, value []string) {
 	if len(value) > 0 {
+		// Only print the top card.
 		display.foundations[num].SetText(
 			value[len(value)-1],
 		)
 	}
 }
 
+const emptyStack = ""
+
 // TableauPrint -
 func (display *Display) TableauPrint(idx int, value []string) {
 	if len(value) > 0 {
 		display.tableau[idx].SetText(
 			strings.Join(value, "\n"),
+		)
+	} else {
+		display.tableau[idx].SetText(
+			emptyStack,
 		)
 	}
 }

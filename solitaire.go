@@ -110,9 +110,7 @@ func (instance *Instance) onComponentSelected(
 		toStack = instance.Talon.Waste
 	}
 
-	log.Printf("%t", fromStack.Move(toStack))
-	log.Printf("To: %v\n", toStack.Cards())
-	log.Printf("From: %v\n", fromStack.Cards())
+	fromStack.Move(toStack)
 	instance.updateDisplay()
 
 }
@@ -208,21 +206,30 @@ func (instance *Instance) updateDisplay() {
 
 	// Tell the board what to display in each box.
 	for idx := range instance.Foundations {
+		// Set the foundation title.
 		instance.Display.FoundationTitle(idx,
 			fmt.Sprintf("%s %s",
 				instance.Foundations[idx].Base.Rank.String(),
 				instance.Foundations[idx].Base.Suit.String(),
 			),
 		)
+
+		// Tell the foundation what cards it is holding.
 		instance.Display.FoundationPrint(idx,
 			instance.Foundations[idx].Stack.Cards(),
 		)
 	}
 
-	// Display each tableau.
+	// Tell each Tableau what cards it is holding.
 	for idx := range instance.Tableau {
 		instance.Display.TableauPrint(idx,
 			instance.Tableau[idx].Stack.Cards(),
 		)
 	}
+
+	// Display the Talon.
+	instance.Display.TalonPrint(instance.Talon.Stock.Cards())
+
+	// Display the Waste.
+	instance.Display.WastePrint(instance.Talon.Waste.Cards())
 }

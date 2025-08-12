@@ -107,6 +107,8 @@ func (stack *Stack) Move(destination *Stack) bool {
 	return false
 }
 
+const blankCard = "--"
+
 // Cards - a string representation of the ards in the stack.
 func (stack *Stack) Cards() []string {
 	cardPile := []string{}
@@ -118,6 +120,8 @@ func (stack *Stack) Cards() []string {
 				card.Rank.String(),
 				card.Suit.String(),
 			)
+		} else {
+			cardStr = blankCard
 		}
 
 		cardPile = append(cardPile, cardStr)

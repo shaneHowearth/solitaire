@@ -33,6 +33,8 @@ type Display interface {
 	FoundationTitle(num int, value string)
 	FoundationPrint(num int, value []string)
 	TableauPrint(idx int, value []string)
+	TalonPrint(value []string)
+	WastePrint(value []string)
 
 	// Component selection.
 	GetSelectedComponent() (ComponentType, int)
