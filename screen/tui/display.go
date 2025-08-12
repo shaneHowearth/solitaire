@@ -4,7 +4,7 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/shanehowearth/solitaire/game"
-	"github.com/shanehowearth/solitaire/screen"
+	"github.com/shanehowearth/solitaire/state"
 )
 
 // Display -
@@ -18,9 +18,9 @@ type Display struct {
 	games                     []game.Variant
 	screens                   map[string]tview.Primitive
 	gameSelectedCallback      func(game.Variant)
-	componentSelectedCallback func(screen.ComponentType, int, screen.ComponentType, int)
+	componentSelectedCallback func(state.StackType, int, state.StackType, int)
 
-	selectedComponentType screen.ComponentType
+	selectedComponentType state.StackType
 	selectedIndex         int
 	defaultBgColor        tcell.Color
 	selectedBgColor       tcell.Color
@@ -36,7 +36,7 @@ func New(games []game.Variant) *Display {
 		App:                   app,
 		games:                 games,
 		screens:               make(map[string]tview.Primitive),
-		selectedComponentType: screen.ComponentFoundation,
+		selectedComponentType: state.StackFoundation,
 		selectedIndex:         -1, // No selection initially
 		defaultBgColor:        tcell.ColorDefault,
 		selectedBgColor:       tcell.ColorRed,
@@ -48,7 +48,7 @@ func New(games []game.Variant) *Display {
 }
 
 // Add this method to the TUI Display:
-func (display *Display) SetComponentSelectedCallback(callback func(screen.ComponentType, int, screen.ComponentType, int)) {
+func (display *Display) SetComponentSelectedCallback(callback func(state.StackType, int, state.StackType, int)) {
 	display.componentSelectedCallback = callback
 }
 

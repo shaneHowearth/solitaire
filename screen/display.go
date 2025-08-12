@@ -5,16 +5,6 @@ import (
 	"github.com/shanehowearth/solitaire/state"
 )
 
-// ComponentType represents the type of game component
-type ComponentType int
-
-const (
-	ComponentFoundation ComponentType = iota
-	ComponentTableau
-	ComponentTalon
-	ComponentWaste
-)
-
 // Display - defines what a display of the game needs to do.
 type Display interface {
 	Run() error
@@ -24,7 +14,7 @@ type Display interface {
 	SetGameSelectedCallback(callback func(game.Variant))
 
 	// Component selection callback
-	SetComponentSelectedCallback(callback func(ComponentType, int, ComponentType, int))
+	SetComponentSelectedCallback(callback func(state.StackType, int, state.StackType, int))
 
 	// Board creation.
 	CreateBoard(name string, tableauHeight, tableauWidth, foundationCount int, foundationBase state.Rank)
@@ -37,7 +27,7 @@ type Display interface {
 	WastePrint(value []string)
 
 	// Component selection.
-	GetSelectedComponent() (ComponentType, int)
+	GetSelectedComponent() (state.StackType, int)
 	ClearSelection()
 	HasSelection() bool
 }

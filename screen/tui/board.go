@@ -6,7 +6,6 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
-	"github.com/shanehowearth/solitaire/screen"
 	"github.com/shanehowearth/solitaire/state"
 )
 
@@ -44,7 +43,7 @@ func (display *Display) createGamePage(
 	talon.SetWordWrap(true).SetBorder(true).SetTitle("Talon")
 	talon.SetMouseCapture(func(action tview.MouseAction, event *tcell.EventMouse) (tview.MouseAction, *tcell.EventMouse) {
 		if action == tview.MouseLeftClick && talon.HasFocus() {
-			display.selectComponent(screen.ComponentTalon, talonIndex)
+			display.selectComponent(state.StackTalon, talonIndex)
 			return tview.MouseConsumed, nil
 		}
 		return action, event
@@ -69,7 +68,7 @@ func (display *Display) createGamePage(
 
 	waste.SetMouseCapture(func(action tview.MouseAction, event *tcell.EventMouse) (tview.MouseAction, *tcell.EventMouse) {
 		if action == tview.MouseLeftClick && waste.HasFocus() {
-			display.selectComponent(screen.ComponentWaste, wasteIndex)
+			display.selectComponent(state.StackWaste, wasteIndex)
 			return tview.MouseConsumed, nil
 		}
 		return action, event
@@ -93,7 +92,7 @@ func (display *Display) createGamePage(
 
 		foundation.SetMouseCapture(func(action tview.MouseAction, event *tcell.EventMouse) (tview.MouseAction, *tcell.EventMouse) {
 			if action == tview.MouseLeftClick && foundation.HasFocus() {
-				display.selectComponent(screen.ComponentFoundation, foundationIdx)
+				display.selectComponent(state.StackFoundation, foundationIdx)
 				// Return nil, nil to completely consume the event
 				return tview.MouseConsumed, nil
 			}
@@ -124,7 +123,7 @@ func (display *Display) createGamePage(
 
 		tableau.SetMouseCapture(func(action tview.MouseAction, event *tcell.EventMouse) (tview.MouseAction, *tcell.EventMouse) {
 			if action == tview.MouseLeftClick && tableau.HasFocus() {
-				display.selectComponent(screen.ComponentTableau, tableauIdx)
+				display.selectComponent(state.StackTableau, tableauIdx)
 				return action, nil
 			}
 			return action, event
@@ -170,6 +169,10 @@ func (display *Display) TalonPrint(value []string) {
 		display.stack[0].SetText(
 			value[len(value)-1],
 		)
+	} else {
+		display.stack[0].SetText(
+			emptyStack,
+		)
 	}
 }
 
@@ -178,6 +181,10 @@ func (display *Display) WastePrint(value []string) {
 	if len(value) > 0 {
 		display.waste[0].SetText(
 			value[len(value)-1],
+		)
+	} else {
+		display.waste[0].SetText(
+			emptyStack,
 		)
 	}
 }
@@ -213,7 +220,7 @@ func (display *Display) TableauPrint(idx int, value []string) {
 }
 
 // Update the selectComponent method to use the callback:
-func (display *Display) selectComponent(componentType screen.ComponentType, index int) {
+func (display *Display) selectComponent(componentType state.StackType, index int) {
 	if display.processingClick {
 		return
 	}
@@ -225,22 +232,22 @@ func (display *Display) selectComponent(componentType screen.ComponentType, inde
 	// Validate the selection first
 	var component *tview.TextView
 	switch componentType {
-	case screen.ComponentFoundation:
+	case state.StackFoundation:
 		if index < 0 || index >= len(display.foundations) || display.foundations[index] == nil {
 			return
 		}
 		component = display.foundations[index]
-	case screen.ComponentTableau:
+	case state.StackTableau:
 		if index < 0 || index >= len(display.tableau) || display.tableau[index] == nil {
 			return
 		}
 		component = display.tableau[index]
-	case screen.ComponentTalon:
+	case state.StackTalon:
 		if index < 0 || index >= len(display.stack) || display.stack[index] == nil {
 			return
 		}
 		component = display.stack[index]
-	case screen.ComponentWaste:
+	case state.StackWaste:
 		if index < 0 || index >= len(display.waste) || display.waste[index] == nil {
 			return
 		}
@@ -276,19 +283,19 @@ func (display *Display) clearCurrentSelection() {
 
 	var component *tview.TextView
 	switch display.selectedComponentType {
-	case screen.ComponentFoundation:
+	case state.StackFoundation:
 		if display.selectedIndex < len(display.foundations) && display.foundations[display.selectedIndex] != nil {
 			component = display.foundations[display.selectedIndex]
 		}
-	case screen.ComponentTableau:
+	case state.StackTableau:
 		if display.selectedIndex < len(display.tableau) && display.tableau[display.selectedIndex] != nil {
 			component = display.tableau[display.selectedIndex]
 		}
-	case screen.ComponentTalon:
+	case state.StackTalon:
 		if display.selectedIndex < len(display.stack) && display.stack[display.selectedIndex] != nil {
 			component = display.stack[display.selectedIndex]
 		}
-	case screen.ComponentWaste:
+	case state.StackWaste:
 		if display.selectedIndex < len(display.waste) && display.waste[display.selectedIndex] != nil {
 			component = display.waste[display.selectedIndex]
 		}
@@ -305,15 +312,15 @@ func (display *Display) clearCurrentSelection() {
 }
 
 // getComponentName - helper to get component name for display
-func (display *Display) getComponentName(componentType screen.ComponentType) string {
+func (display *Display) getComponentName(componentType state.StackType) string {
 	switch componentType {
-	case screen.ComponentFoundation:
+	case state.StackFoundation:
 		return "foundation"
-	case screen.ComponentTableau:
+	case state.StackTableau:
 		return "tableau"
-	case screen.ComponentTalon:
+	case state.StackTalon:
 		return "talon"
-	case screen.ComponentWaste:
+	case state.StackWaste:
 		return "waste"
 	default:
 		return "component"
@@ -321,7 +328,7 @@ func (display *Display) getComponentName(componentType screen.ComponentType) str
 }
 
 // GetSelectedComponent - get the currently selected component type and index
-func (display *Display) GetSelectedComponent() (screen.ComponentType, int) {
+func (display *Display) GetSelectedComponent() (state.StackType, int) {
 	return display.selectedComponentType, display.selectedIndex
 }
 
