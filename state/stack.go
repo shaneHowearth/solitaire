@@ -82,29 +82,75 @@ func (stack *Stack) Move(destination *Stack) bool {
 		return false
 	}
 
-	topcard, err := stack.Top()
-	if err != nil {
-		return false
+	// Can we move multiple cards?
+	// Should I put the cards onto a temporary stack, then unwind if there's no
+	// cards able to be moved?
+	temp := NewStack(15, func(SuitedCard) bool { return true })
+	count := 0
+	canMove := false
+
+	for {
+		top, err := stack.Top()
+		if err != nil {
+			break
+		}
+		if !top.Visible {
+			break
+		}
+		count++
+		temp.Add(top, true)
+		_, err = stack.Deal()
+		if err != nil {
+			log.Printf("Stack Deal err %v", err)
+		}
+		if destination.Rule(top) {
+			canMove = true
+			break
+		}
 	}
 
-	// If the card can be added to the destination add it, and drop it from the
-	// source.
-	if destination.Rule(topcard) {
-		destination.Add(topcard, true)
-		// Pull the top card off the source stack.
-		_, _ = stack.Deal()
+	if !canMove {
+		savedRule := stack.Rule
+		stack.Rule = func(SuitedCard) bool { return true }
+		// Put the cards back and finish.
+		for {
+			top, err := temp.Top()
+			if err != nil {
+				stack.Rule = savedRule
+				break
+			}
+
+			stackTop, _ := stack.Top()
+			if stackTop.Rank == top.Rank && stackTop.Suit == top.Suit {
+				stack.Rule = savedRule
+				break
+			}
+			stack.Add(top, true)
+			_, _ = temp.Deal()
+		}
+	} else {
+		// If the card can be added to the destination add it, and drop it from the
+		// source.
+		for {
+			top, err := temp.Top()
+			if err != nil {
+				break
+			}
+			destination.Add(top, true)
+			// Pull the top card off the source stack.
+			_, _ = temp.Deal()
+		}
 		// Make the top card visible.
-		topcard, err = stack.Top()
+
+		newTop, err := stack.Top()
 		if err != nil {
 			return true
 		}
-		stack.Add(topcard, true)
-
-	} else {
-		return false
+		_, _ = stack.Deal()
+		stack.Add(newTop, true)
 	}
 
-	return false
+	return true
 }
 
 const blankCard = "--"
