@@ -30,6 +30,7 @@ func CreateTableaus(number int, base Rank, rule func(*Tableau, SuitedCard) bool)
 			func(card SuitedCard) bool {
 				return rule(&tableau, card)
 			},
+			StackTableau,
 		)
 		tableau.Stack = stack
 		tableau.Base = base
@@ -94,6 +95,7 @@ func (tableau *Tableau) MultiMove(destination *Tableau) bool {
 		temporaryStack := NewStack(
 			(movable - tableau.Stack.Len()),
 			func(SuitedCard) bool { return true },
+			StackUndefined,
 		)
 
 		for donorIdx := tableau.Stack.Len() - 1; donorIdx >= movable; donorIdx-- {

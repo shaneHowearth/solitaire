@@ -25,9 +25,11 @@ func NewTalon(
 	stock := NewStack(stackSize, func(SuitedCard) bool {
 		// Let anything on.
 		return true
-	})
+	},
+		StackTalon,
+	)
 
-	waste := NewStack(stackSize, rule)
+	waste := NewStack(stackSize, rule, StackWaste)
 
 	return &Talon{
 		Stock:        stock,

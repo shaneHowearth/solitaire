@@ -33,7 +33,9 @@ func CreateFoundations(number int, base Rank, rule func(Foundation, SuitedCard) 
 		stack := NewStack(RankCount,
 			func(card SuitedCard) bool {
 				return rule(foundation, card)
-			})
+			},
+			StackWaste,
+		)
 
 		foundation.Stack = stack
 

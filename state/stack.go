@@ -3,7 +3,6 @@ package state
 import (
 	"errors"
 	"fmt"
-	"slices"
 )
 
 // Stack - A stack of cards one on top of the other and squared such that only
@@ -11,7 +10,19 @@ import (
 type Stack struct {
 	cards *[]SuitedCard
 	Rule  func(SuitedCard) bool
+	Type  StackType
 }
+
+// StackType represents the type of game component
+type StackType int
+
+const (
+	StackUndefined StackType = iota
+	StackFoundation
+	StackTableau
+	StackTalon
+	StackWaste
+)
 
 // ErrEmpty - Error emitted when the stack is empty.
 var ErrEmpty = errors.New("Empty")
@@ -21,12 +32,13 @@ var ErrEmpty = errors.New("Empty")
 
 // NewStack - Create a new stack with an empty slice of SuitedCards that has a
 // capacity of n.
-func NewStack(number int, rule func(SuitedCard) bool) *Stack {
+func NewStack(number int, rule func(SuitedCard) bool, componentType StackType) *Stack {
 	cards := make([]SuitedCard, 0, number)
 
 	return &Stack{
 		cards: &cards,
 		Rule:  rule,
+		Type:  componentType,
 	}
 }
 
@@ -85,7 +97,7 @@ func (stack *Stack) Move(destination *Stack) bool {
 	// Can we move multiple cards?
 	// Should I put the cards onto a temporary stack, then unwind if there's no
 	// cards able to be moved?
-	temp := NewStack(15, func(SuitedCard) bool { return true })
+	temp := NewStack(15, func(SuitedCard) bool { return true }, StackUndefined)
 	count := 0
 	canMove := false
 
@@ -94,7 +106,7 @@ func (stack *Stack) Move(destination *Stack) bool {
 		if err != nil {
 			break
 		}
-		if !top.Visible {
+		if !top.Visible && (stack.Type != StackTalon) {
 			break
 		}
 		count++
