@@ -39,7 +39,7 @@ func (stack *Stack) Add(card SuitedCard, visible bool) {
 
 // Len - return the length of the stack.
 func (stack *Stack) Len() int {
-	return len((*stack.cards))
+	return len(*stack.cards)
 }
 
 // Top - the card that can be accessed immediately.
@@ -48,7 +48,7 @@ func (stack *Stack) Top() (SuitedCard, error) {
 		return SuitedCard{}, ErrEmpty
 	}
 
-	return (*stack.cards)[(*stack).Len()-1], nil
+	return (*stack.cards)[stack.Len()-1], nil
 }
 
 // Deal returns and removes the final card in the deck.
@@ -59,10 +59,10 @@ func (stack *Stack) Deal() (SuitedCard, error) {
 		return SuitedCard{}, ErrEmpty
 	}
 
-	card := (*stack.cards)[((*stack).Len() - 1)]
+	card := (*stack.cards)[stack.Len()-1]
 
-	cards := make([]SuitedCard, (*stack).Len()-1)
-	for idx := 0; idx < (*stack).Len()-1; idx++ {
+	cards := make([]SuitedCard, stack.Len()-1)
+	for idx := 0; idx < stack.Len()-1; idx++ {
 		cards[idx] = (*stack.cards)[idx]
 	}
 
