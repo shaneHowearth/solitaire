@@ -97,7 +97,12 @@ func (stack *Stack) Move(destination *Stack) bool {
 	// Can we move multiple cards?
 	// Should I put the cards onto a temporary stack, then unwind if there's no
 	// cards able to be moved?
-	temp := NewStack(15, func(SuitedCard) bool { return true }, StackUndefined)
+	temp := NewStack(
+		15,
+		func(SuitedCard) bool { return true },
+		StackUndefined,
+	)
+
 	count := 0
 	canMove := false
 
@@ -106,17 +111,26 @@ func (stack *Stack) Move(destination *Stack) bool {
 		if err != nil {
 			break
 		}
+
 		if !top.Visible && (stack.Type != StackTalon) {
 			break
 		}
+
 		count++
 		temp.Add(top, true)
+
 		_, err = stack.Deal()
 		if err != nil {
 			log.Printf("Stack Deal err %v", err)
 		}
+
 		if destination.Rule(top) {
 			canMove = true
+			break
+		}
+
+		// Only tableau can have more than 1 cards moved at once.
+		if stack.Type != StackTableau {
 			break
 		}
 	}
@@ -153,13 +167,14 @@ func (stack *Stack) Move(destination *Stack) bool {
 			_, _ = temp.Deal()
 		}
 		// Make the top card visible.
-
-		newTop, err := stack.Top()
-		if err != nil {
-			return true
+		if stack.Type == StackTableau {
+			newTop, err := stack.Top()
+			if err != nil {
+				return true
+			}
+			_, _ = stack.Deal()
+			stack.Add(newTop, true)
 		}
-		_, _ = stack.Deal()
-		stack.Add(newTop, true)
 	}
 
 	return true
