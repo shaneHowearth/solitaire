@@ -1,6 +1,8 @@
 package state
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Talon -
 // The remaining stack of cards, typically squared and face-down, that is left
