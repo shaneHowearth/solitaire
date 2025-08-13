@@ -1,5 +1,8 @@
 package state
 
+// BaseCard - the card that the Foundation starts at.
+type BaseCard Rank
+
 // Foundation - The final place for cards. Cards are built up in piles from the
 // (nominated) base card.
 // There are at least 4 Foundations per game, sometimes more (there will always
