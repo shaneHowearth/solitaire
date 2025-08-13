@@ -48,6 +48,7 @@ func (instance *Instance) Start() error {
 	instance.Display = tui.New(variants)
 
 	instance.Display.SetGameSelectedCallback(instance.onGameSelected)
+
 	// Set up component selection callback
 	if tuiDisplay, ok := instance.Display.(*tui.Display); ok {
 		tuiDisplay.SetComponentSelectedCallback(instance.onComponentSelected)

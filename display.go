@@ -9,6 +9,7 @@ func (instance *Instance) createGamePage() {
 	// Create the board that will be displayed.
 	tableauHeight, tableauWidth := instance.Game.TableauGridSize()
 	foundationCount, foundationBase, _ := instance.Game.Foundations()
+	howTo := instance.Game.HowToPlay()
 
 	// Create the board layout
 	instance.Display.CreateBoard(
@@ -17,6 +18,7 @@ func (instance *Instance) createGamePage() {
 		tableauWidth,
 		foundationCount,
 		foundationBase,
+		howTo,
 	)
 
 	// Update the display with current game state

@@ -65,3 +65,16 @@ func (*Klondike) SetupDealCardCounts() []int {
 	//nolint:revive // Ignore the constant complaint.
 	return []int{1, 1, 2, 1, 3, 1, 4, 1, 5, 1, 6, 1, 7, 1}
 }
+
+// HowToPlay - Tell the player how to play the game.
+func (*Klondike) HowToPlay() []string {
+	lines := []string{
+		`The four foundations (rectangles in the upper right of the board) are built up by suit from Ace (low in this game) to King, and the tableau piles can be built down by alternate colors.
+`,
+		`Every face-up card in a partial pile, or a complete pile, can be moved, as a unit, to another tableau pile on the basis of what can be moved onto that other pile. Any empty piles can be filled with a King, or a pile of cards with a King.
+`,
+		`The aim of the game is to build up four stacks of cards starting with Ace and ending with King all of the same suit, on one of the four foundations, at which time the player would have won.`,
+	}
+
+	return lines
+}

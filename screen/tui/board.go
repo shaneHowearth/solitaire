@@ -14,8 +14,9 @@ func (display *Display) CreateBoard(
 	name string,
 	tableauHeight, tableauWidth, foundationCount int,
 	foundationBase state.Rank,
+	howTo []string,
 ) {
-	gamePage := display.createGamePage(name, tableauHeight, tableauWidth, foundationCount, foundationBase)
+	gamePage := display.createGamePage(name, tableauHeight, tableauWidth, foundationCount, foundationBase, howTo)
 
 	display.screens[name] = gamePage
 }
@@ -24,12 +25,13 @@ func (display *Display) createGamePage(
 	name string,
 	tableauHeight, tableauWidth, foundationCount int,
 	foundationBase state.Rank,
+	howTo []string,
 ) tview.Primitive {
 	mainRows := tview.NewFlex().SetDirection(tview.FlexRow)
 
 	title := tview.NewTextView().
-		SetText(fmt.Sprintf("Playing: %s", name)).
-		SetTextAlign(tview.AlignCenter).
+		SetText(strings.Join(append([]string{fmt.Sprintf("Playing: %s\n", name)}, howTo...), "\n")).
+		SetWordWrap(true).
 		SetTextColor(tview.Styles.PrimaryTextColor)
 	title.SetBorder(true)
 

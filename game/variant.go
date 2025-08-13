@@ -50,4 +50,7 @@ type Variant interface {
 	// cards are visible in that tableau. The third and fourth ints will apply
 	// to the second tableau, etc.
 	SetupDealCardCounts() []int
+
+	// HowToPlay - Explains to the player how the game is played.
+	HowToPlay() []string
 }
