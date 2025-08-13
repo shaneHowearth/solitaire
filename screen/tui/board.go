@@ -40,7 +40,7 @@ func (display *Display) createGamePage(
 	/////////////
 	talonIndex := 0 // There's typically only one talon
 	talon := tview.NewTextView().SetDynamicColors(true)
-	talon.SetWordWrap(true).SetBorder(true).SetTitle("Talon")
+	talon.SetWordWrap(true).SetBorder(true).SetTitle(" Stock ")
 	talon.SetMouseCapture(func(action tview.MouseAction, event *tcell.EventMouse) (tview.MouseAction, *tcell.EventMouse) {
 		if action == tview.MouseLeftClick && talon.HasFocus() {
 			display.selectComponent(state.StackTalon, talonIndex)
@@ -61,7 +61,7 @@ func (display *Display) createGamePage(
 	/////////////
 	waste := tview.NewTextView()
 	display.waste = append(display.waste, waste)
-	waste.SetBorder(true).SetTitle("Waste")
+	waste.SetBorder(true).SetTitle(" Waste ")
 	waste.SetBackgroundColor(display.defaultBgColor)
 	// Add waste selection capability
 	wasteIndex := 0 // There's typically only one waste pile
@@ -87,7 +87,7 @@ func (display *Display) createGamePage(
 
 		// Add some decorations to the box.
 		foundationIdx := idx
-		foundation.Box.SetBorder(true).SetTitle(foundationBase.String())
+		foundation.Box.SetBorder(true)
 		foundation.SetBackgroundColor(display.defaultBgColor)
 
 		foundation.SetMouseCapture(func(action tview.MouseAction, event *tcell.EventMouse) (tview.MouseAction, *tcell.EventMouse) {
@@ -116,7 +116,7 @@ func (display *Display) createGamePage(
 	for idx := 0; idx < tableauHeight*tableauWidth; idx++ {
 		tableau := tview.NewTextView()
 
-		tableau.SetBorder(true).SetTitle(fmt.Sprintf(""))
+		tableau.SetBorder(true)
 		tableau.SetBackgroundColor(display.defaultBgColor)
 		tableauIdx := idx
 		display.tableau[tableauIdx] = tableau
