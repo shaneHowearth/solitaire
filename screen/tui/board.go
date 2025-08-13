@@ -38,9 +38,12 @@ func (display *Display) createGamePage(
 	/////////////
 	/// TALON ///
 	/////////////
+	display.stack = make([]*tview.TextView, 1)
 	talonIndex := 0 // There's typically only one talon
-	talon := tview.NewTextView().SetDynamicColors(true)
+	talon := tview.NewTextView()
 	talon.SetWordWrap(true).SetBorder(true).SetTitle(" Stock ")
+	talon.SetBackgroundColor(display.defaultBgColor)
+
 	talon.SetMouseCapture(func(action tview.MouseAction, event *tcell.EventMouse) (tview.MouseAction, *tcell.EventMouse) {
 		if action == tview.MouseLeftClick && talon.HasFocus() {
 			display.selectComponent(state.StackTalon, talonIndex)
@@ -49,8 +52,7 @@ func (display *Display) createGamePage(
 		return action, event
 	})
 
-	talon.SetBackgroundColor(display.defaultBgColor)
-	display.stack = append(display.stack, talon)
+	display.stack[talonIndex] = talon
 
 	foundationsRow.AddItem(
 		talon, 0, 1, true,
@@ -59,12 +61,13 @@ func (display *Display) createGamePage(
 	/////////////
 	/// WASTE ///
 	/////////////
+	display.waste = make([]*tview.TextView, 1)
 	waste := tview.NewTextView()
-	display.waste = append(display.waste, waste)
+
+	wasteIndex := 0 // There's typically only one waste pile
 	waste.SetBorder(true).SetTitle(" Waste ")
 	waste.SetBackgroundColor(display.defaultBgColor)
 	// Add waste selection capability
-	wasteIndex := 0 // There's typically only one waste pile
 
 	waste.SetMouseCapture(func(action tview.MouseAction, event *tcell.EventMouse) (tview.MouseAction, *tcell.EventMouse) {
 		if action == tview.MouseLeftClick && waste.HasFocus() {
@@ -74,6 +77,7 @@ func (display *Display) createGamePage(
 		return action, event
 	})
 
+	display.waste[wasteIndex] = waste
 	foundationsRow.AddItem(waste, 0, 1, true)
 
 	// Add a box for each foundation.
