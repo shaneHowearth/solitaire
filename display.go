@@ -30,7 +30,7 @@ func (instance *Instance) updateDisplay() {
 	for idx := range instance.Foundations {
 		// Set the foundation title.
 		instance.Display.FoundationTitle(idx,
-			fmt.Sprintf("%s %s",
+			fmt.Sprintf(" %s %s ",
 				instance.Foundations[idx].Base.Rank.String(),
 				instance.Foundations[idx].Base.Suit.String(),
 			),
