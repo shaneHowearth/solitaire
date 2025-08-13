@@ -1,6 +1,8 @@
 package solitaire
 
 import (
+	"log"
+
 	"github.com/shanehowearth/solitaire/game"
 	"github.com/shanehowearth/solitaire/screen"
 	"github.com/shanehowearth/solitaire/screen/tui"
@@ -20,7 +22,7 @@ type Instance struct {
 	// View.
 	Display screen.Display
 	// Model.
-	Foundations []state.Foundation
+	Foundations []*state.Foundation
 	Tableau     []*state.Tableau
 	Talon       *state.Talon
 	Deck        *state.Deck
@@ -108,7 +110,12 @@ func (instance *Instance) onComponentSelected(
 	}
 
 	fromStack.Move(toStack)
+
 	instance.updateDisplay()
+
+	if instance.Game.HasWon(instance.Tableau, instance.Foundations) {
+		log.Print("WINNER")
+	}
 
 }
 

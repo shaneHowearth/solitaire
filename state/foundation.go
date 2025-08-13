@@ -13,7 +13,7 @@ type Foundation struct {
 }
 
 // CreateFoundations - Create the foundations that will host the cards.
-func CreateFoundations(number int, base Rank, rule func(Foundation, SuitedCard) bool) []Foundation {
+func CreateFoundations(number int, base Rank, rule func(Foundation, SuitedCard) bool) []*Foundation {
 	if number < 1 {
 		panic("Cannot have zero foundations")
 	}
@@ -26,16 +26,16 @@ func CreateFoundations(number int, base Rank, rule func(Foundation, SuitedCard) 
 		panic("Cannot create foundations without a rule.")
 	}
 
-	foundations := make([]Foundation, 0, SuitCount*number)
+	foundations := make([]*Foundation, 0, SuitCount*number)
 
 	for i := 0; i < number; i++ {
-		foundation := Foundation{
+		foundation := &Foundation{
 			Base: SuitedCard{Rank: base, Suit: Suit(i)},
 		}
 
 		stack := NewStack(RankCount,
 			func(card SuitedCard) bool {
-				return rule(foundation, card)
+				return rule(*foundation, card)
 			},
 			StackWaste,
 		)

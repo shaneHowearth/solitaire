@@ -53,4 +53,7 @@ type Variant interface {
 
 	// HowToPlay - Explains to the player how the game is played.
 	HowToPlay() []string
+
+	// HasWon - Checks if the Game has been Won.
+	HasWon([]*state.Tableau, []*state.Foundation) bool
 }

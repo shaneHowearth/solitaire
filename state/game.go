@@ -5,7 +5,7 @@ type State struct {
 	Deck        *Deck
 	Tableau     []*Tableau
 	Talon       *Talon
-	Foundations []Foundation
+	Foundations []*Foundation
 }
 
 // New - Create a new set of stacks.
