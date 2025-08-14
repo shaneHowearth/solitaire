@@ -141,7 +141,7 @@ func (display *Display) createGamePage(
 
 	// Controls/Help
 	controls := tview.NewTextView().
-		SetText("Press 'n' to start a new game, 'q' to return to game selection, Ctrl+C to quit").
+		SetText("Press 'n' to start a new game, 'm' to return to game menu, Ctrl+C or 'q' to quit").
 		SetTextAlign(tview.AlignCenter)
 	controls.SetBorder(true).SetTitle("Controls")
 
@@ -157,11 +157,14 @@ func (display *Display) createGamePage(
 	// Add the main rows to the window container.
 	mainRows.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Rune() {
+		case 'm':
+			display.Show("Games")
+			return nil
 		case 'n':
 			display.onGameSelected(display.Selected)
 			return nil
 		case 'q':
-			display.Show("Games")
+			display.App.Stop()
 			return nil
 		}
 		return event
