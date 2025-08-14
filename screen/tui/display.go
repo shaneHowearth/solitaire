@@ -10,6 +10,7 @@ import (
 // Display -
 type Display struct {
 	App                       *tview.Application
+	pages                     *tview.Pages
 	stack                     []*tview.TextView
 	waste                     []*tview.TextView
 	foundations               []*tview.TextView
@@ -28,6 +29,12 @@ type Display struct {
 	processingClick bool
 }
 
+// Initialize pages system
+func (display *Display) initializePages() {
+	display.pages = tview.NewPages()
+	display.App.SetRoot(display.pages, true)
+}
+
 // New - create a new display.
 func New(games []game.Variant) *Display {
 	app := tview.NewApplication()
@@ -41,6 +48,8 @@ func New(games []game.Variant) *Display {
 		defaultBgColor:        tcell.ColorDefault,
 		selectedBgColor:       tcell.ColorRed,
 	}
+
+	display.initializePages()
 
 	display.screens["Games"] = display.createGameListPage(games)
 
@@ -58,7 +67,19 @@ func (display *Display) Run() error {
 
 // Show - show the named screen.
 func (display *Display) Show(name string) {
-	display.App.SetRoot(display.screens[name], true).EnableMouse(true)
+	// display.App.SetRoot(display.screens[name], true).EnableMouse(true)
+	if screen, exists := display.screens[name]; exists {
+		// Add the screen as a page if it doesn't exist
+		if display.pages.HasPage(name) {
+			display.pages.RemovePage(name)
+		}
+
+		display.pages.AddPage(name, screen, true, true)
+
+		// Switch to the page
+		display.pages.SwitchToPage(name)
+		display.App.EnableMouse(true)
+	}
 }
 
 // SetGameSelectedCallback - set the callback for when a game is selected

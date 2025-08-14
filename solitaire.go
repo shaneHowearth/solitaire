@@ -1,8 +1,6 @@
 package solitaire
 
 import (
-	"log"
-
 	"github.com/shanehowearth/solitaire/game"
 	"github.com/shanehowearth/solitaire/screen"
 	"github.com/shanehowearth/solitaire/screen/tui"
@@ -114,7 +112,8 @@ func (instance *Instance) onComponentSelected(
 	instance.updateDisplay()
 
 	if instance.Game.HasWon(instance.Tableau, instance.Foundations) {
-		log.Print("WINNER")
+		// TODO: Add a score to display.
+		instance.Display.ShowWinnerModal(instance.Game.Name(), 100)
 	}
 
 }

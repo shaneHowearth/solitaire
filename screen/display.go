@@ -30,4 +30,7 @@ type Display interface {
 	GetSelectedComponent() (state.StackType, int)
 	ClearSelection()
 	HasSelection() bool
+
+	// Winner modal
+	ShowWinnerModal(string, int)
 }
