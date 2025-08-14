@@ -18,6 +18,8 @@ that can be moved will be moved.
 
 Happy Playing.
 
+![gameplay](gameplay.gif)
+
 # Build.
 Clone the source locally, and run:
 ```
