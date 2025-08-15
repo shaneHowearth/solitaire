@@ -13,7 +13,7 @@ type Display interface {
 	// Game selection.
 	SetGameSelectedCallback(callback func(game.Variant))
 
-	// Component selection callback
+	// Component selection callback.
 	SetComponentSelectedCallback(callback func(state.StackType, int, state.StackType, int))
 
 	// Board creation.
@@ -31,6 +31,6 @@ type Display interface {
 	ClearSelection()
 	HasSelection() bool
 
-	// Winner modal
+	// Winner modal.
 	ShowWinnerModal(string, int)
 }

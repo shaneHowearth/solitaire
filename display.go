@@ -4,14 +4,14 @@ import (
 	"fmt"
 )
 
-// createGamePage - create the game board page dynamically
+// createGamePage - create the game board page dynamically.
 func (instance *Instance) createGamePage() {
 	// Create the board that will be displayed.
 	tableauHeight, tableauWidth := instance.Game.TableauGridSize()
 	foundationCount, foundationBase, _ := instance.Game.Foundations()
 	howTo := instance.Game.HowToPlay()
 
-	// Create the board layout
+	// Create the board layout.
 	instance.Display.CreateBoard(
 		instance.Game.Name(),
 		tableauHeight,
@@ -21,13 +21,12 @@ func (instance *Instance) createGamePage() {
 		howTo,
 	)
 
-	// Update the display with current game state
+	// Update the display with current game state.
 	instance.updateDisplay()
 }
 
-// updateDisplay - update the display with current game state
+// updateDisplay - update the display with current game state.
 func (instance *Instance) updateDisplay() {
-
 	// Tell the board what to display in each box.
 	for idx := range instance.Foundations {
 		// Set the foundation title.

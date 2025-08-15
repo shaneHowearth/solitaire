@@ -86,10 +86,11 @@ func (*Klondike) HasWon(tableaus []*state.Tableau, foundations []*state.Foundati
 			return false
 		}
 	}
+
 	return true
 }
 
-// MaxRedeals - how many redeals are allowed
+// MaxRedeals - how many redeals are allowed.
 func (*Klondike) MaxRedeals() int {
 	// Allow an unlimited number of redeals.
 	return -1

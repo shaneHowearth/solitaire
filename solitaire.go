@@ -27,7 +27,7 @@ type Instance struct {
 	Talon       *state.Talon
 	Deck        *state.Deck
 
-	// Track first selection for move operations
+	// Track first selection for move operations.
 	firstSelection     bool
 	firstComponentType state.StackType
 	firstIndex         int
@@ -52,7 +52,7 @@ func (instance *Instance) Start() error {
 
 	instance.Display.SetGameSelectedCallback(instance.onGameSelected)
 
-	// Set up component selection callback
+	// Set up component selection callback.
 	if tuiDisplay, ok := instance.Display.(*tui.Display); ok {
 		tuiDisplay.SetComponentSelectedCallback(instance.onComponentSelected)
 	}
@@ -66,13 +66,13 @@ func (instance *Instance) Start() error {
 func (instance *Instance) onGameSelected(selectedGame game.Variant) {
 	instance.Game = selectedGame
 
-	// Create and set up the game state
+	// Create and set up the game state.
 	instance.setupGameState()
 
-	// Create the game board page dynamically
+	// Create the game board page dynamically.
 	instance.createGamePage()
 
-	// Switch to the game page
+	// Switch to the game page.
 	instance.Display.Show(instance.Game.Name())
 }
 
@@ -82,7 +82,6 @@ func (instance *Instance) onComponentSelected(
 	fromComponentType state.StackType, fromIndex int,
 	toComponentType state.StackType, toIndex int,
 ) {
-
 	if fromComponentType == toComponentType && fromIndex == toIndex {
 		// Nothing to do.
 		return
@@ -124,10 +123,9 @@ func (instance *Instance) onComponentSelected(
 		// TODO: Add a score to display.
 		instance.Display.ShowWinnerModal(instance.Game.Name(), 100)
 	}
-
 }
 
-// dealCards - deal cards to tableau
+// dealCards - deal cards to tableau.
 func (instance *Instance) dealCards() {
 	// Shuffle the cards.
 	instance.Deck.Shuffle()
@@ -166,12 +164,8 @@ func (instance *Instance) dealCards() {
 	instance.Talon.Waste.Add(card, true)
 
 	// Put the rest of the cards onto the talon.
-	for {
-		if instance.Deck.Len() == 0 {
-			break
-		}
+	for instance.Deck.Len() != 0 {
 		card := instance.Deck.Deal()
 		instance.Talon.Stock.Add(card, false)
 	}
-
 }

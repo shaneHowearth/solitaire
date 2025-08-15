@@ -39,11 +39,11 @@ func (display *Display) GetSelected() game.Variant {
 	return display.Selected
 }
 
-// onGameSelected - handle game selection
+// onGameSelected - handle game selection.
 func (display *Display) onGameSelected(selectedGame game.Variant) {
 	display.Selected = selectedGame
 
-	// Call the callback if set
+	// Call the callback if set.
 	if display.gameSelectedCallback != nil {
 		display.gameSelectedCallback(selectedGame)
 	}

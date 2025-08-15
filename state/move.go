@@ -104,7 +104,9 @@ func (stack *Stack) Move(destination *Stack, maxRedeals int) bool {
 	if stack.Type == StackWaste && destination.Type == StackTalon {
 		if destination.Received < maxRedeals || maxRedeals == -1 {
 			canMove = true
+
 			slices.Reverse(*temp.cards)
+
 			destination.Received++
 		} else {
 			canMove = false
@@ -125,10 +127,14 @@ func (stack *Stack) Move(destination *Stack, maxRedeals int) bool {
 			stackTop, _ := stack.Top()
 			if stackTop.Rank == top.Rank && stackTop.Suit == top.Suit {
 				log.Printf("Got same card %v %v", stackTop, top)
+
 				stack.Rule = savedRule
+
 				break
 			}
+
 			stack.Add(top, true)
+
 			_, _ = temp.Deal()
 		}
 	} else {
@@ -154,6 +160,7 @@ func (stack *Stack) Move(destination *Stack, maxRedeals int) bool {
 			if err != nil {
 				return true
 			}
+
 			_, _ = stack.Deal()
 			stack.Add(newTop, true)
 		}

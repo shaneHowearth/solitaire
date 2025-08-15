@@ -13,7 +13,7 @@ type Stack struct {
 	Received int // count how many times this stack has received cards.
 }
 
-// StackType represents the type of game component
+// StackType represents the type of game component.
 type StackType int
 
 const (

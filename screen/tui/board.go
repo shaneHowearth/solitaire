@@ -41,7 +41,7 @@ func (display *Display) createGamePage(
 	/// TALON ///
 	/////////////
 	display.stack = make([]*tview.TextView, 1)
-	talonIndex := 0 // There's typically only one talon
+	talonIndex := 0 // There's typically only one talon.
 	talon := tview.NewTextView()
 	talon.SetWordWrap(true).SetBorder(true).SetTitle(" Stock ")
 	talon.SetBackgroundColor(display.defaultBgColor)
@@ -51,6 +51,7 @@ func (display *Display) createGamePage(
 			display.selectComponent(state.StackTalon, talonIndex)
 			return tview.MouseConsumed, nil
 		}
+
 		return action, event
 	})
 
@@ -66,16 +67,18 @@ func (display *Display) createGamePage(
 	display.waste = make([]*tview.TextView, 1)
 	waste := tview.NewTextView()
 
-	wasteIndex := 0 // There's typically only one waste pile
+	wasteIndex := 0 // There's typically only one waste pile.
+
 	waste.SetBorder(true).SetTitle(" Waste ")
 	waste.SetBackgroundColor(display.defaultBgColor)
-	// Add waste selection capability
+	// Add waste selection capability.
 
 	waste.SetMouseCapture(func(action tview.MouseAction, event *tcell.EventMouse) (tview.MouseAction, *tcell.EventMouse) {
 		if action == tview.MouseLeftClick && waste.HasFocus() {
 			display.selectComponent(state.StackWaste, wasteIndex)
 			return tview.MouseConsumed, nil
 		}
+
 		return action, event
 	})
 
@@ -93,15 +96,17 @@ func (display *Display) createGamePage(
 
 		// Add some decorations to the box.
 		foundationIdx := idx
-		foundation.Box.SetBorder(true)
+
+		foundation.SetBorder(true)
 		foundation.SetBackgroundColor(display.defaultBgColor)
 
 		foundation.SetMouseCapture(func(action tview.MouseAction, event *tcell.EventMouse) (tview.MouseAction, *tcell.EventMouse) {
 			if action == tview.MouseLeftClick && foundation.HasFocus() {
 				display.selectComponent(state.StackFoundation, foundationIdx)
-				// Return nil, nil to completely consume the event
+				// Return nil, nil to completely consume the event.
 				return tview.MouseConsumed, nil
 			}
+
 			return action, event
 		})
 
@@ -124,6 +129,7 @@ func (display *Display) createGamePage(
 
 		tableau.SetBorder(true)
 		tableau.SetBackgroundColor(display.defaultBgColor)
+
 		tableauIdx := idx
 		display.tableau[tableauIdx] = tableau
 
@@ -132,6 +138,7 @@ func (display *Display) createGamePage(
 				display.selectComponent(state.StackTableau, tableauIdx)
 				return action, nil
 			}
+
 			return action, event
 		})
 
@@ -139,7 +146,7 @@ func (display *Display) createGamePage(
 		tableauArea.AddItem(tableau, 0, 1, true)
 	}
 
-	// Controls/Help
+	// Controls/Help.
 	controls := tview.NewTextView().
 		SetText("Press 'n' to start a new game, 'm' to return to game menu, Ctrl+C or 'q' to quit").
 		SetTextAlign(tview.AlignCenter)
@@ -167,6 +174,7 @@ func (display *Display) createGamePage(
 			display.App.Stop()
 			return nil
 		}
+
 		return event
 	})
 
@@ -236,64 +244,72 @@ func (display *Display) selectComponent(componentType state.StackType, index int
 	if display.processingClick {
 		return
 	}
+
 	display.processingClick = true
+
 	defer func() {
 		display.processingClick = false
 	}()
 
-	// Validate the selection first
+	// Validate the selection first.
 	var component *tview.TextView
+
 	switch componentType {
 	case state.StackFoundation:
 		if index < 0 || index >= len(display.foundations) || display.foundations[index] == nil {
 			return
 		}
+
 		component = display.foundations[index]
 	case state.StackTableau:
 		if index < 0 || index >= len(display.tableau) || display.tableau[index] == nil {
 			return
 		}
+
 		component = display.tableau[index]
 	case state.StackTalon:
 		if index < 0 || index >= len(display.stack) || display.stack[index] == nil {
 			return
 		}
+
 		component = display.stack[index]
 	case state.StackWaste:
 		if index < 0 || index >= len(display.waste) || display.waste[index] == nil {
 			return
 		}
+
 		component = display.waste[index]
 	default:
 		return
 	}
 
-	// Clear previous selection
+	// Clear previous selection.
 	if display.selectedIndex != -1 {
 		// Tell the controller.
 		display.componentSelectedCallback(display.selectedComponentType, display.selectedIndex, componentType, index)
 
 		display.clearCurrentSelection()
 	} else {
-		// Set the new selection
+		// Set the new selection.
 		display.selectedComponentType = componentType
 		display.selectedIndex = index
 		component.SetBackgroundColor(display.selectedBgColor)
 
 		// Update the display (use a different goroutine to prevent a lockup).
 		go func() {
-			display.App.Draw() // Call from a goroutine to avoid blocking
+			display.App.Draw() // Call from a goroutine to avoid blocking.
 		}()
 	}
 }
 
-// clearCurrentSelection - helper to clear the current selection
+// clearCurrentSelection - helper to clear the current selection.
 func (display *Display) clearCurrentSelection() {
 	if display.selectedIndex < 0 {
 		return
 	}
 
 	var component *tview.TextView
+
 	switch display.selectedComponentType {
 	case state.StackFoundation:
 		if display.selectedIndex < len(display.foundations) && display.foundations[display.selectedIndex] != nil {
@@ -320,13 +336,14 @@ func (display *Display) clearCurrentSelection() {
 		component.SetBackgroundColor(display.defaultBgColor)
 		display.selectedComponentType = -1
 		display.selectedIndex = -1
+
 		go func() {
-			display.App.Draw() // Call from a goroutine to avoid blocking
+			display.App.Draw() // Call from a goroutine to avoid blocking.
 		}()
 	}
 }
 
-// getComponentName - helper to get component name for display
+// getComponentName - helper to get component name for display.
 func (display *Display) getComponentName(componentType state.StackType) string {
 	switch componentType {
 	case state.StackFoundation:
@@ -342,12 +359,12 @@ func (display *Display) getComponentName(componentType state.StackType) string {
 	}
 }
 
-// GetSelectedComponent - get the currently selected component type and index
+// GetSelectedComponent - get the currently selected component type and index.
 func (display *Display) GetSelectedComponent() (state.StackType, int) {
 	return display.selectedComponentType, display.selectedIndex
 }
 
-// ClearSelection - clear the current selection
+// ClearSelection - clear the current selection.
 func (display *Display) ClearSelection() {
 	display.App.QueueUpdate(func() {
 		display.clearCurrentSelection()
@@ -355,7 +372,7 @@ func (display *Display) ClearSelection() {
 	})
 }
 
-// HasSelection - check if there's currently a selection
+// HasSelection - check if there's currently a selection.
 func (display *Display) HasSelection() bool {
 	return display.selectedIndex >= 0
 }
