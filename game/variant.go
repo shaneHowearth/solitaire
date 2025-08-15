@@ -56,4 +56,8 @@ type Variant interface {
 
 	// HasWon - Checks if the Game has been Won.
 	HasWon([]*state.Tableau, []*state.Foundation) bool
+
+	// MaxRedeals - Rule for how many times the stock can be dealt back to the
+	// talon/stock -1 inidcates unlimited.
+	MaxRedeals() int
 }

@@ -82,9 +82,15 @@ func (*Klondike) HowToPlay() []string {
 // HasWon - How to tell if the game has been won.
 func (*Klondike) HasWon(tableaus []*state.Tableau, foundations []*state.Foundation) bool {
 	for _, foundation := range foundations {
-		if foundation.Len() != 13 {
+		if foundation.Len() != state.RankCount {
 			return false
 		}
 	}
 	return true
+}
+
+// MaxRedeals - how many redeals are allowed
+func (*Klondike) MaxRedeals() int {
+	// Allow an unlimited number of redeals.
+	return -1
 }

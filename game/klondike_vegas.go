@@ -2,44 +2,44 @@ package game
 
 import "github.com/shanehowearth/solitaire/state"
 
-// Klondike2 - https://en.wikipedia.org/wiki/Klondike2_(solitaire)
-type Klondike2 struct{}
+// KlondikeVegas - https://en.wikipedia.org/wiki/Klondike2_(solitaire)
+type KlondikeVegas struct{}
 
-// Ensure that Klondike2 implements game.Variant.
-var _ Variant = (*Klondike2)(nil)
+// Ensure that KlondikeVegas implements game.Variant.
+var _ Variant = (*KlondikeVegas)(nil)
 
 // Name - name of the variant.
-func (*Klondike2) Name() string {
-	return "Klondike2"
+func (*KlondikeVegas) Name() string {
+	return "Klondike (Vegas style)"
 }
 
-// TableauGridSize - The size of the grid required by klondike2.
-func (*Klondike2) TableauGridSize() (int, int) {
+// TableauGridSize - The size of the grid required by klondikeVegas.
+func (*KlondikeVegas) TableauGridSize() (int, int) {
 	const height = 1
 
-	return height, numKlondike2Tableau
+	return height, numKlondikeVegasTableau
 }
 
-// Decks - How many decks of cards are required to play klondike2.
-func (*Klondike2) Decks() int {
+// Decks - How many decks of cards are required to play klondikeVegas.
+func (*KlondikeVegas) Decks() int {
 	return 1
 }
 
-const numKlondike2Tableau = 7
+const numKlondikeVegasTableau = 7
 
 // Tableau - how the tableau are defined.
-func (*Klondike2) Tableau() (
+func (*KlondikeVegas) Tableau() (
 	number int,
 	basecard state.Rank,
 	addRule func(*state.Tableau, state.SuitedCard) bool,
 ) {
-	return numKlondike2Tableau, state.King, MinusOneRule
+	return numKlondikeVegasTableau, state.King, MinusOneRule
 }
 
 // TableauPosition - Where does each tableau go in the grid, and what angle (relative to
 // straight up and down) should the tableau be twisted.
 // Tableau and Grid are 0 indexed.
-func (*Klondike2) TableauPosition(tableauNumber int) (int, int, int) {
+func (*KlondikeVegas) TableauPosition(tableauNumber int) (int, int, int) {
 	const x = 0
 
 	const angle = 0
@@ -48,7 +48,7 @@ func (*Klondike2) TableauPosition(tableauNumber int) (int, int, int) {
 }
 
 // Foundations - how the foundations are defined.
-func (*Klondike2) Foundations() (
+func (*KlondikeVegas) Foundations() (
 	number int,
 	basecard state.Rank,
 	addRule func(state.Foundation, state.SuitedCard) bool,
@@ -61,13 +61,13 @@ func (*Klondike2) Foundations() (
 // number of cards going into the first tableau, the second will be how many
 // cards are visible in that tableau. The third and fourth ints will apply
 // to the second tableau, etc.
-func (*Klondike2) SetupDealCardCounts() []int {
+func (*KlondikeVegas) SetupDealCardCounts() []int {
 	//nolint:revive // Ignore the constant complaint.
 	return []int{1, 1, 2, 1, 3, 1, 4, 1, 5, 1, 6, 1, 7, 1}
 }
 
 // HowToPlay - Tell the player how to play the game.
-func (*Klondike2) HowToPlay() []string {
+func (*KlondikeVegas) HowToPlay() []string {
 	lines := []string{
 		`The four foundations (rectangles in the upper right of the board) are
 		built up by suit from Ace (low in this game) to King, and the tableau
@@ -84,6 +84,17 @@ func (*Klondike2) HowToPlay() []string {
 }
 
 // HasWon - How to tell if the game has been won.
-func (*Klondike2) HasWon(_ []*state.Tableau, _ []*state.Foundation) bool {
+func (*KlondikeVegas) HasWon(_ []*state.Tableau, foundations []*state.Foundation) bool {
+	for idx := range foundations {
+		if foundations[idx].Len() != state.RankCount {
+			return false
+		}
+	}
+
 	return true
+}
+
+func (*KlondikeVegas) MaxRedeals() int {
+	// Never allowed to redeal.
+	return 0
 }
