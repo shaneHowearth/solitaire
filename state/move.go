@@ -49,7 +49,7 @@ func (stack *Stack) Move(destination *Stack, maxRedeals int) bool {
 	// Can we move multiple cards?
 	// Temporary stack that will hold cards that will be moved.
 	temp := NewStack(
-		15,
+		stack.Len(),
 		func(SuitedCard) bool { return true },
 		StackUndefined,
 	)

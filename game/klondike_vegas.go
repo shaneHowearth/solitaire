@@ -94,6 +94,8 @@ func (*KlondikeVegas) HasWon(_ []*state.Tableau, foundations []*state.Foundation
 	return true
 }
 
+// MaxRedeals - This is the maximum number of times that the stock can be
+// refreshed from the waste.
 func (*KlondikeVegas) MaxRedeals() int {
 	// Never allowed to redeal.
 	return 0

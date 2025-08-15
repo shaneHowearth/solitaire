@@ -28,9 +28,8 @@ type Instance struct {
 	Deck        *state.Deck
 
 	// Track first selection for move operations.
-	firstSelection     bool
-	firstComponentType state.StackType
-	firstIndex         int
+	firstSelection bool
+	firstIndex     int
 }
 
 // New - create a new instance.
@@ -121,7 +120,8 @@ func (instance *Instance) onComponentSelected(
 
 	if instance.Game.HasWon(instance.Tableau, instance.Foundations) {
 		// TODO: Add a score to display.
-		instance.Display.ShowWinnerModal(instance.Game.Name(), 100)
+		const score = 100
+		instance.Display.ShowWinnerModal(instance.Game.Name(), score)
 	}
 }
 

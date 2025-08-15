@@ -81,7 +81,7 @@ func (*Klondike) HowToPlay() []string {
 }
 
 // HasWon - How to tell if the game has been won.
-func (*Klondike) HasWon(tableaus []*state.Tableau, foundations []*state.Foundation) bool {
+func (*Klondike) HasWon(_ []*state.Tableau, foundations []*state.Foundation) bool {
 	for _, foundation := range foundations {
 		if foundation.Len() != state.RankCount {
 			return false

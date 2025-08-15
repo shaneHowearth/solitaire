@@ -110,12 +110,13 @@ func (display *Display) ShowWinnerModal(gameName string, score int) {
 	display.pages.AddPage("winner", modalContainer, true, true)
 }
 
-// Helper functions for modal buttons.
+// StartNewGame - Start a new game.
 func (display *Display) StartNewGame() {
 	display.onGameSelected(display.Selected)
 	display.pages.RemovePage("winner")
 }
 
+// ShowGameMenu - Show the menu of games.
 func (display *Display) ShowGameMenu() {
 	display.Show("Games")
 	display.pages.RemovePage("winner")

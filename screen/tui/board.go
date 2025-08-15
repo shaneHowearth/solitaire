@@ -1,5 +1,3 @@
-// than as named constants.
-//
 //nolint:mnd // Small numeric literals for UI positioning are clearer inline
 package tui
 
@@ -27,7 +25,7 @@ func (display *Display) CreateBoard(
 func (display *Display) createGamePage(
 	name string,
 	tableauHeight, tableauWidth, foundationCount int,
-	foundationBase state.Rank,
+	_ state.Rank,
 	howTo []string,
 ) tview.Primitive {
 	mainRows := tview.NewFlex().SetDirection(tview.FlexRow)
@@ -40,9 +38,9 @@ func (display *Display) createGamePage(
 
 	foundationsRow := tview.NewFlex().SetDirection(tview.FlexColumn)
 
-	/////////////
-	/// TALON ///
-	/////////////
+	// #########
+	// # TALON #
+	// #########
 	display.stack = make([]*tview.TextView, 1)
 	talonIndex := 0 // There's typically only one talon.
 	talon := tview.NewTextView()
@@ -64,9 +62,9 @@ func (display *Display) createGamePage(
 		talon, 0, 1, true,
 	)
 
-	/////////////
-	/// WASTE ///
-	/////////////
+	// #########
+	// # WASTE #
+	// #########
 	display.waste = make([]*tview.TextView, 1)
 	waste := tview.NewTextView()
 
@@ -89,9 +87,9 @@ func (display *Display) createGamePage(
 	foundationsRow.AddItem(waste, 0, 1, true)
 
 	// Add a box for each foundation.
-	///////////////////
-	/// FOUNDATIONS ///
-	///////////////////
+	// ###############
+	// # FOUNDATIONS #
+	// ###############
 	display.foundations = make([]*tview.TextView, foundationCount)
 
 	for idx := 0; idx < foundationCount; idx++ {
@@ -122,10 +120,9 @@ func (display *Display) createGamePage(
 		)
 	}
 
-	// The tableau.
-	////////////////
-	/// TABLEAUS ///
-	////////////////
+	// ############
+	// # TABLEAUS #
+	// ############
 	tableauArea := tview.NewFlex().SetDirection(tview.FlexColumn)
 	display.tableau = make([]*tview.TextView, tableauHeight*tableauWidth)
 
@@ -347,22 +344,6 @@ func (display *Display) clearCurrentSelection() {
 		go func() {
 			display.App.Draw() // Call from a goroutine to avoid blocking.
 		}()
-	}
-}
-
-// getComponentName - helper to get component name for display.
-func (display *Display) getComponentName(componentType state.StackType) string {
-	switch componentType {
-	case state.StackFoundation:
-		return "foundation"
-	case state.StackTableau:
-		return "tableau"
-	case state.StackTalon:
-		return "talon"
-	case state.StackWaste:
-		return "waste"
-	default:
-		return "component"
 	}
 }
 

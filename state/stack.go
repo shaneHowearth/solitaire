@@ -17,10 +17,15 @@ type Stack struct {
 type StackType int
 
 const (
+	// StackUndefined - Undefined Stock type.
 	StackUndefined StackType = iota
+	// StackFoundation - Foundations.
 	StackFoundation
+	// StackTableau - Tableau.
 	StackTableau
+	// StackTalon - Talon, or Stock.
 	StackTalon
+	// StackWaste - Waste.
 	StackWaste
 )
 
