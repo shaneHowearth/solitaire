@@ -21,7 +21,11 @@ func Test_Add(t *testing.T) {
 	}
 	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {
-			stack := state.NewStack(testcase.Number, func(state.SuitedCard) bool { return true })
+			stack := state.NewStack(
+				testcase.Number,
+				func(state.SuitedCard) bool { return true },
+				state.StackUndefined,
+			)
 
 			for x := 1; x <= testcase.Number; x++ {
 				card := shuffledDeck.Deal()
@@ -41,7 +45,12 @@ func Test_Add(t *testing.T) {
 }
 
 func Test_Move(t *testing.T) {
-	source := state.NewStack(4, func(state.SuitedCard) bool { return true })
+	source := state.NewStack(
+		4,
+		func(state.SuitedCard) bool { return true },
+		state.StackUndefined,
+	)
+
 	standardDeck := state.CreateDecks(1)
 
 	for idx := 0; idx < 10; idx++ {
@@ -62,16 +71,24 @@ func Test_Move(t *testing.T) {
 			output:           false,
 		},
 		"Move to an empty stack where the rule allows the move": {
-			number:           1,
-			sourceStack:      source,
-			destinationStack: state.NewStack(0, func(state.SuitedCard) bool { return true }),
-			output:           true,
+			number:      1,
+			sourceStack: source,
+			destinationStack: state.NewStack(
+				0,
+				func(state.SuitedCard) bool { return true },
+				state.StackUndefined,
+			),
+			output: true,
 		},
 		"Move to an empty stack where the rule denies the move": {
-			number:           1,
-			sourceStack:      source,
-			destinationStack: state.NewStack(0, func(state.SuitedCard) bool { return false }),
-			output:           false,
+			number:      1,
+			sourceStack: source,
+			destinationStack: state.NewStack(
+				0,
+				func(state.SuitedCard) bool { return true },
+				state.StackUndefined,
+			),
+			output: false,
 		},
 		// Waste to Empty Foundation.
 		// Waste to partially filled Foundation.
@@ -82,7 +99,7 @@ func Test_Move(t *testing.T) {
 	}
 	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {
-			output := testcase.sourceStack.Move(testcase.number, testcase.destinationStack)
+			output := testcase.sourceStack.Move(testcase.destinationStack, 100)
 			assert.Equalf(t, testcase.output, output, "got %t want %t", output, testcase.output)
 		})
 	}

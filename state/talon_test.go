@@ -120,24 +120,36 @@ func Test_MoveTalon(t *testing.T) {
 		"Waste moves": {
 			WasteCount:      5,
 			FinalWasteCount: 4,
-			Destination:     state.NewStack(5, func(state.SuitedCard) bool { return true }),
-			Output:          true,
-			Rule:            func(state.SuitedCard) bool { return true },
+			Destination: state.NewStack(
+				5,
+				func(state.SuitedCard) bool { return true },
+				state.StackUndefined,
+			),
+			Output: true,
+			Rule:   func(state.SuitedCard) bool { return true },
 		},
 
 		"Waste doesn't move": {
 			WasteCount:      5,
 			FinalWasteCount: 5,
-			Destination:     state.NewStack(5, func(state.SuitedCard) bool { return false }),
-			Output:          false,
-			Rule:            func(state.SuitedCard) bool { return true },
+			Destination: state.NewStack(
+				5,
+				func(state.SuitedCard) bool { return true },
+				state.StackUndefined,
+			),
+			Output: false,
+			Rule:   func(state.SuitedCard) bool { return true },
 		},
 		"Waste is empty": {
 			WasteCount:      0,
 			FinalWasteCount: 0,
-			Destination:     state.NewStack(5, func(state.SuitedCard) bool { return false }),
-			Output:          false,
-			Rule:            func(state.SuitedCard) bool { return true },
+			Destination: state.NewStack(
+				5,
+				func(state.SuitedCard) bool { return true },
+				state.StackUndefined,
+			),
+			Output: false,
+			Rule:   func(state.SuitedCard) bool { return true },
 		},
 		"No destination": {
 			WasteCount:      5,
@@ -158,7 +170,7 @@ func Test_MoveTalon(t *testing.T) {
 				talon.Waste.Add(card, false)
 			}
 
-			output := talon.Move(testcase.Destination)
+			output := talon.Waste.Move(testcase.Destination, 100)
 
 			assert.Equalf(t, testcase.Output, output, "movement gave wrong result got %t want %t", output, testcase.Output)
 			assert.Equalf(t, testcase.FinalWasteCount, talon.Waste.Len(), "")

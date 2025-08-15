@@ -12,6 +12,7 @@ func Test_CreateTableaus(t *testing.T) {
 		WillPanic    bool
 		PanicMessage string
 		Number       int
+		Rank         state.Rank
 		Rule         func(*state.Tableau, state.SuitedCard) bool
 	}{
 		"Zero tableaus": {
@@ -49,6 +50,7 @@ func Test_CreateTableaus(t *testing.T) {
 					func() {
 						state.CreateTableaus(
 							testcase.Number,
+							testcase.Rank,
 							testcase.Rule,
 						)
 					},
@@ -58,6 +60,7 @@ func Test_CreateTableaus(t *testing.T) {
 			if !testcase.WillPanic {
 				tableau := state.CreateTableaus(
 					testcase.Number,
+					testcase.Rank,
 					testcase.Rule,
 				)
 
@@ -82,6 +85,7 @@ func Test_Empty(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			tableaus := state.CreateTableaus(
 				2,
+				state.Ace,
 				func(
 					*state.Tableau,
 					state.SuitedCard,
