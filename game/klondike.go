@@ -75,6 +75,7 @@ func (*Klondike) HowToPlay() []string {
 		`Every face-up card in a partial pile, or a complete pile, can be moved, as a unit, to another tableau pile on the basis of what can be moved onto that other pile. Any empty piles can be filled with a King, or a pile of cards with a King.
 `,
 		`The aim of the game is to build up four stacks of cards starting with Ace and ending with King all of the same suit, on one of the four foundations, at which time the player would have won.`,
+		`There are unlimited redeals available in this style of Klondike.`,
 	}
 
 	return lines
