@@ -1,6 +1,8 @@
 package solitaire
 
 import (
+	"fmt"
+
 	"github.com/shanehowearth/solitaire/game"
 	"github.com/shanehowearth/solitaire/screen"
 	"github.com/shanehowearth/solitaire/screen/tui"
@@ -96,6 +98,8 @@ func (instance *Instance) onComponentSelected(
 		fromStack = instance.Talon.Stock
 	case state.StackWaste:
 		fromStack = instance.Talon.Waste
+	default:
+		panic(fmt.Sprintf("Got impossible fromComponentType %d", fromComponentType))
 	}
 
 	var toStack *state.Stack
@@ -108,6 +112,8 @@ func (instance *Instance) onComponentSelected(
 		toStack = instance.Talon.Stock
 	case state.StackWaste:
 		toStack = instance.Talon.Waste
+	default:
+		panic(fmt.Sprintf("Got impossible toComponentType %d", toComponentType))
 	}
 
 	fromStack.Move(toStack, instance.Game.MaxRedeals())

@@ -311,6 +311,9 @@ func (display *Display) clearCurrentSelection() {
 		if display.selectedIndex < len(display.waste) && display.waste[display.selectedIndex] != nil {
 			component = display.waste[display.selectedIndex]
 		}
+	default:
+		// Shouldn't be here.
+		panic(fmt.Sprintf("Bad component type received %d", display.selectedComponentType))
 	}
 
 	if component != nil {
