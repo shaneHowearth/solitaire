@@ -46,6 +46,7 @@ func (instance *Instance) Start() error {
 	variants := []game.Variant{}
 	variants = append(variants, &game.Klondike{})
 	variants = append(variants, &game.KlondikeVegas{})
+	variants = append(variants, &game.Acme{})
 
 	instance.Display = tui.New(variants)
 
