@@ -97,7 +97,7 @@ func (stack *Stack) Move(destination *Stack) bool {
 		}
 
 		// Only tableau or talon can have more than 1 cards moved at once.
-		if stack.Type != StackTableau && destination.Type != StackTalon {
+		if destination.Type != StackTableau && destination.Type != StackTalon {
 			break
 		}
 	}
