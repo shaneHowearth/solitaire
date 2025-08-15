@@ -103,6 +103,8 @@ func (instance *Instance) onComponentSelected(
 		toStack = instance.Foundations[toIndex].Stack
 	case state.StackTableau:
 		toStack = instance.Tableau[toIndex].Stack
+	case state.StackTalon:
+		toStack = instance.Talon.Stock
 	case state.StackWaste:
 		toStack = instance.Talon.Waste
 	}
