@@ -35,9 +35,8 @@ func (stack *Stack) Deal() (SuitedCard, error) {
 	return card, nil
 }
 
-// Move - Move card(s) on the tableau stack to the nominated pile (foundation or
-// tableau).
-func (stack *Stack) Move(destination *Stack) bool {
+// Move - Move card(s) from one stack to another.
+func (stack *Stack) Move(destination *Stack, maxRedeals int) bool {
 	if destination == nil {
 		return false
 	}
@@ -103,8 +102,13 @@ func (stack *Stack) Move(destination *Stack) bool {
 	}
 
 	if stack.Type == StackWaste && destination.Type == StackTalon {
-		canMove = true
-		slices.Reverse(*temp.cards)
+		if destination.Received < maxRedeals || maxRedeals == -1 {
+			canMove = true
+			slices.Reverse(*temp.cards)
+			destination.Received++
+		} else {
+			canMove = false
+		}
 	}
 
 	if !canMove {

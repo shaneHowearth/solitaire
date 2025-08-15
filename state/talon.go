@@ -89,9 +89,3 @@ func (talon *Talon) Deal() bool {
 func (talon *Talon) Top() (SuitedCard, error) {
 	return talon.Waste.Top()
 }
-
-// Move - Move the top card on the waste stack to the nominated pile
-// (foundation or tableau).
-func (talon *Talon) Move(destination *Stack) bool {
-	return talon.Waste.Move(destination)
-}

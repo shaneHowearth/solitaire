@@ -7,9 +7,10 @@ import (
 // Stack - A stack of cards one on top of the other and squared such that only
 // the topmost card, whether face up or face down is visible.[5]
 type Stack struct {
-	cards *[]SuitedCard
-	Rule  func(SuitedCard) bool
-	Type  StackType
+	cards    *[]SuitedCard
+	Rule     func(SuitedCard) bool
+	Type     StackType
+	Received int // count how many times this stack has received cards.
 }
 
 // StackType represents the type of game component

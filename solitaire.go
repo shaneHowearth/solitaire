@@ -110,7 +110,7 @@ func (instance *Instance) onComponentSelected(
 		toStack = instance.Talon.Waste
 	}
 
-	fromStack.Move(toStack)
+	fromStack.Move(toStack, instance.Game.MaxRedeals())
 
 	instance.updateDisplay()
 
