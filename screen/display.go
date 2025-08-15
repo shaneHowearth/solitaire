@@ -17,7 +17,12 @@ type Display interface {
 	SetComponentSelectedCallback(callback func(state.StackType, int, state.StackType, int))
 
 	// Board creation.
-	CreateBoard(name string, tableauHeight, tableauWidth, foundationCount int, foundationBase state.Rank, howToPlay []string)
+	CreateBoard(
+		name string,
+		tableauHeight, tableauWidth, foundationCount int,
+		foundationBase state.Rank,
+		howToPlay []string,
+	)
 
 	// Display updates.
 	FoundationTitle(num int, value string)

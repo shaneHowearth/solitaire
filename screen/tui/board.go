@@ -100,15 +100,17 @@ func (display *Display) createGamePage(
 		foundation.SetBorder(true)
 		foundation.SetBackgroundColor(display.defaultBgColor)
 
-		foundation.SetMouseCapture(func(action tview.MouseAction, event *tcell.EventMouse) (tview.MouseAction, *tcell.EventMouse) {
-			if action == tview.MouseLeftClick && foundation.HasFocus() {
-				display.selectComponent(state.StackFoundation, foundationIdx)
-				// Return nil, nil to completely consume the event.
-				return tview.MouseConsumed, nil
-			}
+		foundation.SetMouseCapture(
+			func(action tview.MouseAction, event *tcell.EventMouse) (
+				tview.MouseAction, *tcell.EventMouse) {
+				if action == tview.MouseLeftClick && foundation.HasFocus() {
+					display.selectComponent(state.StackFoundation, foundationIdx)
+					// Return nil, nil to completely consume the event.
+					return tview.MouseConsumed, nil
+				}
 
-			return action, event
-		})
+				return action, event
+			})
 
 		display.foundations[foundationIdx] = foundation
 
@@ -133,14 +135,16 @@ func (display *Display) createGamePage(
 		tableauIdx := idx
 		display.tableau[tableauIdx] = tableau
 
-		tableau.SetMouseCapture(func(action tview.MouseAction, event *tcell.EventMouse) (tview.MouseAction, *tcell.EventMouse) {
-			if action == tview.MouseLeftClick && tableau.HasFocus() {
-				display.selectComponent(state.StackTableau, tableauIdx)
-				return action, nil
-			}
+		tableau.SetMouseCapture(
+			func(action tview.MouseAction, event *tcell.EventMouse) (
+				tview.MouseAction, *tcell.EventMouse) {
+				if action == tview.MouseLeftClick && tableau.HasFocus() {
+					display.selectComponent(state.StackTableau, tableauIdx)
+					return action, nil
+				}
 
-			return action, event
-		})
+				return action, event
+			})
 
 		// Add the row to the tableau.
 		tableauArea.AddItem(tableau, 0, 1, true)

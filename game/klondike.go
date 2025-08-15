@@ -68,6 +68,7 @@ func (*Klondike) SetupDealCardCounts() []int {
 
 // HowToPlay - Tell the player how to play the game.
 func (*Klondike) HowToPlay() []string {
+	//nolint:lll // Long line needed to preserve readability of game rules text.
 	lines := []string{
 		`The four foundations (rectangles in the upper right of the board) are built up by suit from Ace (low in this game) to King, and the tableau piles can be built down by alternate colors.
 `,
