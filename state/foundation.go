@@ -48,18 +48,6 @@ func CreateFoundations(number int, base Rank, rule func(Foundation, SuitedCard) 
 	return foundations
 }
 
-// Full - the foundation is full.
-func (foundation Foundation) Full() bool {
-	return foundation.Len() == RankCount
-}
-
-// Add - Add a card to the foundation.
-func (foundation Foundation) Add(card SuitedCard, visible bool) {
-	if foundation.Stack.Rule(card) {
-		foundation.Stack.Add(card, visible)
-	}
-}
-
 // Len - the length of the stack inside the foundation.
 func (foundation Foundation) Len() int {
 	return foundation.Stack.Len()

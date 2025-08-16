@@ -148,12 +148,12 @@ func (instance *Instance) dealCards() {
 
 		for dealIdx := 0; dealIdx < numCards-numOpen; dealIdx++ {
 			card := instance.Deck.Deal()
-			instance.Tableau[idx].Add(card, false)
+			instance.Tableau[idx].Stack.Add(card, false)
 		}
 
 		for openIdx := 0; openIdx < numOpen; openIdx++ {
 			card := instance.Deck.Deal()
-			instance.Tableau[idx].Add(card, true)
+			instance.Tableau[idx].Stack.Add(card, true)
 		}
 
 		// Return the rule to its correct state.
