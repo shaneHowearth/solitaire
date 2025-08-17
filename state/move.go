@@ -71,6 +71,7 @@ func (stack *Stack) Move(destination *Stack, maxRedeals int) bool {
 		}
 	}
 
+	// This loop attempts to find the group of cards that may be moved.
 	for {
 		top, err := stack.Top()
 		if err != nil {
@@ -97,6 +98,11 @@ func (stack *Stack) Move(destination *Stack, maxRedeals int) bool {
 
 		// Only tableau or talon can have more than 1 cards moved at once.
 		if destination.Type != StackTableau && destination.Type != StackTalon {
+			break
+		}
+
+		// The waste can only move multiple cards to the Talon.
+		if stack.Type == StackWaste && destination.Type != StackTalon {
 			break
 		}
 	}
