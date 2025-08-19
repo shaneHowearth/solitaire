@@ -64,7 +64,7 @@ func (stack *Stack) Move(destination *Stack, maxRedeals int) bool {
 		}
 
 		// Stock can only be given cards from the Deck (first deal) or the
-		// Stock. As the Deck isn't typed, we'll exclude the foundation and
+		// Waste. As the Deck isn't typed, we'll exclude the foundation and
 		// tableau from being able to add to the stock.
 		if stack.Type == StackFoundation || stack.Type == StackTableau {
 			return false
@@ -105,6 +105,11 @@ func (stack *Stack) Move(destination *Stack, maxRedeals int) bool {
 		if stack.Type == StackWaste && destination.Type != StackTalon {
 			break
 		}
+
+		// The Talon can never move multiple cards.
+		if stack.Type == StackTalon {
+			break
+		}
 	}
 
 	if stack.Type == StackWaste && destination.Type == StackTalon {
@@ -139,7 +144,11 @@ func (stack *Stack) Move(destination *Stack, maxRedeals int) bool {
 				break
 			}
 
-			stack.Add(top, true)
+			if stack.Type == StackTalon {
+				stack.Add(top, false)
+			} else {
+				stack.Add(top, true)
+			}
 
 			_, _ = temp.Deal()
 		}
