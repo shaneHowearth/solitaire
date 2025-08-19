@@ -53,9 +53,7 @@ func (instance *Instance) Start() error {
 	instance.Display.SetGameSelectedCallback(instance.onGameSelected)
 
 	// Set up component selection callback.
-	if tuiDisplay, ok := instance.Display.(*tui.Display); ok {
-		tuiDisplay.SetComponentSelectedCallback(instance.onComponentSelected)
-	}
+	instance.Display.SetComponentSelectedCallback(instance.onComponentSelected)
 
 	// Show the list of games available to play.
 	instance.Display.Show("Games")
