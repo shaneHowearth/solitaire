@@ -12,8 +12,7 @@ func (*Acme) Name() string {
 	return "Acme"
 }
 
-// numAcmeTableau - Strictly speaking there are 4 tableau and one depot for
-// Acme.
+// numAcmeTableau - Number of Tableau used for Acme.
 const numAcmeTableau = 5
 
 // TableauGridSize - The size of the grid required by acme.
@@ -26,6 +25,15 @@ func (*Acme) TableauGridSize() (int, int) {
 // Decks - How many decks of cards are required to play acme.
 func (*Acme) Decks() int {
 	return 1
+}
+
+// Reserves - how the reserves are defined.
+func (*Acme) Reserves() (
+	number int,
+	addRule func(state.Reserve, state.SuitedCard) bool,
+) {
+	const reserveCount = 1
+	return reserveCount, func(state.Reserve, state.SuitedCard) bool { return false }
 }
 
 // Tableau - how the tableau are defined.

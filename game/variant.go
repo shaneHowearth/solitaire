@@ -5,15 +5,18 @@ import "github.com/shanehowearth/solitaire/state"
 // Variant - The variant of solitaire being defined.
 type Variant interface {
 	// Name of the Variant.
+	// This name is what is displayed to the user.
 	Name() string
-
-	// TableauGridSize - How big is the grid that the tableau needs.
-	TableauGridSize() (height, width int)
 
 	// Decks - How many decks of cards are required to play the variant.
 	Decks() int
 
-	// Tableau.
+	// Tableau - An arrangement of cards on the table, typically comprising
+	// several depots i.e. places where columns of overlapping cards may be
+	// formed, the packing taking place on the available cards on the columns.
+	// It is thus distinct from a layout, reserve, talon or wastepile.[2] The
+	// main part of the layout on the table.[9] Sometimes equated, confusingly,
+	// to layout. https://en.wikipedia.org/wiki/Glossary_of_patience_terms#tableau
 	Tableau() (
 		number int,
 		base state.Rank,
@@ -22,6 +25,9 @@ type Variant interface {
 			state.SuitedCard,
 		) bool,
 	)
+
+	// TableauGridSize - How big is the grid that the tableau needs.
+	TableauGridSize() (height, width int)
 
 	// TableauPosition - the position of the the tableau.
 	// The number of each tableau is passed to a function that returns the
@@ -33,9 +39,24 @@ type Variant interface {
 		orientation int,
 	)
 
-	// Foundations - how many, what is the first card to go on one if the
-	// tableau is empty, and what rule is to be applied when deciding if a new
-	// card can be added to the tableau.
+	// Reserves - this gives how many reserves are required, and their
+	// configuration.
+	// A reserve is cards available for play that are not part of the
+	// foundations, talon, tableau or discard piles.
+	// https://en.wikipedia.org/wiki/Glossary_of_patience_terms#reservehttps://en.wikipedia.org/wiki/Glossary_of_patience_terms#reserve
+	Reserves() (
+		number int,
+		addRule func(
+			state.Reserve,
+			state.SuitedCard,
+		) bool,
+	)
+
+	// Foundations - this gives how many foundations are required, and their
+	// configuration.
+	// A foundation is a pile of cards, typically squared and face-up, and built
+	// on the bottom card which is the foundation card. As the tableau is
+	// cleared, cards are moved to the foundations.
 	Foundations() (
 		number int,
 		basecard state.Rank,

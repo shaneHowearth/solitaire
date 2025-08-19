@@ -13,6 +13,16 @@ func (*KlondikeVegas) Name() string {
 	return "Klondike (Vegas style)"
 }
 
+// Reserves - how the reserves are defined.
+// Note that there are no reserves required in a game of KlondikeVegas.
+func (*KlondikeVegas) Reserves() (
+	number int,
+	addRule func(state.Reserve, state.SuitedCard) bool,
+) {
+	const reserveCount = 0
+	return reserveCount, func(state.Reserve, state.SuitedCard) bool { return false }
+}
+
 // TableauGridSize - The size of the grid required by klondikeVegas.
 func (*KlondikeVegas) TableauGridSize() (int, int) {
 	const height = 1

@@ -36,16 +36,6 @@ func CreateTableaus(number int, base Rank, rule func(*Tableau, SuitedCard) bool)
 	return tableaus
 }
 
-// // Add - Add a card to the tableau.
-// func (tableau *Tableau) Add(card SuitedCard, visible bool) bool {
-// 	if tableau.Stack.Rule(card) {
-// 		tableau.Stack.Add(card, visible)
-// 		return true
-// 	}
-
-// 	return false
-// }
-
 // Len - the length of the stack inside the tableau.
 func (tableau *Tableau) Len() int {
 	return tableau.Stack.Len()

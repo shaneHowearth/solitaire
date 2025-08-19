@@ -25,6 +25,16 @@ func (*Klondike) Decks() int {
 	return 1
 }
 
+// Reserves - how the reserves are defined.
+// Note that there are no reserves required in a game of Klondike.
+func (*Klondike) Reserves() (
+	number int,
+	addRule func(state.Reserve, state.SuitedCard) bool,
+) {
+	const reserveCount = 0
+	return reserveCount, func(state.Reserve, state.SuitedCard) bool { return false }
+}
+
 const numKlondikeTableau = 7
 
 // Tableau - how the tableau are defined.

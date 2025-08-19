@@ -27,6 +27,8 @@ const (
 	StackTalon
 	// StackWaste - Waste.
 	StackWaste
+	// StackReserve - Reserve.
+	StackReserve
 )
 
 // There are two types of stack, the one that holds the reserve of cards that
