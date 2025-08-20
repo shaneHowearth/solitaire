@@ -24,7 +24,8 @@ type Instance struct {
 	// Model.
 	Foundations []*state.Foundation
 	Tableau     []*state.Tableau
-	Talon       *state.Talon
+	Reserves    []*state.Reserve
+	Talon       *state.Talon // This has both Stock and Waste stacks.
 	Deck        *state.Deck
 
 	// Track first selection for move operations.
@@ -48,6 +49,9 @@ func (instance *Instance) Start() error {
 	variants = append(variants, &game.KlondikeVegas{})
 	variants = append(variants, &game.Acme{})
 
+	// TODO - This shouldn't be here in the controller - it's coupling the
+	// controller to one type of display, and if there's a new display created
+	// in the future (eg. wails), this will break.
 	instance.Display = tui.New(variants)
 
 	instance.Display.SetGameSelectedCallback(instance.onGameSelected)
@@ -95,8 +99,10 @@ func (instance *Instance) onComponentSelected(
 		fromStack = instance.Talon.Stock
 	case state.StackWaste:
 		fromStack = instance.Talon.Waste
+	case state.StackReserve:
+		fromStack = instance.Reserves[fromIndex].Stack
 	default:
-		panic(fmt.Sprintf("Got impossible fromComponentType %d", fromComponentType))
+		panic(fmt.Sprintf("Got impossible 'fromComponentType' %d", fromComponentType))
 	}
 
 	var toStack *state.Stack
@@ -109,8 +115,10 @@ func (instance *Instance) onComponentSelected(
 		toStack = instance.Talon.Stock
 	case state.StackWaste:
 		toStack = instance.Talon.Waste
+	case state.StackReserve:
+		toStack = instance.Reserves[toIndex].Stack
 	default:
-		panic(fmt.Sprintf("Got impossible toComponentType %d", toComponentType))
+		panic(fmt.Sprintf("Got impossible 'toComponentType' %d", toComponentType))
 	}
 
 	fromStack.Move(toStack, instance.Game.MaxRedeals())
@@ -130,9 +138,10 @@ func (instance *Instance) dealCards() {
 	instance.Deck.Shuffle()
 
 	numTableau, _, _ := instance.Game.Tableau()
-	counts := instance.Game.SetupDealCardCounts()
+	numReserves, reserveCounts, _ := instance.Game.Reserves()
+	counts := instance.Game.SetupTableauCardCounts()
 
-	// Deal the cards out onto the different stacks (talon, tableau).
+	// Deal the cards out onto the tableau.
 	for idx := 0; idx < numTableau; idx++ {
 		// Grab a copy of the existing rule on the stack and replace it with
 		// one that will allow us to deal anything.
@@ -140,9 +149,8 @@ func (instance *Instance) dealCards() {
 		// dealt most definitely do not adhere to it (the rule).
 		rule := instance.Tableau[idx].Stack.Rule
 		instance.Tableau[idx].Stack.Rule = func(state.SuitedCard) bool { return true }
-		countIdx := idx * 2
-		numCards := counts[countIdx]
-		numOpen := counts[countIdx+1]
+		numCards := counts[idx][0]
+		numOpen := counts[idx][1]
 
 		for dealIdx := 0; dealIdx < numCards-numOpen; dealIdx++ {
 			card := instance.Deck.Deal()
@@ -156,6 +164,31 @@ func (instance *Instance) dealCards() {
 
 		// Return the rule to its correct state.
 		instance.Tableau[idx].Stack.Rule = rule
+	}
+
+	// Deal cards to any reserves.
+	for idx := 0; idx < numReserves; idx++ {
+		// Grab a copy of the existing rule on the stack and replace it with
+		// one that will allow us to deal anything.
+		// FTR the existing rule prevents a deal because the cards being
+		// dealt most definitely do not adhere to it (the rule).
+		rule := instance.Reserves[idx].Stack.Rule
+		instance.Reserves[idx].Stack.Rule = func(state.SuitedCard) bool { return true }
+		numCards := reserveCounts[idx][0]
+		numOpen := reserveCounts[idx][1]
+
+		for dealIdx := 0; dealIdx < numCards-numOpen; dealIdx++ {
+			card := instance.Deck.Deal()
+			instance.Reserves[idx].Stack.Add(card, false)
+		}
+
+		for openIdx := 0; openIdx < numOpen; openIdx++ {
+			card := instance.Deck.Deal()
+			instance.Reserves[idx].Stack.Add(card, true)
+		}
+
+		// Return the rule to its correct state.
+		instance.Reserves[idx].Stack.Rule = rule
 	}
 
 	// Put one card onto the Waste.

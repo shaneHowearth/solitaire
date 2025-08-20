@@ -9,16 +9,25 @@ func (instance *Instance) setupGameState() {
 	numFoundations, foundationBase, foundationRule := instance.Game.Foundations()
 	// Get the tableau information for the game.
 	numTableau, tableauBase, tableauRule := instance.Game.Tableau()
+	// Get any reserves information for the game.
+	numReserves, _, reserveRule := instance.Game.Reserves()
 
 	// Create the state/model for the game.
 	gameState := state.New(
+		// Number of decks.
 		instance.Game.Decks(),
+		// Foundation Setup.
 		numFoundations,
 		foundationBase,
 		foundationRule,
+		// Tableau Setup.
 		numTableau,
 		tableauBase,
 		tableauRule,
+		// Reserve Setup.
+		numReserves,
+		reserveRule,
+		// Talon Setup.
 		1,
 		1,
 		// Talon rule is to allow everything to be added to its stacks.
@@ -28,6 +37,7 @@ func (instance *Instance) setupGameState() {
 	)
 
 	// Copy the game state instantiated model into the current instance.
+	instance.Reserves = gameState.Reserves
 	instance.Foundations = gameState.Foundations
 	instance.Tableau = gameState.Tableau
 	instance.Talon = gameState.Talon

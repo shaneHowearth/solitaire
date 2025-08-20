@@ -13,18 +13,18 @@ import (
 // CreateBoard - Create the board that the game will use.
 func (display *Display) CreateBoard(
 	name string,
-	tableauHeight, tableauWidth, foundationCount int,
+	tableauHeight, tableauWidth, reserveCount, foundationCount int,
 	foundationBase state.Rank,
 	howTo []string,
 ) {
-	gamePage := display.createGamePage(name, tableauHeight, tableauWidth, foundationCount, foundationBase, howTo)
+	gamePage := display.createGamePage(name, tableauHeight, tableauWidth, reserveCount, foundationCount, foundationBase, howTo)
 
 	display.screens[name] = gamePage
 }
 
 func (display *Display) createGamePage(
 	name string,
-	tableauHeight, tableauWidth, foundationCount int,
+	tableauHeight, tableauWidth, reserveCount, foundationCount int,
 	_ state.Rank,
 	howTo []string,
 ) tview.Primitive {
@@ -121,9 +121,42 @@ func (display *Display) createGamePage(
 	}
 
 	// ############
-	// # TABLEAUS #
+	// # RESERVES #
 	// ############
 	tableauArea := tview.NewFlex().SetDirection(tview.FlexColumn)
+	display.reserves = make([]*tview.TextView, reserveCount)
+
+	for idx := 0; idx < reserveCount; idx++ {
+		reserve := tview.NewTextView()
+
+		reserveIdx := idx
+
+		// Add some decorations to the box.
+		reserve.SetBorder(true)
+		reserve.SetBackgroundColor(display.defaultBgColor)
+
+		reserve.SetMouseCapture(
+			func(action tview.MouseAction, event *tcell.EventMouse) (
+				tview.MouseAction, *tcell.EventMouse) {
+				if action == tview.MouseLeftClick && reserve.HasFocus() {
+					display.selectComponent(state.StackReserve, reserveIdx)
+					// Return nil, nil to completely consume the event.
+					return tview.MouseConsumed, nil
+				}
+
+				return action, event
+			})
+
+		display.reserves[reserveIdx] = reserve
+
+		tableauArea.AddItem(
+			reserve, 0, 1, true,
+		)
+	}
+
+	// ############
+	// # TABLEAUS #
+	// ############
 	display.tableau = make([]*tview.TextView, tableauHeight*tableauWidth)
 
 	for idx := 0; idx < tableauHeight*tableauWidth; idx++ {
@@ -230,6 +263,19 @@ func (display *Display) FoundationPrint(num int, value []string) {
 
 const emptyStack = ""
 
+// ReservePrint -
+func (display *Display) ReservePrint(idx int, value []string) {
+	if len(value) > 0 {
+		display.reserves[idx].SetText(
+			strings.Join(value, "\n"),
+		)
+	} else {
+		display.reserves[idx].SetText(
+			emptyStack,
+		)
+	}
+}
+
 // TableauPrint -
 func (display *Display) TableauPrint(idx int, value []string) {
 	if len(value) > 0 {
@@ -265,6 +311,12 @@ func (display *Display) selectComponent(componentType state.StackType, index int
 		}
 
 		component = display.foundations[index]
+	case state.StackReserve:
+		if index < 0 || index >= len(display.reserves) || display.reserves[index] == nil {
+			return
+		}
+
+		component = display.reserves[index]
 	case state.StackTableau:
 		if index < 0 || index >= len(display.tableau) || display.tableau[index] == nil {
 			return
@@ -318,6 +370,10 @@ func (display *Display) clearCurrentSelection() {
 	case state.StackFoundation:
 		if display.selectedIndex < len(display.foundations) && display.foundations[display.selectedIndex] != nil {
 			component = display.foundations[display.selectedIndex]
+		}
+	case state.StackReserve:
+		if display.selectedIndex < len(display.reserves) && display.reserves[display.selectedIndex] != nil {
+			component = display.reserves[display.selectedIndex]
 		}
 	case state.StackTableau:
 		if display.selectedIndex < len(display.tableau) && display.tableau[display.selectedIndex] != nil {

@@ -46,6 +46,11 @@ func (stack *Stack) Move(destination *Stack, maxRedeals int) bool {
 		return false
 	}
 
+	if destination.Type == StackReserve {
+		// No cards can be moved ONTO a reserve.
+		return false
+	}
+
 	// Can we move multiple cards?
 	// Temporary stack that will hold cards that will be moved.
 	temp := NewStack(
@@ -170,7 +175,7 @@ func (stack *Stack) Move(destination *Stack, maxRedeals int) bool {
 			_, _ = temp.Deal()
 		}
 		// Make the top card visible.
-		if stack.Type == StackTableau {
+		if stack.Type == StackTableau || stack.Type == StackReserve {
 			newTop, err := stack.Top()
 			if err != nil {
 				return true

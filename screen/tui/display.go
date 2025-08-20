@@ -14,6 +14,7 @@ type Display struct {
 	stack                     []*tview.TextView
 	waste                     []*tview.TextView
 	foundations               []*tview.TextView
+	reserves                  []*tview.TextView
 	tableau                   []*tview.TextView
 	Selected                  game.Variant
 	games                     []game.Variant

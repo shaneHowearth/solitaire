@@ -46,8 +46,9 @@ type Variant interface {
 	// https://en.wikipedia.org/wiki/Glossary_of_patience_terms#reservehttps://en.wikipedia.org/wiki/Glossary_of_patience_terms#reserve
 	Reserves() (
 		number int,
+		cardCount [][2]int, // A description of how many cards each reserve receives at the beginning.
 		addRule func(
-			state.Reserve,
+			*state.Reserve,
 			state.SuitedCard,
 		) bool,
 	)
@@ -66,11 +67,12 @@ type Variant interface {
 		) bool,
 	)
 
-	// SetupDealCardCounts - Should return a list of ints, the first int will be the
-	// number of cards going into the first tableau, the second will be how many
-	// cards are visible in that tableau. The third and fourth ints will apply
-	// to the second tableau, etc.
-	SetupDealCardCounts() []int
+	// SetupTableauCardCounts - Should return a list of [2]int, the first int
+	// will be the number of cards going into the first tableau, the second will
+	// be how many cards are visible in that tableau. The third and fourth ints
+	// will apply to the second tableau, etc.
+	SetupTableauCardCounts() [][2]int
+	// SetupDealCardCounts() []int
 
 	// HowToPlay - Explains to the player how the game is played.
 	HowToPlay() []string

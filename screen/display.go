@@ -19,7 +19,7 @@ type Display interface {
 	// Board creation.
 	CreateBoard(
 		name string,
-		tableauHeight, tableauWidth, foundationCount int,
+		tableauHeight, tableauWidth, reserveCount, foundationCount int,
 		foundationBase state.Rank,
 		howToPlay []string,
 	)
@@ -27,6 +27,7 @@ type Display interface {
 	// Display updates.
 	FoundationTitle(num int, value string)
 	FoundationPrint(num int, value []string)
+	ReservePrint(idx int, value []string)
 	TableauPrint(idx int, value []string)
 	TalonPrint(value []string)
 	WastePrint(value []string)

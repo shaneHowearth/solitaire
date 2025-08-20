@@ -9,6 +9,7 @@ func (instance *Instance) createGamePage() {
 	// Create the board that will be displayed.
 	tableauHeight, tableauWidth := instance.Game.TableauGridSize()
 	foundationCount, foundationBase, _ := instance.Game.Foundations()
+	reserveCount, _, _ := instance.Game.Reserves()
 	howTo := instance.Game.HowToPlay()
 
 	// Create the board layout.
@@ -16,6 +17,7 @@ func (instance *Instance) createGamePage() {
 		instance.Game.Name(),
 		tableauHeight,
 		tableauWidth,
+		reserveCount,
 		foundationCount,
 		foundationBase,
 		howTo,
@@ -47,6 +49,13 @@ func (instance *Instance) updateDisplay() {
 	for idx := range instance.Tableau {
 		instance.Display.TableauPrint(idx,
 			instance.Tableau[idx].Stack.Cards(),
+		)
+	}
+
+	// Tell each Reserve what cards it is holding.
+	for idx := range instance.Reserves {
+		instance.Display.ReservePrint(idx,
+			instance.Reserves[idx].Stack.Cards(),
 		)
 	}
 

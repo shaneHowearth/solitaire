@@ -13,7 +13,7 @@ func (*Acme) Name() string {
 }
 
 // numAcmeTableau - Number of Tableau used for Acme.
-const numAcmeTableau = 5
+const numAcmeTableau = 4
 
 // TableauGridSize - The size of the grid required by acme.
 func (*Acme) TableauGridSize() (int, int) {
@@ -30,10 +30,11 @@ func (*Acme) Decks() int {
 // Reserves - how the reserves are defined.
 func (*Acme) Reserves() (
 	number int,
-	addRule func(state.Reserve, state.SuitedCard) bool,
+	cardCounts [][2]int,
+	addRule func(*state.Reserve, state.SuitedCard) bool,
 ) {
 	const reserveCount = 1
-	return reserveCount, func(state.Reserve, state.SuitedCard) bool { return false }
+	return reserveCount, [][2]int{{13, 1}}, func(*state.Reserve, state.SuitedCard) bool { return false }
 }
 
 // Tableau - how the tableau are defined.
@@ -89,11 +90,11 @@ func (*Acme) Foundations() (
 
 // SetupDealCardCounts - Should return a list of ints, the first int will be the
 // number of cards going into the first tableau, the second will be how many
-// cards are visible in that tableau. The third and fourth ints will apply
-// to the second tableau, etc.
-func (*Acme) SetupDealCardCounts() []int {
+// cards are visible in that tableau. The third and fourth ints will apply to
+// the second tableau, etc.
+func (*Acme) SetupTableauCardCounts() [][2]int {
 	//nolint:revive // Ignore the constant complaint.
-	return []int{13, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+	return [][2]int{{1, 1}, {1, 1}, {1, 1}, {1, 1}}
 }
 
 // HowToPlay - Tell the player how to play the game.

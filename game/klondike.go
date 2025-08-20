@@ -29,10 +29,11 @@ func (*Klondike) Decks() int {
 // Note that there are no reserves required in a game of Klondike.
 func (*Klondike) Reserves() (
 	number int,
-	addRule func(state.Reserve, state.SuitedCard) bool,
+	cardCounts [][2]int,
+	addRule func(*state.Reserve, state.SuitedCard) bool,
 ) {
 	const reserveCount = 0
-	return reserveCount, func(state.Reserve, state.SuitedCard) bool { return false }
+	return reserveCount, [][2]int{}, func(*state.Reserve, state.SuitedCard) bool { return false }
 }
 
 const numKlondikeTableau = 7
@@ -67,13 +68,13 @@ func (*Klondike) Foundations() (
 	return foundationCount, state.Ace, PlusOneRule
 }
 
-// SetupDealCardCounts - Should return a list of ints, the first int will be the
-// number of cards going into the first tableau, the second will be how many
-// cards are visible in that tableau. The third and fourth ints will apply
-// to the second tableau, etc.
-func (*Klondike) SetupDealCardCounts() []int {
+// SetupTableauCardCounts - Should return a list of ints, the first int will be
+// the number of cards going into the first tableau, the second will be how many
+// cards are visible in that tableau. The third and fourth ints will apply to
+// the second tableau, etc.
+func (*Klondike) SetupTableauCardCounts() [][2]int {
 	//nolint:revive // Ignore the constant complaint.
-	return []int{1, 1, 2, 1, 3, 1, 4, 1, 5, 1, 6, 1, 7, 1}
+	return [][2]int{{1, 1}, {2, 1}, {3, 1}, {4, 1}, {5, 1}, {6, 1}, {7, 1}}
 }
 
 // HowToPlay - Tell the player how to play the game.
