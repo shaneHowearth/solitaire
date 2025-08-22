@@ -132,7 +132,7 @@ func (display *Display) createGamePage(
 		reserveIdx := idx
 
 		// Add some decorations to the box.
-		reserve.SetBorder(true)
+		reserve.SetBorder(true).SetTitle(" Reserve ")
 		reserve.SetBackgroundColor(display.defaultBgColor)
 
 		reserve.SetMouseCapture(

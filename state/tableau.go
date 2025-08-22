@@ -1,5 +1,7 @@
 package state
 
+import "fmt"
+
 // Tableau - An arrangement of cards on the table, typically comprising several
 // depots i.e. places where columns of overlapping cards may be formed.
 type Tableau struct {
@@ -8,27 +10,29 @@ type Tableau struct {
 }
 
 // CreateTableaus - Create the tableaus that will host the cards.
-func CreateTableaus(number int, base Rank, rule func(*Tableau, SuitedCard) bool) []*Tableau {
-	if number < 1 {
+func CreateTableaus(tableauSpec []StackSpec) []*Tableau {
+	if len(tableauSpec) < 1 {
 		panic("Cannot have zero tableaus")
 	}
 
-	if rule == nil {
-		panic("Cannot create tableaus without a rule.")
-	}
+	tableaus := make([]*Tableau, 0, len(tableauSpec))
 
-	tableaus := make([]*Tableau, 0, number)
+	for i := 0; i < len(tableauSpec); i++ {
+		if tableauSpec[i].AddRule == nil {
+			panic(fmt.Sprintf("Cannot create tableau %d without a rule.", i))
+		}
 
-	for i := 0; i < number; i++ {
-		tableau := Tableau{}
+		tableau := Tableau{
+			Base: tableauSpec[i].BaseCard.Rank,
+		}
 		stack := NewStack(RankCount,
+			tableauSpec[i].BaseCard,
 			func(card SuitedCard) bool {
-				return rule(&tableau, card)
+				return tableauSpec[i].AddRule(tableau.Stack, card)
 			},
 			StackTableau,
 		)
 		tableau.Stack = stack
-		tableau.Base = base
 
 		tableaus = append(tableaus, &tableau)
 	}

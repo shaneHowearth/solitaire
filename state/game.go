@@ -14,16 +14,11 @@ func New(
 	// Number of decks.
 	decks int,
 	// Foundation Setup.
-	numFoundations int,
-	foundationBase Rank,
-	foundationRule func(Foundation, SuitedCard) bool,
+	foundationsSpec []StackSpec,
 	// Tableau Setup.
-	numTableau int,
-	tableauBase Rank,
-	tableauRule func(*Tableau, SuitedCard) bool,
+	tableauSpec []StackSpec,
 	// Reserve Setup.
-	numReserve int,
-	reserveRule func(*Reserve, SuitedCard) bool,
+	reserveSpec []StackSpec,
 	// Talon Setup.
 	dealCount int,
 	perDealCount int,
@@ -32,18 +27,13 @@ func New(
 	return &State{
 		Deck: CreateDecks(decks),
 		Foundations: CreateFoundations(
-			numFoundations,
-			foundationBase,
-			foundationRule,
+			foundationsSpec,
 		),
 		Tableau: CreateTableaus(
-			numTableau,
-			tableauBase,
-			tableauRule,
+			tableauSpec,
 		),
 		Reserves: CreateReserves(
-			numReserve,
-			reserveRule,
+			reserveSpec,
 		),
 		Talon: NewTalon(
 			dealCount,

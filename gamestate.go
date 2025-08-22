@@ -6,27 +6,22 @@ import (
 
 func (instance *Instance) setupGameState() {
 	// Get the foundation information for the game.
-	numFoundations, foundationBase, foundationRule := instance.Game.Foundations()
+	foundationSpec := instance.Game.Foundations()
 	// Get the tableau information for the game.
-	numTableau, tableauBase, tableauRule := instance.Game.Tableau()
+	tableauSpec := instance.Game.Tableau()
 	// Get any reserves information for the game.
-	numReserves, _, reserveRule := instance.Game.Reserves()
+	reserveSpec := instance.Game.Reserves()
 
 	// Create the state/model for the game.
 	gameState := state.New(
 		// Number of decks.
 		instance.Game.Decks(),
 		// Foundation Setup.
-		numFoundations,
-		foundationBase,
-		foundationRule,
+		foundationSpec,
 		// Tableau Setup.
-		numTableau,
-		tableauBase,
-		tableauRule,
+		tableauSpec,
 		// Reserve Setup.
-		numReserves,
-		reserveRule,
+		reserveSpec,
 		// Talon Setup.
 		1,
 		1,

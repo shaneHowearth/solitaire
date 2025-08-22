@@ -1,27 +1,30 @@
 package state
 
+import "fmt"
+
 type Reserve struct {
 	Stack *Stack
 }
 
 // CreateReserves - Create the reserve that will host the cards.
-func CreateReserves(number int, rule func(*Reserve, SuitedCard) bool) []*Reserve {
-	if number < 1 {
+func CreateReserves(reserveSpec []StackSpec) []*Reserve {
+	if len(reserveSpec) < 1 {
 		return []*Reserve{}
 	}
 
-	if rule == nil {
-		panic("Cannot create depots without a rule.")
-	}
+	reserves := make([]*Reserve, 0, len(reserveSpec))
 
-	reserves := make([]*Reserve, 0, number)
+	for i := 0; i < len(reserveSpec); i++ {
+		if reserveSpec[i].AddRule == nil {
+			panic(fmt.Sprintf("Cannot create reserve %d without a rule.", i))
+		}
 
-	for i := 0; i < number; i++ {
 		reserve := &Reserve{}
 
 		stack := NewStack(RankCount,
+			reserveSpec[i].BaseCard,
 			func(card SuitedCard) bool {
-				return rule(reserve, card)
+				return reserveSpec[i].AddRule(reserve.Stack, card)
 			},
 			StackReserve,
 		)

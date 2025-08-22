@@ -55,6 +55,7 @@ func (stack *Stack) Move(destination *Stack, maxRedeals int) bool {
 	// Temporary stack that will hold cards that will be moved.
 	temp := NewStack(
 		stack.Len(),
+		SuitedCard{},
 		func(SuitedCard) bool { return true },
 		StackUndefined,
 	)

@@ -8,6 +8,7 @@ import (
 // the topmost card, whether face up or face down is visible.[5]
 type Stack struct {
 	cards    *[]SuitedCard
+	Base     SuitedCard
 	Rule     func(SuitedCard) bool
 	Type     StackType
 	Received int // count how many times this stack has received cards.
@@ -36,10 +37,11 @@ const (
 
 // NewStack - Create a new stack with an empty slice of SuitedCards that has a
 // capacity of n.
-func NewStack(number int, rule func(SuitedCard) bool, componentType StackType) *Stack {
+func NewStack(number int, base SuitedCard, rule func(SuitedCard) bool, componentType StackType) *Stack {
 	cards := make([]SuitedCard, 0, number)
 
 	return &Stack{
+		Base:  base,
 		cards: &cards,
 		Rule:  rule,
 		Type:  componentType,

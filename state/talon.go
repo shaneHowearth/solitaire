@@ -24,14 +24,22 @@ func NewTalon(
 ) *Talon {
 	const stackSize = 52
 
-	stock := NewStack(stackSize, func(SuitedCard) bool {
-		// Let anything on.
-		return true
-	},
+	stock := NewStack(
+		stackSize,
+		SuitedCard{},
+		func(SuitedCard) bool {
+			// Let anything on.
+			return true
+		},
 		StackTalon,
 	)
 
-	waste := NewStack(stackSize, rule, StackWaste)
+	waste := NewStack(
+		stackSize,
+		SuitedCard{},
+		rule,
+		StackWaste,
+	)
 
 	return &Talon{
 		Stock:        stock,

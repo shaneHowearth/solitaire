@@ -1,5 +1,7 @@
 package state
 
+import "fmt"
+
 // BaseCard - the card that the Foundation starts at.
 type BaseCard Rank
 
@@ -13,29 +15,30 @@ type Foundation struct {
 }
 
 // CreateFoundations - Create the foundations that will host the cards.
-func CreateFoundations(number int, base Rank, rule func(Foundation, SuitedCard) bool) []*Foundation {
-	if number < 1 {
+func CreateFoundations(foundationSpec []StackSpec) []*Foundation {
+	if len(foundationSpec) < 1 {
 		panic("Cannot have zero foundations")
 	}
 
-	if number%SuitCount != 0 {
+	if len(foundationSpec)%SuitCount != 0 {
 		panic("Number of foundations must be a multiple of the number of suits in a deck")
 	}
 
-	if rule == nil {
-		panic("Cannot create foundations without a rule.")
-	}
+	foundations := make([]*Foundation, 0, len(foundationSpec))
 
-	foundations := make([]*Foundation, 0, SuitCount*number)
+	for i := 0; i < len(foundationSpec); i++ {
+		if foundationSpec[i].AddRule == nil {
+			panic(fmt.Sprintf("Cannot create foundation %d without a rule.", i))
+		}
 
-	for i := 0; i < number; i++ {
 		foundation := &Foundation{
-			Base: SuitedCard{Rank: base, Suit: Suit(i)},
+			Base: foundationSpec[i].BaseCard,
 		}
 
 		stack := NewStack(RankCount,
+			foundationSpec[i].BaseCard,
 			func(card SuitedCard) bool {
-				return rule(*foundation, card)
+				return foundationSpec[i].AddRule(foundation.Stack, card)
 			},
 			StackFoundation,
 		)

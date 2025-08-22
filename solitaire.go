@@ -137,20 +137,20 @@ func (instance *Instance) dealCards() {
 	// Shuffle the cards.
 	instance.Deck.Shuffle()
 
-	numTableau, _, _ := instance.Game.Tableau()
-	numReserves, reserveCounts, _ := instance.Game.Reserves()
-	counts := instance.Game.SetupTableauCardCounts()
+	tableauSpec := instance.Game.Tableau()
+	reserveSpec := instance.Game.Reserves()
 
 	// Deal the cards out onto the tableau.
-	for idx := 0; idx < numTableau; idx++ {
+	for idx := 0; idx < len(tableauSpec); idx++ {
 		// Grab a copy of the existing rule on the stack and replace it with
 		// one that will allow us to deal anything.
 		// FTR the existing rule prevents a deal because the cards being
 		// dealt most definitely do not adhere to it (the rule).
 		rule := instance.Tableau[idx].Stack.Rule
 		instance.Tableau[idx].Stack.Rule = func(state.SuitedCard) bool { return true }
-		numCards := counts[idx][0]
-		numOpen := counts[idx][1]
+		// countIdx := idx * 2
+		numCards := tableauSpec[idx].CardCount[0]
+		numOpen := tableauSpec[idx].CardCount[1]
 
 		for dealIdx := 0; dealIdx < numCards-numOpen; dealIdx++ {
 			card := instance.Deck.Deal()
@@ -167,15 +167,15 @@ func (instance *Instance) dealCards() {
 	}
 
 	// Deal cards to any reserves.
-	for idx := 0; idx < numReserves; idx++ {
+	for idx := 0; idx < len(reserveSpec); idx++ {
 		// Grab a copy of the existing rule on the stack and replace it with
 		// one that will allow us to deal anything.
 		// FTR the existing rule prevents a deal because the cards being
 		// dealt most definitely do not adhere to it (the rule).
 		rule := instance.Reserves[idx].Stack.Rule
 		instance.Reserves[idx].Stack.Rule = func(state.SuitedCard) bool { return true }
-		numCards := reserveCounts[idx][0]
-		numOpen := reserveCounts[idx][1]
+		numCards := reserveSpec[idx].CardCount[0]
+		numOpen := reserveSpec[idx].CardCount[1]
 
 		for dealIdx := 0; dealIdx < numCards-numOpen; dealIdx++ {
 			card := instance.Deck.Deal()
