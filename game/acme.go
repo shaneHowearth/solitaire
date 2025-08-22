@@ -5,6 +5,7 @@ import "github.com/shanehowearth/solitaire/state"
 // Acme - https://en.wikipedia.org/wiki/Acme_(card_game)
 type Acme struct{}
 
+// Ensure that Acme implements game.Variant.
 var _ Variant = (*Acme)(nil)
 
 // Name - name of the variant.
@@ -12,12 +13,10 @@ func (*Acme) Name() string {
 	return "Acme"
 }
 
-// numAcmeTableau - Number of Tableau used for Acme.
-const numAcmeTableau = 4
-
 // TableauGridSize - The size of the grid required by acme.
 func (*Acme) TableauGridSize() (int, int) {
 	const height = 1
+	const numAcmeTableau = 4
 
 	return height, numAcmeTableau
 }

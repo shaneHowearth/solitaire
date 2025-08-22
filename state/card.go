@@ -53,6 +53,7 @@ const (
 	Clubs
 	Diamonds
 	Spades
+	Undefined
 )
 
 func (suit Suit) String() string {
@@ -61,6 +62,7 @@ func (suit Suit) String() string {
 		"♣",
 		"♦",
 		"♠",
+		"",
 	}[suit]
 }
 
