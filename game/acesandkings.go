@@ -35,14 +35,14 @@ func (*AcesAndKings) Reserves() []state.StackSpec {
 				// Nothing can be added to a reserve.
 				return false
 			},
-			CardCount: [2]int{13, 1},
+			CardCount: [2]int{13, 13},
 		},
 		{
 			AddRule: func(*state.Stack, state.SuitedCard) bool {
 				// Nothing can be added to a reserve.
 				return false
 			},
-			CardCount: [2]int{13, 1},
+			CardCount: [2]int{13, 13},
 		},
 	}
 }

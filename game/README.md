@@ -92,7 +92,7 @@ func (tableau solitaire.Tableau, card solitaire.SuitedCard) bool {
 ## Possible Variants [Source](https://en.wikipedia.org/wiki/List_of_patience_games)
 ### A
 - [ ] [Accordion](https://en.wikipedia.org/wiki/Accordion_(solitaire))
-- [ ] [Aces and Kings](https://en.wikipedia.org/wiki/Aces_and_Kings)
+- [x] [Aces and Kings](https://en.wikipedia.org/wiki/Aces_and_Kings)
 - [ ] [Aces Square](https://en.wikipedia.org/wiki/Aces_Square_(solitaire))
 - [ ] [Aces Up](https://en.wikipedia.org/wiki/Aces_Up)
 - [x] [Acme](https://en.wikipedia.org/wiki/Acme_(solitaire))
