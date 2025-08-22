@@ -16,6 +16,7 @@ func (*Klondike) Name() string {
 // TableauGridSize - The size of the grid required by klondike.
 func (*Klondike) TableauGridSize() (int, int) {
 	const height = 1
+	const numKlondikeTableau = 7
 
 	return height, numKlondikeTableau
 }
@@ -27,24 +28,50 @@ func (*Klondike) Decks() int {
 
 // Reserves - how the reserves are defined.
 // Note that there are no reserves required in a game of Klondike.
-func (*Klondike) Reserves() (
-	number int,
-	cardCounts [][2]int,
-	addRule func(*state.Reserve, state.SuitedCard) bool,
-) {
-	const reserveCount = 0
-	return reserveCount, [][2]int{}, func(*state.Reserve, state.SuitedCard) bool { return false }
+func (*Klondike) Reserves() []state.StackSpec {
+	return []state.StackSpec{}
 }
 
-const numKlondikeTableau = 7
-
 // Tableau - how the tableau are defined.
-func (*Klondike) Tableau() (
-	number int,
-	basecard state.Rank,
-	addRule func(*state.Tableau, state.SuitedCard) bool,
-) {
-	return numKlondikeTableau, state.King, MinusOneRule
+func (*Klondike) Tableau() []state.StackSpec {
+	// return numKlondikeTableau, state.King, MinusOneRule
+	return []state.StackSpec{
+		{
+			AddRule:   MinusOneRule,
+			CardCount: [2]int{1, 1},
+			BaseCard:  state.SuitedCard{Rank: state.King},
+		},
+		{
+			AddRule:   MinusOneRule,
+			CardCount: [2]int{2, 1},
+			BaseCard:  state.SuitedCard{Rank: state.King},
+		},
+		{
+			AddRule:   MinusOneRule,
+			CardCount: [2]int{3, 1},
+			BaseCard:  state.SuitedCard{Rank: state.King},
+		},
+		{
+			AddRule:   MinusOneRule,
+			CardCount: [2]int{4, 1},
+			BaseCard:  state.SuitedCard{Rank: state.King},
+		},
+		{
+			AddRule:   MinusOneRule,
+			CardCount: [2]int{5, 1},
+			BaseCard:  state.SuitedCard{Rank: state.King},
+		},
+		{
+			AddRule:   MinusOneRule,
+			CardCount: [2]int{6, 1},
+			BaseCard:  state.SuitedCard{Rank: state.King},
+		},
+		{
+			AddRule:   MinusOneRule,
+			CardCount: [2]int{7, 1},
+			BaseCard:  state.SuitedCard{Rank: state.King},
+		},
+	}
 }
 
 // TableauPosition - Where does each tableau go in the grid, and what angle (relative to
@@ -59,22 +86,25 @@ func (*Klondike) TableauPosition(tableauNumber int) (int, int, int) {
 }
 
 // Foundations - how the foundations are defined.
-func (*Klondike) Foundations() (
-	number int,
-	basecard state.Rank,
-	addRule func(state.Foundation, state.SuitedCard) bool,
-) {
-	const foundationCount = 4
-	return foundationCount, state.Ace, PlusOneRule
-}
-
-// SetupTableauCardCounts - Should return a list of ints, the first int will be
-// the number of cards going into the first tableau, the second will be how many
-// cards are visible in that tableau. The third and fourth ints will apply to
-// the second tableau, etc.
-func (*Klondike) SetupTableauCardCounts() [][2]int {
-	//nolint:revive // Ignore the constant complaint.
-	return [][2]int{{1, 1}, {2, 1}, {3, 1}, {4, 1}, {5, 1}, {6, 1}, {7, 1}}
+func (*Klondike) Foundations() []state.StackSpec {
+	return []state.StackSpec{
+		{
+			BaseCard: state.SuitedCard{Rank: state.Ace, Suit: state.Hearts},
+			AddRule:  PlusOneRule,
+		},
+		{
+			BaseCard: state.SuitedCard{Rank: state.Ace, Suit: state.Diamonds},
+			AddRule:  PlusOneRule,
+		},
+		{
+			BaseCard: state.SuitedCard{Rank: state.Ace, Suit: state.Clubs},
+			AddRule:  PlusOneRule,
+		},
+		{
+			BaseCard: state.SuitedCard{Rank: state.Ace, Suit: state.Spades},
+			AddRule:  PlusOneRule,
+		},
+	}
 }
 
 // HowToPlay - Tell the player how to play the game.

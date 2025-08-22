@@ -28,33 +28,54 @@ func (*Acme) Decks() int {
 }
 
 // Reserves - how the reserves are defined.
-func (*Acme) Reserves() (
-	number int,
-	cardCounts [][2]int,
-	addRule func(*state.Reserve, state.SuitedCard) bool,
-) {
-	const reserveCount = 1
-	return reserveCount, [][2]int{{13, 1}}, func(*state.Reserve, state.SuitedCard) bool { return false }
+func (*Acme) Reserves() []state.StackSpec {
+	return []state.StackSpec{
+		{
+			AddRule: func(*state.Stack, state.SuitedCard) bool {
+				// Nothing can be added to a reserve.
+				return false
+			},
+			CardCount: [2]int{13, 1},
+		},
+	}
 }
 
 // Tableau - how the tableau are defined.
-func (acme *Acme) Tableau() (
-	number int,
-	basecard state.Rank,
-	addRule func(*state.Tableau, state.SuitedCard) bool,
-) {
-	return numAcmeTableau, state.King, acme.tableauRule
+func (acme *Acme) Tableau() []state.StackSpec {
+
+	return []state.StackSpec{
+		{
+			AddRule:   acme.tableauRule,
+			CardCount: [2]int{1, 1},
+			BaseCard:  state.SuitedCard{Rank: state.King},
+		},
+		{
+			AddRule:   acme.tableauRule,
+			CardCount: [2]int{1, 1},
+			BaseCard:  state.SuitedCard{Rank: state.King},
+		},
+		{
+			AddRule:   acme.tableauRule,
+			CardCount: [2]int{1, 1},
+			BaseCard:  state.SuitedCard{Rank: state.King},
+		},
+		{
+			AddRule:   acme.tableauRule,
+			CardCount: [2]int{1, 1},
+			BaseCard:  state.SuitedCard{Rank: state.King},
+		},
+	}
 }
 
-func (*Acme) tableauRule(tableau *state.Tableau, card state.SuitedCard) bool {
+func (*Acme) tableauRule(tableau *state.Stack, card state.SuitedCard) bool {
 	// Handle when the tableau is empty.
-	if (*tableau).Len() == 0 {
+	if tableau.Len() == 0 {
 		// Anything can be put onto an empty tableau.
 		return true
 	}
 
 	// Get the card currently at the top of the tableau.
-	topCard, err := (*tableau).Top()
+	topCard, err := tableau.Top()
 	if err != nil {
 		return false
 	}
@@ -69,32 +90,14 @@ func (*Acme) tableauRule(tableau *state.Tableau, card state.SuitedCard) bool {
 	return false
 }
 
-// TableauPosition - Not currently used.
-func (*Acme) TableauPosition(tableauNumber int) (int, int, int) {
-	const x = 0
-
-	const angle = 0
-
-	return x, tableauNumber, angle
-}
-
 // Foundations - how the foundations are defined.
-func (*Acme) Foundations() (
-	number int,
-	basecard state.Rank,
-	addRule func(state.Foundation, state.SuitedCard) bool,
-) {
-	const foundationCount = 4
-	return foundationCount, state.Ace, PlusOneRule
-}
-
-// SetupDealCardCounts - Should return a list of ints, the first int will be the
-// number of cards going into the first tableau, the second will be how many
-// cards are visible in that tableau. The third and fourth ints will apply to
-// the second tableau, etc.
-func (*Acme) SetupTableauCardCounts() [][2]int {
-	//nolint:revive // Ignore the constant complaint.
-	return [][2]int{{1, 1}, {1, 1}, {1, 1}, {1, 1}}
+func (*Acme) Foundations() []state.StackSpec {
+	return []state.StackSpec{
+		{BaseCard: state.SuitedCard{Rank: state.Ace, Suit: state.Hearts}, AddRule: PlusOneRule},
+		{BaseCard: state.SuitedCard{Rank: state.Ace, Suit: state.Diamonds}, AddRule: PlusOneRule},
+		{BaseCard: state.SuitedCard{Rank: state.Ace, Suit: state.Clubs}, AddRule: PlusOneRule},
+		{BaseCard: state.SuitedCard{Rank: state.Ace, Suit: state.Spades}, AddRule: PlusOneRule},
+	}
 }
 
 // HowToPlay - Tell the player how to play the game.

@@ -15,13 +15,8 @@ func (*KlondikeVegas) Name() string {
 
 // Reserves - how the reserves are defined.
 // Note that there are no reserves required in a game of KlondikeVegas.
-func (*KlondikeVegas) Reserves() (
-	number int,
-	cardCount [][2]int,
-	addRule func(*state.Reserve, state.SuitedCard) bool,
-) {
-	const reserveCount = 0
-	return reserveCount, [][2]int{}, func(*state.Reserve, state.SuitedCard) bool { return false }
+func (*KlondikeVegas) Reserves() []state.StackSpec {
+	return []state.StackSpec{}
 }
 
 // TableauGridSize - The size of the grid required by klondikeVegas.
@@ -39,12 +34,45 @@ func (*KlondikeVegas) Decks() int {
 const numKlondikeVegasTableau = 7
 
 // Tableau - how the tableau are defined.
-func (*KlondikeVegas) Tableau() (
-	number int,
-	basecard state.Rank,
-	addRule func(*state.Tableau, state.SuitedCard) bool,
-) {
-	return numKlondikeVegasTableau, state.King, MinusOneRule
+func (*KlondikeVegas) Tableau() []state.StackSpec {
+	// return numKlondikeTableau, state.King, MinusOneRule
+	return []state.StackSpec{
+		{
+			AddRule:   MinusOneRule,
+			CardCount: [2]int{1, 1},
+			BaseCard:  state.SuitedCard{Rank: state.King},
+		},
+		{
+			AddRule:   MinusOneRule,
+			CardCount: [2]int{2, 1},
+			BaseCard:  state.SuitedCard{Rank: state.King},
+		},
+		{
+			AddRule:   MinusOneRule,
+			CardCount: [2]int{3, 1},
+			BaseCard:  state.SuitedCard{Rank: state.King},
+		},
+		{
+			AddRule:   MinusOneRule,
+			CardCount: [2]int{4, 1},
+			BaseCard:  state.SuitedCard{Rank: state.King},
+		},
+		{
+			AddRule:   MinusOneRule,
+			CardCount: [2]int{5, 1},
+			BaseCard:  state.SuitedCard{Rank: state.King},
+		},
+		{
+			AddRule:   MinusOneRule,
+			CardCount: [2]int{6, 1},
+			BaseCard:  state.SuitedCard{Rank: state.King},
+		},
+		{
+			AddRule:   MinusOneRule,
+			CardCount: [2]int{7, 1},
+			BaseCard:  state.SuitedCard{Rank: state.King},
+		},
+	}
 }
 
 // TableauPosition - Where does each tableau go in the grid, and what angle (relative to
@@ -59,22 +87,25 @@ func (*KlondikeVegas) TableauPosition(tableauNumber int) (int, int, int) {
 }
 
 // Foundations - how the foundations are defined.
-func (*KlondikeVegas) Foundations() (
-	number int,
-	basecard state.Rank,
-	addRule func(state.Foundation, state.SuitedCard) bool,
-) {
-	const foundationCount = 4
-	return foundationCount, state.Ace, PlusOneRule
-}
-
-// SetupTableauCardCounts - Should return a list of ints, the first int will be
-// the number of cards going into the first tableau, the second will be how many
-// cards are visible in that tableau. The third and fourth ints will apply to
-// the second tableau, etc.
-func (*KlondikeVegas) SetupTableauCardCounts() [][2]int {
-	//nolint:revive // Ignore the constant complaint.
-	return [][2]int{{1, 1}, {2, 1}, {3, 1}, {4, 1}, {5, 1}, {6, 1}, {7, 1}}
+func (*KlondikeVegas) Foundations() []state.StackSpec {
+	return []state.StackSpec{
+		{
+			BaseCard: state.SuitedCard{Rank: state.Ace, Suit: state.Hearts},
+			AddRule:  PlusOneRule,
+		},
+		{
+			BaseCard: state.SuitedCard{Rank: state.Ace, Suit: state.Diamonds},
+			AddRule:  PlusOneRule,
+		},
+		{
+			BaseCard: state.SuitedCard{Rank: state.Ace, Suit: state.Clubs},
+			AddRule:  PlusOneRule,
+		},
+		{
+			BaseCard: state.SuitedCard{Rank: state.Ace, Suit: state.Spades},
+			AddRule:  PlusOneRule,
+		},
+	}
 }
 
 // HowToPlay - Tell the player how to play the game.

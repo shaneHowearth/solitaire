@@ -2,9 +2,9 @@ package game
 
 import "github.com/shanehowearth/solitaire/state"
 
-// PlusOneRule - A rule for foundations where the card being added must be the
+// PlusOneRule - A rule for stacks where the card being added must be the
 // same suit, and be of a rank one higher than the existing top card.
-var PlusOneRule = func(foundation state.Foundation, card state.SuitedCard) bool {
+var PlusOneRule = func(foundation *state.Stack, card state.SuitedCard) bool {
 	// Handle when the foundation is empty.
 	if foundation.Len() == 0 {
 		if card.Suit == foundation.Base.Suit && card.Rank == foundation.Base.Rank {
@@ -31,10 +31,10 @@ var PlusOneRule = func(foundation state.Foundation, card state.SuitedCard) bool 
 // MinusOneRule - A rule for tableau where the card being added must be the
 // opposite colour, and a rank of one less, than the existing top card on that
 // tableau.
-var MinusOneRule = func(tableau *state.Tableau, card state.SuitedCard) bool {
+var MinusOneRule = func(tableau *state.Stack, card state.SuitedCard) bool {
 	// Handle when the tableau is empty.
 	if (*tableau).Len() == 0 {
-		if card.Rank == tableau.Base {
+		if card.Rank == tableau.Base.Rank {
 			return true
 		}
 	}
