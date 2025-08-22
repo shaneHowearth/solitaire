@@ -5,7 +5,6 @@ import (
 
 	"github.com/shanehowearth/solitaire/game"
 	"github.com/shanehowearth/solitaire/screen"
-	"github.com/shanehowearth/solitaire/screen/tui"
 	"github.com/shanehowearth/solitaire/state"
 )
 
@@ -43,16 +42,6 @@ func New() *Instance {
 
 // Start - start the game.
 func (instance *Instance) Start() error {
-	// Available games.
-	variants := []game.Variant{}
-	variants = append(variants, &game.Klondike{})
-	variants = append(variants, &game.KlondikeVegas{})
-	variants = append(variants, &game.Acme{})
-
-	// TODO - This shouldn't be here in the controller - it's coupling the
-	// controller to one type of display, and if there's a new display created
-	// in the future (eg. wails), this will break.
-	instance.Display = tui.New(variants)
 
 	instance.Display.SetGameSelectedCallback(instance.onGameSelected)
 

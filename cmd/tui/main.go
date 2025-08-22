@@ -5,6 +5,8 @@ import (
 	"os"
 
 	"github.com/shanehowearth/solitaire"
+	"github.com/shanehowearth/solitaire/game"
+	"github.com/shanehowearth/solitaire/screen/tui"
 )
 
 func main() {
@@ -22,6 +24,14 @@ func main() {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 
 	instance := solitaire.New()
+
+	// Available games.
+	variants := []game.Variant{}
+	variants = append(variants, &game.Klondike{})
+	variants = append(variants, &game.KlondikeVegas{})
+	variants = append(variants, &game.Acme{})
+
+	instance.Display = tui.New(variants)
 
 	if err := instance.Start(); err != nil {
 		log.Fatalf("Error running application: %v", err)
