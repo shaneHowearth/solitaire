@@ -141,3 +141,8 @@ func (*KlondikeVegas) MaxRedeals() int {
 	// Never allowed to redeal.
 	return 0
 }
+
+// Move -
+func (*KlondikeVegas) Move(source, destination *state.Stack, maxRedeals int) bool {
+	return Move(source, destination, maxRedeals)
+}

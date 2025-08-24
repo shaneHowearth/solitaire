@@ -181,3 +181,8 @@ func (*AcesAndKings) MaxRedeals() int {
 	// Allow an unlimited number of redeals.
 	return 0
 }
+
+// Move -
+func (*AcesAndKings) Move(source, destination *state.Stack, maxRedeals int) bool {
+	return Move(source, destination, maxRedeals)
+}
