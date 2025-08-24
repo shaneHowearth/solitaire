@@ -126,11 +126,11 @@ func (*Acme) HasWon(_ []*state.Tableau, foundations []*state.Foundation) bool {
 
 // MaxRedeals - how many redeals are allowed.
 func (*Acme) MaxRedeals() int {
-	// Allow an unlimited number of redeals.
+	// Only one redeal is allowed.
 	return 1
 }
 
 // Move -
-func (*Acme) Move(source, destination *state.Stack, maxRedeals int) bool {
+func (*Acme) Move(source, destination *state.Stack, _ []*state.Tableau, maxRedeals int) bool {
 	return Move(source, destination, maxRedeals)
 }

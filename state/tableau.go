@@ -7,6 +7,7 @@ import "fmt"
 type Tableau struct {
 	Stack *Stack
 	Base  Rank
+	Count int
 }
 
 // CreateTableaus - Create the tableaus that will host the cards.
@@ -23,8 +24,10 @@ func CreateTableaus(tableauSpec []StackSpec) []*Tableau {
 		}
 
 		tableau := Tableau{
-			Base: tableauSpec[i].BaseCard.Rank,
+			Base:  tableauSpec[i].BaseCard.Rank,
+			Count: i,
 		}
+
 		stack := NewStack(RankCount,
 			tableauSpec[i].BaseCard,
 			func(card SuitedCard) bool {

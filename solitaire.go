@@ -110,7 +110,7 @@ func (instance *Instance) onComponentSelected(
 		panic(fmt.Sprintf("Got impossible 'toComponentType' %d", toComponentType))
 	}
 
-	instance.Game.Move(fromStack, toStack, instance.Game.MaxRedeals())
+	instance.Game.Move(fromStack, toStack, instance.Tableau, instance.Game.MaxRedeals())
 
 	instance.updateDisplay()
 

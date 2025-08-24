@@ -140,6 +140,6 @@ func (*Klondike) MaxRedeals() int {
 }
 
 // Move -
-func (*Klondike) Move(source, destination *state.Stack, maxRedeals int) bool {
+func (*Klondike) Move(source, destination *state.Stack, _ []*state.Tableau, maxRedeals int) bool {
 	return Move(source, destination, maxRedeals)
 }
