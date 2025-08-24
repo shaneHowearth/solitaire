@@ -45,4 +45,7 @@ type Variant interface {
 	// MaxRedeals - Rule for how many times the stock can be dealt back to the
 	// talon/stock -1 inidcates unlimited.
 	MaxRedeals() int
+
+	// Move - how cards are moved from one stack to another.
+	Move(source, destination *state.Stack, maxRedeals int) bool
 }

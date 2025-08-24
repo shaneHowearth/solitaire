@@ -138,3 +138,8 @@ func (*Klondike) MaxRedeals() int {
 	// Allow an unlimited number of redeals.
 	return -1
 }
+
+// Move -
+func (*Klondike) Move(source, destination *state.Stack, maxRedeals int) bool {
+	return Move(source, destination, maxRedeals)
+}
