@@ -31,6 +31,7 @@ func main() {
 	variants = append(variants, &game.KlondikeVegas{})
 	variants = append(variants, &game.Acme{})
 	variants = append(variants, &game.AcesAndKings{})
+	variants = append(variants, &game.AcesSquare{})
 
 	instance.Display = tui.New(variants)
 

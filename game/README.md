@@ -93,7 +93,7 @@ func (tableau solitaire.Tableau, card solitaire.SuitedCard) bool {
 ### A
 - [ ] [Accordion](https://en.wikipedia.org/wiki/Accordion_(solitaire))
 - [x] [Aces and Kings](https://en.wikipedia.org/wiki/Aces_and_Kings)
-- [ ] [Aces Square](https://en.wikipedia.org/wiki/Aces_Square_(solitaire))
+- [x] [Aces Square](https://en.wikipedia.org/wiki/Aces_Square_(solitaire))
 - [ ] [Aces Up](https://en.wikipedia.org/wiki/Aces_Up)
 - [x] [Acme](https://en.wikipedia.org/wiki/Acme_(solitaire))
 - [ ] [Addiction](https://en.wikipedia.org/wiki/Addiction_(solitaire))
