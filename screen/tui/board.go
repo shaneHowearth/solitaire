@@ -14,10 +14,9 @@ import (
 func (display *Display) CreateBoard(
 	name string,
 	tableauHeight, tableauWidth, reserveCount, foundationCount int,
-	foundationBase state.Rank,
 	howTo []string,
 ) {
-	gamePage := display.createGamePage(name, tableauHeight, tableauWidth, reserveCount, foundationCount, foundationBase, howTo)
+	gamePage := display.createGamePage(name, tableauHeight, tableauWidth, reserveCount, foundationCount, howTo)
 
 	display.screens[name] = gamePage
 }
@@ -25,7 +24,6 @@ func (display *Display) CreateBoard(
 func (display *Display) createGamePage(
 	name string,
 	tableauHeight, tableauWidth, reserveCount, foundationCount int,
-	_ state.Rank,
 	howTo []string,
 ) tview.Primitive {
 	mainRows := tview.NewFlex().SetDirection(tview.FlexRow)

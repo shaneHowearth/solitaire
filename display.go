@@ -19,7 +19,6 @@ func (instance *Instance) createGamePage() {
 		tableauWidth,
 		len(reserveSpec),
 		len(foundationSpec),
-		foundationSpec[0].BaseCard.Rank,
 		howTo,
 	)
 

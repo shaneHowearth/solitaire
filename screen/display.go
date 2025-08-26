@@ -20,7 +20,6 @@ type Display interface {
 	CreateBoard(
 		name string,
 		tableauHeight, tableauWidth, reserveCount, foundationCount int,
-		foundationBase state.Rank,
 		howToPlay []string,
 	)
 

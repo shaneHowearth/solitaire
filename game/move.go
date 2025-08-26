@@ -12,11 +12,6 @@ func Move(source, destination *state.Stack, maxRedeals int) bool {
 		return false
 	}
 
-	// Nothing to do.
-	// if source.Cards() == destination.Cards() {
-	// 	return false
-	// }
-
 	if destination.Type == state.StackReserve {
 		// No cards can be moved ONTO a reserve.
 		return false

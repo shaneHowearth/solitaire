@@ -7,7 +7,6 @@ import "fmt"
 type Tableau struct {
 	Stack *Stack
 	Base  Rank
-	Count int
 }
 
 // CreateTableaus - Create the tableaus that will host the cards.
