@@ -47,5 +47,8 @@ type Variant interface {
 	MaxRedeals() int
 
 	// Move - how cards are moved from one stack to another.
-	Move(source, destination *state.Stack, tableau []*state.Tableau, maxRedeals int) bool
+	Move(source, destination *state.Stack, maxRedeals int) bool
+
+	// Compact
+	Compact(stock, waste *state.Stack, tableaus []*state.Tableau)
 }

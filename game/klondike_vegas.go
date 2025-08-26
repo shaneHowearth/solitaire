@@ -143,6 +143,9 @@ func (*KlondikeVegas) MaxRedeals() int {
 }
 
 // Move -
-func (*KlondikeVegas) Move(source, destination *state.Stack, _ []*state.Tableau, maxRedeals int) bool {
+func (*KlondikeVegas) Move(source, destination *state.Stack, maxRedeals int) bool {
 	return Move(source, destination, maxRedeals)
 }
+
+// Compact
+func (*KlondikeVegas) Compact(_, _ *state.Stack, _ []*state.Tableau) {}
