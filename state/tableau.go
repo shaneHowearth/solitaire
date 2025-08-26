@@ -17,23 +17,25 @@ func CreateTableaus(tableauSpec []StackSpec) []*Tableau {
 
 	tableaus := make([]*Tableau, 0, len(tableauSpec))
 
-	for i := 0; i < len(tableauSpec); i++ {
-		if tableauSpec[i].AddRule == nil {
-			panic(fmt.Sprintf("Cannot create tableau %d without a rule.", i))
+	for idx := 0; idx < len(tableauSpec); idx++ {
+		if tableauSpec[idx].AddRule == nil {
+			panic(fmt.Sprintf("Cannot create tableau %d without a rule.", idx))
 		}
 
 		tableau := Tableau{
-			Base:  tableauSpec[i].BaseCard.Rank,
-			Count: i,
+			Base: tableauSpec[idx].BaseCard.Rank,
 		}
 
 		stack := NewStack(RankCount,
-			tableauSpec[i].BaseCard,
+			tableauSpec[idx].BaseCard,
 			func(card SuitedCard) bool {
-				return tableauSpec[i].AddRule(tableau.Stack, card)
+				return tableauSpec[idx].AddRule(tableau.Stack, card)
 			},
 			StackTableau,
 		)
+
+		stack.TableauPosition = idx
+
 		tableau.Stack = stack
 
 		tableaus = append(tableaus, &tableau)

@@ -118,67 +118,76 @@ func (display *Display) createGamePage(
 		)
 	}
 
-	// ############
-	// # RESERVES #
-	// ############
-	tableauArea := tview.NewFlex().SetDirection(tview.FlexColumn)
-	display.reserves = make([]*tview.TextView, reserveCount)
-
-	for idx := 0; idx < reserveCount; idx++ {
-		reserve := tview.NewTextView()
-
-		reserveIdx := idx
-
-		// Add some decorations to the box.
-		reserve.SetBorder(true).SetTitle(" Reserve ")
-		reserve.SetBackgroundColor(display.defaultBgColor)
-
-		reserve.SetMouseCapture(
-			func(action tview.MouseAction, event *tcell.EventMouse) (
-				tview.MouseAction, *tcell.EventMouse) {
-				if action == tview.MouseLeftClick && reserve.HasFocus() {
-					display.selectComponent(state.StackReserve, reserveIdx)
-					// Return nil, nil to completely consume the event.
-					return tview.MouseConsumed, nil
-				}
-
-				return action, event
-			})
-
-		display.reserves[reserveIdx] = reserve
-
-		tableauArea.AddItem(
-			reserve, 0, 1, true,
-		)
-	}
+	tableauArea := tview.NewFlex().SetDirection(tview.FlexRow)
 
 	// ############
 	// # TABLEAUS #
 	// ############
 	display.tableau = make([]*tview.TextView, tableauHeight*tableauWidth)
 
-	for idx := 0; idx < tableauHeight*tableauWidth; idx++ {
-		tableau := tview.NewTextView()
+	for idx := 0; idx < tableauHeight; idx++ {
+		// Create a row holding flex.
+		tableauRow := tview.NewFlex().SetDirection(tview.FlexColumn)
 
-		tableau.SetBorder(true)
-		tableau.SetBackgroundColor(display.defaultBgColor)
+		// Only do this in the first tableauRow
+		if idx == 0 {
+			// ############
+			// # RESERVES #
+			// ############
 
-		tableauIdx := idx
-		display.tableau[tableauIdx] = tableau
+			display.reserves = make([]*tview.TextView, reserveCount)
+			for reserveIdx := 0; reserveIdx < reserveCount; reserveIdx++ {
+				reserve := tview.NewTextView()
 
-		tableau.SetMouseCapture(
-			func(action tview.MouseAction, event *tcell.EventMouse) (
-				tview.MouseAction, *tcell.EventMouse) {
-				if action == tview.MouseLeftClick && tableau.HasFocus() {
-					display.selectComponent(state.StackTableau, tableauIdx)
-					return action, nil
-				}
+				// Add some decorations to the box.
+				reserve.SetBorder(true).SetTitle(" Reserve ")
+				reserve.SetBackgroundColor(display.defaultBgColor)
 
-				return action, event
-			})
+				reserve.SetMouseCapture(
+					func(action tview.MouseAction, event *tcell.EventMouse) (
+						tview.MouseAction, *tcell.EventMouse) {
+						if action == tview.MouseLeftClick && reserve.HasFocus() {
+							display.selectComponent(state.StackReserve, reserveIdx)
+							// Return nil, nil to completely consume the event.
+							return tview.MouseConsumed, nil
+						}
+
+						return action, event
+					})
+
+				display.reserves[reserveIdx] = reserve
+
+				tableauRow.AddItem(
+					reserve, 0, 1, true,
+				)
+			}
+		}
+
+		for widthIdx := 0; widthIdx < tableauWidth; widthIdx++ {
+			tableau := tview.NewTextView()
+
+			tableau.SetBorder(true)
+			tableau.SetBackgroundColor(display.defaultBgColor)
+
+			tableauIdx := idx*tableauWidth + widthIdx
+			display.tableau[tableauIdx] = tableau
+
+			tableau.SetMouseCapture(
+				func(action tview.MouseAction, event *tcell.EventMouse) (
+					tview.MouseAction, *tcell.EventMouse) {
+					if action == tview.MouseLeftClick && tableau.HasFocus() {
+						display.selectComponent(state.StackTableau, tableauIdx)
+						return action, nil
+					}
+
+					return action, event
+				})
+			tableauRow.AddItem(tableau, 0, 1, true)
+
+		}
 
 		// Add the row to the tableau.
-		tableauArea.AddItem(tableau, 0, 1, true)
+		tableauArea.AddItem(tableauRow, 0, 1, true)
 	}
 
 	// Controls/Help.
