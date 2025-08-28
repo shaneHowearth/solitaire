@@ -34,6 +34,8 @@ func NewTalon(
 		StackTalon,
 	)
 
+	stock.MaxRedeals = dealCount
+
 	waste := NewStack(
 		stackSize,
 		SuitedCard{},

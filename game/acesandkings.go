@@ -183,8 +183,8 @@ func (*AcesAndKings) MaxRedeals() int {
 }
 
 // Move -
-func (*AcesAndKings) Move(source, destination *state.Stack, maxRedeals int) bool {
-	return Move(source, destination, maxRedeals)
+func (*AcesAndKings) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
+	return Move(source, destination)
 }
 
 // Compact

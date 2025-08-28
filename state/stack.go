@@ -12,6 +12,7 @@ type Stack struct {
 	Rule            func(SuitedCard) bool
 	Type            StackType
 	Received        int // count how many times this stack has received cards.
+	MaxRedeals      int
 	TableauPosition int // Simple count to determine where in the Tableau this is.
 }
 
@@ -84,4 +85,17 @@ func (stack *Stack) Cards() []string {
 	}
 
 	return cardPile
+}
+
+// CanReceiveMore - returns whether the stack is allowed to receive another
+// bunch. Used to check if there has been more redeals than the game specifies
+// are allowed.
+func (stack *Stack) CanReceiveMore() bool {
+	if stack.Received < stack.MaxRedeals || stack.MaxRedeals == -1 {
+		stack.Received++
+
+		return true
+	}
+
+	return false
 }

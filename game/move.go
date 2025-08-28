@@ -7,7 +7,7 @@ import (
 )
 
 // Move - Move card(s) from one stack to another.
-func Move(source, destination *state.Stack, maxRedeals int) bool {
+func Move(source, destination *state.Stack) bool {
 	if destination == nil {
 		return false
 	}
@@ -85,13 +85,10 @@ func Move(source, destination *state.Stack, maxRedeals int) bool {
 	}
 
 	if source.Type == state.StackWaste && destination.Type == state.StackTalon {
-		if destination.Received < maxRedeals || maxRedeals == -1 {
+		if destination.CanReceiveMore() {
 			canMove = true
 
-			// slices.Reverse(*temp.Cards)
 			temp.Reverse()
-
-			destination.Received++
 		} else {
 			canMove = false
 		}

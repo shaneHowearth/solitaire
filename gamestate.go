@@ -23,8 +23,8 @@ func (instance *Instance) setupGameState() {
 		// Reserve Setup.
 		reserveSpec,
 		// Talon Setup.
-		1,
-		1,
+		instance.Game.MaxRedeals(),
+		1, // how many cards per deal.
 		// Talon rule is to allow everything to be added to its stacks.
 		func(state.SuitedCard) bool {
 			return true
