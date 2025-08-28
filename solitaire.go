@@ -149,6 +149,11 @@ func (instance *Instance) dealCards() {
 
 		for openIdx := 0; openIdx < numOpen; openIdx++ {
 			card := instance.Deck.Deal()
+
+			if _, ok := instance.Tableau[idx].Stack.SkipCards[card]; ok {
+				continue
+			}
+
 			instance.Tableau[idx].Stack.Add(card, true)
 		}
 
