@@ -352,3 +352,8 @@ func (AcesSquare) Compact(stock, waste *state.Stack, tableaus []*state.Tableau) 
 
 	log.Printf("Compaction complete")
 }
+
+// Talon
+func (*AcesSquare) Talon() bool {
+	return true
+}

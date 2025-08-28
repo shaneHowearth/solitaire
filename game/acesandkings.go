@@ -189,3 +189,8 @@ func (*AcesAndKings) Move(source, destination *state.Stack, _ []*state.Tableau) 
 
 // Compact
 func (*AcesAndKings) Compact(_, _ *state.Stack, _ []*state.Tableau) {}
+
+// Talon
+func (*AcesAndKings) Talon() bool {
+	return true
+}

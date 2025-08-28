@@ -11,6 +11,9 @@ type Variant interface {
 	// Decks - How many decks of cards are required to play the variant.
 	Decks() int
 
+	// Talon - whether or not cards should be deal to the Talon
+	Talon() bool
+
 	// Tableau - An arrangement of cards on the table, typically comprising
 	// several depots i.e. places where columns of overlapping cards may be
 	// formed, the packing taking place on the available cards on the columns.

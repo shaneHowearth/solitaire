@@ -139,7 +139,6 @@ func (instance *Instance) dealCards() {
 		// dealt most definitely do not adhere to it (the rule).
 		rule := instance.Tableau[idx].Stack.Rule
 		instance.Tableau[idx].Stack.Rule = func(state.SuitedCard) bool { return true }
-		// countIdx := idx * 2
 		numCards := tableauSpec[idx].CardCount[0]
 		numOpen := tableauSpec[idx].CardCount[1]
 
@@ -183,8 +182,10 @@ func (instance *Instance) dealCards() {
 	}
 
 	// Put one card onto the Waste.
-	card := instance.Deck.Deal()
-	instance.Talon.Waste.Add(card, true)
+	if instance.Game.Talon() {
+		card := instance.Deck.Deal()
+		instance.Talon.Waste.Add(card, true)
+	}
 
 	// Put the rest of the cards onto the talon.
 	for instance.Deck.Len() != 0 {
