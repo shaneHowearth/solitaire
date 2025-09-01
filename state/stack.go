@@ -2,6 +2,7 @@ package state
 
 import (
 	"fmt"
+	"math/rand/v2"
 )
 
 // Stack - A stack of cards one on top of the other and squared such that only
@@ -99,4 +100,10 @@ func (stack *Stack) CanReceiveMore() bool {
 	}
 
 	return false
+}
+
+func (stack *Stack) Shuffle() {
+	rand.Shuffle(stack.Len(), func(i, j int) {
+		(*stack.cards)[i], (*stack.cards)[j] = (*stack.cards)[j], (*stack.cards)[i]
+	})
 }

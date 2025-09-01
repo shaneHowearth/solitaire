@@ -64,3 +64,8 @@ func (instance *Instance) updateDisplay() {
 	// Display the Waste.
 	instance.Display.WastePrint(instance.Talon.Waste.Cards())
 }
+
+func (instance *Instance) redeal() {
+	instance.Game.Redeal(instance.Talon, instance.Tableau)
+	instance.updateDisplay()
+}

@@ -142,3 +142,6 @@ func (*Acme) Compact(_, _ *state.Stack, _ []*state.Tableau) {}
 func (*Acme) Talon() bool {
 	return true
 }
+
+// Redeal
+func (*Acme) Redeal(_ *state.Talon, _ []*state.Tableau) {}

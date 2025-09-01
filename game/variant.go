@@ -46,8 +46,11 @@ type Variant interface {
 	HasWon([]*state.Tableau, []*state.Foundation) bool
 
 	// MaxRedeals - Rule for how many times the stock can be dealt back to the
-	// talon/stock -1 inidcates unlimited.
+	// talon/stock -1 indicates unlimited.
 	MaxRedeals() int
+
+	// Redeal
+	Redeal(foundations *state.Talon, tableau []*state.Tableau)
 
 	// Move - how cards are moved from one stack to another.
 	Move(source, destination *state.Stack, tableaus []*state.Tableau) bool

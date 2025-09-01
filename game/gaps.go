@@ -158,3 +158,8 @@ func (*Gaps) Compact(_, _ *state.Stack, _ []*state.Tableau) {}
 func (*Gaps) Talon() bool {
 	return false
 }
+
+// Redeal
+func (gaps *Gaps) Redeal(_ *state.Talon, tableau []*state.Tableau) {
+	GapsRedeal(tableau, gapsRows, gapsColumns)
+}

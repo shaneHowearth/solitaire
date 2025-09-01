@@ -357,3 +357,6 @@ func (AcesSquare) Compact(stock, waste *state.Stack, tableaus []*state.Tableau) 
 func (*AcesSquare) Talon() bool {
 	return true
 }
+
+// Redeal
+func (*AcesSquare) Redeal(_ *state.Talon, _ []*state.Tableau) {}

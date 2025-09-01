@@ -154,3 +154,6 @@ func (*KlondikeVegas) Compact(_, _ *state.Stack, _ []*state.Tableau) {}
 func (*KlondikeVegas) Talon() bool {
 	return true
 }
+
+// Redeal
+func (*KlondikeVegas) Redeal(_ *state.Talon, _ []*state.Tableau) {}

@@ -194,3 +194,6 @@ func (*AcesAndKings) Compact(_, _ *state.Stack, _ []*state.Tableau) {}
 func (*AcesAndKings) Talon() bool {
 	return true
 }
+
+// Redeal
+func (*AcesAndKings) Redeal(_ *state.Talon, _ []*state.Tableau) {}

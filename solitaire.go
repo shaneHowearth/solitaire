@@ -63,6 +63,9 @@ func (instance *Instance) onGameSelected(selectedGame game.Variant) {
 	// Create the game board page dynamically.
 	instance.createGamePage()
 
+	// Set the redeal callback for this game.
+	instance.Display.SetGameRedealCallback(instance.redeal)
+
 	// Switch to the game page.
 	instance.Display.Show(instance.Game.Name())
 }

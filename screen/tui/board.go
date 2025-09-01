@@ -192,7 +192,7 @@ func (display *Display) createGamePage(
 
 	// Controls/Help.
 	controls := tview.NewTextView().
-		SetText("Press 'n' to start a new game, 'm' to return to game menu, Ctrl+C or 'q' to quit").
+		SetText("Press 'n' to start a n\u0332ew game, 'm' to return to game m\u0332enu, Ctrl+C or 'q' to q\u0332uit\n'r' will r\u0332edeal in some games.").
 		SetTextAlign(tview.AlignCenter)
 	controls.SetBorder(true).SetTitle("Controls")
 
@@ -201,21 +201,24 @@ func (display *Display) createGamePage(
 	// Add the rows to the main rows container.
 	mainRows.
 		AddItem(title, 0, 1, false).
-		AddItem(foundationsRow, 8, 0, true).
+		AddItem(foundationsRow, 6, 0, true).
 		AddItem(tableauArea, 0, 1, true).
-		AddItem(controls, 3, 0, false)
+		AddItem(controls, 4, 0, false)
 
 	// Add the main rows to the window container.
 	mainRows.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Rune() {
-		case 'm':
+		case 'm', 'M':
 			display.Show("Games")
 			return nil
-		case 'n':
+		case 'n', 'N':
 			display.onGameSelected(display.Selected)
 			return nil
-		case 'q':
+		case 'q', 'Q':
 			display.App.Stop()
+			return nil
+		case 'r', 'R':
+			display.gameRedealCallback()
 			return nil
 		}
 
