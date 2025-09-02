@@ -35,6 +35,7 @@ func CreateTableaus(tableauSpec []StackSpec) []*Tableau {
 		)
 
 		stack.TableauPosition = idx
+		stack.SkipCards = tableauSpec[idx].SkipCards
 
 		tableau.Stack = stack
 

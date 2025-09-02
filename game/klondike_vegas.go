@@ -149,3 +149,11 @@ func (*KlondikeVegas) Move(source, destination *state.Stack, _ []*state.Tableau)
 
 // Compact
 func (*KlondikeVegas) Compact(_, _ *state.Stack, _ []*state.Tableau) {}
+
+// Talon
+func (*KlondikeVegas) Talon() bool {
+	return true
+}
+
+// Redeal
+func (*KlondikeVegas) Redeal(_ *state.Talon, _ []*state.Tableau) {}

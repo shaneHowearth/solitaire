@@ -11,6 +11,9 @@ type Variant interface {
 	// Decks - How many decks of cards are required to play the variant.
 	Decks() int
 
+	// Talon - whether or not cards should be deal to the Talon
+	Talon() bool
+
 	// Tableau - An arrangement of cards on the table, typically comprising
 	// several depots i.e. places where columns of overlapping cards may be
 	// formed, the packing taking place on the available cards on the columns.
@@ -43,8 +46,11 @@ type Variant interface {
 	HasWon([]*state.Tableau, []*state.Foundation) bool
 
 	// MaxRedeals - Rule for how many times the stock can be dealt back to the
-	// talon/stock -1 inidcates unlimited.
+	// talon/stock -1 indicates unlimited.
 	MaxRedeals() int
+
+	// Redeal
+	Redeal(foundations *state.Talon, tableau []*state.Tableau)
 
 	// Move - how cards are moved from one stack to another.
 	Move(source, destination *state.Stack, tableaus []*state.Tableau) bool

@@ -2,6 +2,7 @@ package state
 
 import (
 	"fmt"
+	"math/rand/v2"
 )
 
 // Stack - A stack of cards one on top of the other and squared such that only
@@ -14,6 +15,7 @@ type Stack struct {
 	Received        int // count how many times this stack has received cards.
 	MaxRedeals      int
 	TableauPosition int // Simple count to determine where in the Tableau this is.
+	SkipCards       map[SuitedCard]struct{}
 }
 
 // StackType represents the type of game component.
@@ -98,4 +100,10 @@ func (stack *Stack) CanReceiveMore() bool {
 	}
 
 	return false
+}
+
+func (stack *Stack) Shuffle() {
+	rand.Shuffle(stack.Len(), func(i, j int) {
+		(*stack.cards)[i], (*stack.cards)[j] = (*stack.cards)[j], (*stack.cards)[i]
+	})
 }

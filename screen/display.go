@@ -16,6 +16,9 @@ type Display interface {
 	// Component selection callback.
 	SetComponentSelectedCallback(callback func(state.StackType, int, state.StackType, int))
 
+	// Game Redeal callback.
+	SetGameRedealCallback(callback func())
+
 	// Board creation.
 	CreateBoard(
 		name string,

@@ -41,7 +41,7 @@ func (display *Display) createGamePage(
 	// #########
 	display.stack = make([]*tview.TextView, 1)
 	talonIndex := 0 // There's typically only one talon.
-	talon := tview.NewTextView()
+	talon := tview.NewTextView().SetDynamicColors(true)
 	talon.SetWordWrap(true).SetBorder(true).SetTitle(" Stock ")
 	talon.SetBackgroundColor(display.defaultBgColor)
 
@@ -64,7 +64,7 @@ func (display *Display) createGamePage(
 	// # WASTE #
 	// #########
 	display.waste = make([]*tview.TextView, 1)
-	waste := tview.NewTextView()
+	waste := tview.NewTextView().SetDynamicColors(true)
 
 	wasteIndex := 0 // There's typically only one waste pile.
 
@@ -91,7 +91,7 @@ func (display *Display) createGamePage(
 	display.foundations = make([]*tview.TextView, foundationCount)
 
 	for idx := 0; idx < foundationCount; idx++ {
-		foundation := tview.NewTextView()
+		foundation := tview.NewTextView().SetDynamicColors(true)
 
 		// Add some decorations to the box.
 		foundationIdx := idx
@@ -137,7 +137,7 @@ func (display *Display) createGamePage(
 
 			display.reserves = make([]*tview.TextView, reserveCount)
 			for reserveIdx := 0; reserveIdx < reserveCount; reserveIdx++ {
-				reserve := tview.NewTextView()
+				reserve := tview.NewTextView().SetDynamicColors(true)
 
 				// Add some decorations to the box.
 				reserve.SetBorder(true).SetTitle(" Reserve ")
@@ -164,7 +164,7 @@ func (display *Display) createGamePage(
 		}
 
 		for widthIdx := 0; widthIdx < tableauWidth; widthIdx++ {
-			tableau := tview.NewTextView()
+			tableau := tview.NewTextView().SetDynamicColors(true)
 
 			tableau.SetBorder(true)
 			tableau.SetBackgroundColor(display.defaultBgColor)
@@ -192,7 +192,7 @@ func (display *Display) createGamePage(
 
 	// Controls/Help.
 	controls := tview.NewTextView().
-		SetText("Press 'n' to start a new game, 'm' to return to game menu, Ctrl+C or 'q' to quit").
+		SetText("Press 'n' to start a n\u0332ew game, 'm' to return to game m\u0332enu, Ctrl+C or 'q' to q\u0332uit\n'r' will r\u0332edeal in some games.").
 		SetTextAlign(tview.AlignCenter)
 	controls.SetBorder(true).SetTitle("Controls")
 
@@ -201,21 +201,24 @@ func (display *Display) createGamePage(
 	// Add the rows to the main rows container.
 	mainRows.
 		AddItem(title, 0, 1, false).
-		AddItem(foundationsRow, 8, 0, true).
+		AddItem(foundationsRow, 6, 0, true).
 		AddItem(tableauArea, 0, 1, true).
-		AddItem(controls, 3, 0, false)
+		AddItem(controls, 4, 0, false)
 
 	// Add the main rows to the window container.
 	mainRows.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Rune() {
-		case 'm':
+		case 'm', 'M':
 			display.Show("Games")
 			return nil
-		case 'n':
+		case 'n', 'N':
 			display.onGameSelected(display.Selected)
 			return nil
-		case 'q':
+		case 'q', 'Q':
 			display.App.Stop()
+			return nil
+		case 'r', 'R':
+			display.gameRedealCallback()
 			return nil
 		}
 
@@ -243,6 +246,13 @@ func (display *Display) TalonPrint(value []string) {
 // WastePrint -
 func (display *Display) WastePrint(value []string) {
 	if len(value) > 0 {
+		textColor := "[-]"
+		if strings.Contains(value[len(value)-1], state.Hearts.String()) ||
+			strings.Contains(value[len(value)-1], state.Diamonds.String()) {
+			textColor = "[red]"
+		}
+		value[len(value)-1] = fmt.Sprintf("%s%s%s", textColor, value[len(value)-1], "[-]")
+
 		display.waste[0].SetText(
 			value[len(value)-1],
 		)
@@ -262,6 +272,13 @@ func (display *Display) FoundationTitle(num int, value string) {
 func (display *Display) FoundationPrint(num int, value []string) {
 	if len(value) > 0 {
 		// Only print the top card.
+		textColor := "[-]"
+		if strings.Contains(value[len(value)-1], state.Hearts.String()) ||
+			strings.Contains(value[len(value)-1], state.Diamonds.String()) {
+			textColor = "[red]"
+		}
+		value[len(value)-1] = fmt.Sprintf("%s%s%s", textColor, value[len(value)-1], "[-]")
+
 		display.foundations[num].SetText(
 			value[len(value)-1],
 		)
@@ -273,6 +290,15 @@ const emptyStack = ""
 // ReservePrint -
 func (display *Display) ReservePrint(idx int, value []string) {
 	if len(value) > 0 {
+		for i := range value {
+			textColor := "[-]"
+			if strings.Contains(value[i], state.Hearts.String()) ||
+				strings.Contains(value[i], state.Diamonds.String()) {
+				textColor = "[red]"
+			}
+			value[i] = fmt.Sprintf("%s%s%s", textColor, value[i], "[-]")
+		}
+
 		display.reserves[idx].SetText(
 			strings.Join(value, "\n"),
 		)
@@ -286,6 +312,15 @@ func (display *Display) ReservePrint(idx int, value []string) {
 // TableauPrint -
 func (display *Display) TableauPrint(idx int, value []string) {
 	if len(value) > 0 {
+		for i := range value {
+			textColor := "[-]"
+			if strings.Contains(value[i], state.Hearts.String()) ||
+				strings.Contains(value[i], state.Diamonds.String()) {
+				textColor = "[red]"
+			}
+			value[i] = fmt.Sprintf("%s%s%s", textColor, value[i], "[-]")
+		}
+
 		display.tableau[idx].SetText(
 			strings.Join(value, "\n"),
 		)
