@@ -1,6 +1,8 @@
 package game
 
-import "github.com/shanehowearth/solitaire/state"
+import (
+	"github.com/shanehowearth/solitaire/state"
+)
 
 // Gaps - https://en.wikipedia.org/wiki/Gaps
 type Gaps struct{}
@@ -14,13 +16,11 @@ func (*Gaps) Name() string {
 }
 
 const gapsColumns = 13
+const gapsRows = 4
 
 // TableauGridSize - The size of the grid required by acme.
 func (*Gaps) TableauGridSize() (int, int) {
-	const rows = 4
-	const gapsColumns = 13
-
-	return rows, gapsColumns
+	return gapsRows, gapsColumns
 }
 
 // Decks - How many decks of cards are required to play acme.
@@ -84,7 +84,7 @@ func (*Gaps) HowToPlay() []string {
 `,
 		`The game is won when all 48 cards are arranged in numerical order and in suits, with the gaps of each row beside the Kings at the extreme right hand of the row.
 `,
-		`There is only two (2) redeal available in this game.`,
+		`There is only one (1) redeal available in this game.`,
 	}
 
 	return lines
@@ -130,8 +130,8 @@ func (*Gaps) Move(source, destination *state.Stack, tableau []*state.Tableau) bo
 			return false
 		}
 
-		// Card being moved must have a higher rank than the neighbour.
-		if neighbourTop.Rank > sourceTop.Rank {
+		// Card being moved must have a rank one higher than the neighbour.
+		if sourceTop.Rank-neighbourTop.Rank != 1 {
 			return false
 		}
 	}
