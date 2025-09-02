@@ -152,8 +152,10 @@ func (*Gaps) Talon() bool {
 }
 
 // Redeal
-func (gaps *Gaps) Redeal(_ *state.Talon, tableau []*state.Tableau) {
-	GapsRedeal(tableau, gapsRows, gapsColumns)
+func (gaps *Gaps) Redeal(talon *state.Talon, tableau []*state.Tableau) {
+	if talon.Stock.CanReceiveMore() {
+		GapsRedeal(tableau, gapsRows, gapsColumns)
+	}
 }
 
 // HasWon - How to tell if the game has been won.
