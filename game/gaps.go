@@ -90,14 +90,6 @@ func (*Gaps) HowToPlay() []string {
 	return lines
 }
 
-// HasWon - How to tell if the game has been won.
-func (*Gaps) HasWon(tableau []*state.Tableau, _ []*state.Foundation) bool {
-	if tableau[51].Stack.Len() < 2 {
-		return false
-	}
-	return true
-}
-
 // MaxRedeals - how many redeals are allowed.
 func (*Gaps) MaxRedeals() int {
 	// Only one redeal is allowed.
@@ -162,4 +154,60 @@ func (*Gaps) Talon() bool {
 // Redeal
 func (gaps *Gaps) Redeal(_ *state.Talon, tableau []*state.Tableau) {
 	GapsRedeal(tableau, gapsRows, gapsColumns)
+}
+
+// HasWon - How to tell if the game has been won.
+func (*Gaps) HasWon(tableau []*state.Tableau, _ []*state.Foundation) bool {
+
+	for row := 0; row < 4; row++ {
+		rowStart := row * gapsColumns
+		// Get the suit from the first non-empty card in the row
+		// (since the last position should be empty)
+		rowSuit := state.Undefined
+
+		// Find the suit for this row from any non-empty card
+		for col := 0; col < gapsColumns-1; col++ { // Skip last position (should be empty)
+			stackIndex := rowStart + col
+			card, err := tableau[stackIndex].Top()
+			if err != nil {
+				continue
+			}
+
+			rowSuit = card.Suit
+			break
+		}
+
+		// If all cards in row are empty (should never happen) fail.
+		if rowSuit == state.Undefined {
+			return false
+		}
+
+		// Check each position in the row
+		for col := 0; col < gapsColumns; col++ {
+			stackIndex := rowStart + col
+			card, err := tableau[stackIndex].Top()
+			if err != nil {
+				// An empty stack should only be at the 13th position.
+				if (col+1)%13 != 0 {
+					return false
+				}
+
+				continue
+			}
+
+			expectedRank := state.Rank((col + 1) % 13)
+
+			// Check rank matches
+			if card.Rank != expectedRank {
+				return false
+			}
+
+			// Check suit matches (except for empty cards)
+			if card.Suit != rowSuit {
+				return false
+			}
+		}
+	}
+
+	return true
 }
