@@ -12,11 +12,14 @@ import (
 
 	// Import your game package
 	"github.com/shanehowearth/solitaire/game"
+	"github.com/shanehowearth/solitaire/screen"
 	"github.com/shanehowearth/solitaire/state"
 )
 
-// Display represents the main game display system
-type Display struct {
+var _ screen.Display = (*DisplayGUI)(nil)
+
+// DisplayGUI represents the main game display system
+type DisplayGUI struct {
 	App                   fyne.App
 	Window                fyne.Window
 	games                 []game.Variant // Replace with your actual game.Variant type
@@ -41,11 +44,11 @@ type Display struct {
 }
 
 // New creates a new Fyne-based game display
-func New(games []game.Variant) *Display {
+func New(games []game.Variant) *DisplayGUI {
 	myApp := app.New()
 	window := myApp.NewWindow("Solitaire Game")
 
-	display := &Display{
+	display := &DisplayGUI{
 		App:                   myApp,
 		Window:                window,
 		games:                 games,
@@ -63,7 +66,7 @@ func New(games []game.Variant) *Display {
 }
 
 // initializeScreens sets up the different screens/pages
-func (display *Display) initializeScreens() {
+func (display *DisplayGUI) initializeScreens() {
 	// Create container for managing different screens
 	display.container = container.NewAppTabs()
 
@@ -78,7 +81,7 @@ func (display *Display) initializeScreens() {
 }
 
 // createGameScreen creates the main game playing area
-func (display *Display) createGameScreen() fyne.CanvasObject {
+func (display *DisplayGUI) createGameScreen() fyne.CanvasObject {
 	// Game table background
 	gameTable := canvas.NewRectangle(display.defaultBgColor)
 
@@ -119,7 +122,7 @@ func (display *Display) createGameScreen() fyne.CanvasObject {
 }
 
 // createFoundationArea creates the foundation piles area
-func (display *Display) createFoundationArea() fyne.CanvasObject {
+func (display *DisplayGUI) createFoundationArea() fyne.CanvasObject {
 	foundations := container.NewVBox()
 
 	// Create 4 foundation piles (typical for solitaire)
@@ -132,7 +135,7 @@ func (display *Display) createFoundationArea() fyne.CanvasObject {
 }
 
 // createTableauArea creates the main playing area
-func (display *Display) createTableauArea() fyne.CanvasObject {
+func (display *DisplayGUI) createTableauArea() fyne.CanvasObject {
 	tableau := container.NewHBox()
 
 	// Create 7 tableau columns (typical for Klondike)
@@ -145,7 +148,7 @@ func (display *Display) createTableauArea() fyne.CanvasObject {
 }
 
 // createStockArea creates the stock and waste piles
-func (display *Display) createStockArea() fyne.CanvasObject {
+func (display *DisplayGUI) createStockArea() fyne.CanvasObject {
 	stockPile := display.createCardPile("Stock", state.StackType(99), 0)
 	wastePile := display.createCardPile("Waste", state.StackType(98), 0)
 
@@ -153,7 +156,7 @@ func (display *Display) createStockArea() fyne.CanvasObject {
 }
 
 // createCardPile creates a clickable card pile area
-func (display *Display) createCardPile(name string, stackType state.StackType, index int) fyne.CanvasObject {
+func (display *DisplayGUI) createCardPile(name string, stackType state.StackType, index int) fyne.CanvasObject {
 	// Create a tappable area for the card pile
 	pile := canvas.NewRectangle(color.RGBA{R: 50, G: 50, B: 50, A: 255})
 	pile.Resize(fyne.NewSize(80, 120)) // Standard card size
@@ -167,7 +170,7 @@ func (display *Display) createCardPile(name string, stackType state.StackType, i
 }
 
 // createGameListPage creates the game selection screen
-func (display *Display) createGameListPage(games []game.Variant) fyne.CanvasObject {
+func (display *DisplayGUI) createGameListPage(games []game.Variant) fyne.CanvasObject {
 	var gameNames []string
 	for _, game := range games {
 		gameNames = append(gameNames, game.Name())
@@ -198,7 +201,7 @@ func (display *Display) createGameListPage(games []game.Variant) fyne.CanvasObje
 }
 
 // createSettingsScreen creates a settings/options screen
-func (display *Display) createSettingsScreen() fyne.CanvasObject {
+func (display *DisplayGUI) createSettingsScreen() fyne.CanvasObject {
 	return container.NewVBox(
 		widget.NewLabel("Game Settings"),
 		widget.NewCheck("Auto-move cards", func(checked bool) {
@@ -214,7 +217,7 @@ func (display *Display) createSettingsScreen() fyne.CanvasObject {
 }
 
 // setupWindow configures the main window
-func (display *Display) setupWindow() {
+func (display *DisplayGUI) setupWindow() {
 	display.Window.Resize(fyne.NewSize(1200, 800))
 	display.Window.CenterOnScreen()
 
@@ -223,45 +226,46 @@ func (display *Display) setupWindow() {
 }
 
 // SetComponentSelectedCallback sets the callback for component selection
-func (display *Display) SetComponentSelectedCallback(callback func(state.StackType, int, state.StackType, int)) {
+func (display *DisplayGUI) SetComponentSelectedCallback(callback func(state.StackType, int, state.StackType, int)) {
 	display.componentSelectedCallback = callback
 }
 
 // SetGameSelectedCallback sets the callback for game selection
-func (display *Display) SetGameSelectedCallback(callback func(game.Variant)) {
+func (display *DisplayGUI) SetGameSelectedCallback(callback func(game.Variant)) {
 	display.gameSelectedCallback = callback
 }
 
 // SetGameRedealCallback sets the callback for redealing cards
-func (display *Display) SetGameRedealCallback(callback func()) {
+func (display *DisplayGUI) SetGameRedealCallback(callback func()) {
 	display.gameRedealCallback = callback
 }
 
 // Run starts the application
-func (display *Display) Run() {
+func (display *DisplayGUI) Run() error {
 	display.Window.ShowAndRun()
+	return nil
 }
 
 // Show displays the named screen
-func (display *Display) Show(name string) {
+func (display *DisplayGUI) Show(name string) {
 	if screen, exists := display.screens[name]; exists {
 		display.Window.SetContent(screen)
 	}
 }
 
 // Additional helper methods for game state management
-func (display *Display) UpdateGameState() {
+func (display *DisplayGUI) UpdateGameState() {
 	// Refresh the game display based on current state
 	// This would update card positions, selections, etc.
 }
 
-func (display *Display) HighlightComponent(stackType state.StackType, index int) {
+func (display *DisplayGUI) HighlightComponent(stackType state.StackType, index int) {
 	// Highlight a specific component (card pile, etc.)
 	// You'd implement visual feedback here
 }
 
 // onGameSelected handles game selection
-func (display *Display) onGameSelected(gameName string) {
+func (display *DisplayGUI) onGameSelected(gameName string) {
 	// Find the game by name and call the callback
 	for _, game := range display.games {
 		if game.Name() == gameName {
@@ -272,3 +276,5 @@ func (display *Display) onGameSelected(gameName string) {
 		}
 	}
 }
+
+func (*DisplayGUI) ShowWinnerModal(string, int) {}

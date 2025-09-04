@@ -21,11 +21,11 @@ type CardArea struct {
 	label      *widget.RichText
 	stackType  state.StackType
 	index      int
-	display    *Display
+	display    *DisplayGUI
 }
 
 // NewCardArea creates a new clickable card area
-func NewCardArea(title string, stackType state.StackType, index int, display *Display) *CardArea {
+func NewCardArea(title string, stackType state.StackType, index int, display *DisplayGUI) *CardArea {
 	background := canvas.NewRectangle(display.defaultBgColor)
 
 	label := widget.NewRichText()
@@ -80,7 +80,7 @@ func (ca *CardArea) convertColorFormat(text string) string {
 }
 
 // CreateBoard creates the game board layout
-func (display *Display) CreateBoard(
+func (display *DisplayGUI) CreateBoard(
 	name string,
 	tableauHeight, tableauWidth, reserveCount, foundationCount int,
 	howTo []string,
@@ -89,7 +89,7 @@ func (display *Display) CreateBoard(
 	display.screens[name] = gamePage
 }
 
-func (display *Display) createGamePage(
+func (display *DisplayGUI) createGamePage(
 	name string,
 	tableauHeight, tableauWidth, reserveCount, foundationCount int,
 	howTo []string,
@@ -194,7 +194,7 @@ func (display *Display) createGamePage(
 // GameContainer wraps the game content and handles keyboard input
 type GameContainer struct {
 	*fyne.Container
-	display *Display
+	display *DisplayGUI
 }
 
 // TypedKey handles keyboard shortcuts
@@ -216,7 +216,7 @@ func (gc *GameContainer) TypedKey(key *fyne.KeyEvent) {
 // Update methods for different stack types
 
 // TalonPrint updates the stock pile display
-func (display *Display) TalonPrint(value []string) {
+func (display *DisplayGUI) TalonPrint(value []string) {
 	if len(display.stack) > 0 && display.stack[0] != nil {
 		if len(value) > 0 {
 			display.stack[0].SetText(value[len(value)-1])
@@ -227,7 +227,7 @@ func (display *Display) TalonPrint(value []string) {
 }
 
 // WastePrint updates the waste pile display
-func (display *Display) WastePrint(value []string) {
+func (display *DisplayGUI) WastePrint(value []string) {
 	if len(display.waste) > 0 && display.waste[0] != nil {
 		if len(value) > 0 {
 			text := value[len(value)-1]
@@ -243,14 +243,14 @@ func (display *Display) WastePrint(value []string) {
 }
 
 // FoundationTitle updates a foundation's title
-func (display *Display) FoundationTitle(num int, value string) {
+func (display *DisplayGUI) FoundationTitle(num int, value string) {
 	if num < len(display.foundations) && display.foundations[num] != nil {
 		display.foundations[num].SetTitle(value)
 	}
 }
 
 // FoundationPrint updates a foundation pile display
-func (display *Display) FoundationPrint(num int, value []string) {
+func (display *DisplayGUI) FoundationPrint(num int, value []string) {
 	if num < len(display.foundations) && display.foundations[num] != nil {
 		if len(value) > 0 {
 			text := value[len(value)-1]
@@ -266,7 +266,7 @@ func (display *Display) FoundationPrint(num int, value []string) {
 }
 
 // ReservePrint updates a reserve pile display
-func (display *Display) ReservePrint(idx int, value []string) {
+func (display *DisplayGUI) ReservePrint(idx int, value []string) {
 	if idx < len(display.reserves) && display.reserves[idx] != nil {
 		if len(value) > 0 {
 			var coloredValues []string
@@ -285,7 +285,7 @@ func (display *Display) ReservePrint(idx int, value []string) {
 }
 
 // TableauPrint updates a tableau pile display
-func (display *Display) TableauPrint(idx int, value []string) {
+func (display *DisplayGUI) TableauPrint(idx int, value []string) {
 	if idx < len(display.tableau) && display.tableau[idx] != nil {
 		if len(value) > 0 {
 			var coloredValues []string
@@ -305,7 +305,7 @@ func (display *Display) TableauPrint(idx int, value []string) {
 
 // Selection handling methods
 
-func (display *Display) selectComponent(componentType state.StackType, index int) {
+func (display *DisplayGUI) selectComponent(componentType state.StackType, index int) {
 	if display.processingClick {
 		return
 	}
@@ -363,7 +363,7 @@ func (display *Display) selectComponent(componentType state.StackType, index int
 	}
 }
 
-func (display *Display) clearCurrentSelection() {
+func (display *DisplayGUI) clearCurrentSelection() {
 	if display.selectedIndex < 0 {
 		return
 	}
@@ -402,17 +402,17 @@ func (display *Display) clearCurrentSelection() {
 }
 
 // GetSelectedComponent returns the currently selected component
-func (display *Display) GetSelectedComponent() (state.StackType, int) {
+func (display *DisplayGUI) GetSelectedComponent() (state.StackType, int) {
 	return display.selectedComponentType, display.selectedIndex
 }
 
 // ClearSelection clears the current selection
-func (display *Display) ClearSelection() {
+func (display *DisplayGUI) ClearSelection() {
 	display.clearCurrentSelection()
 }
 
 // HasSelection checks if there's a current selection
-func (display *Display) HasSelection() bool {
+func (display *DisplayGUI) HasSelection() bool {
 	return display.selectedIndex >= 0
 }
 
