@@ -213,3 +213,8 @@ func (*Gaps) HasWon(tableau []*state.Tableau, _ []*state.Foundation) bool {
 
 	return true
 }
+
+// FoundationBase
+func (*Gaps) FoundationBase() bool {
+	return false
+}

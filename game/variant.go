@@ -39,6 +39,10 @@ type Variant interface {
 	// cleared, cards are moved to the foundations.
 	Foundations() []state.StackSpec
 
+	// FoundationBase - tell the first deal whether to use a card from the stock
+	// as the base, or not.
+	FoundationBase() bool
+
 	// HowToPlay - Explains to the player how the game is played.
 	HowToPlay() []string
 

@@ -34,7 +34,6 @@ func (*Klondike) Reserves() []state.StackSpec {
 
 // Tableau - how the tableau are defined.
 func (*Klondike) Tableau() []state.StackSpec {
-	// return numKlondikeTableau, state.King, MinusOneRule
 	return []state.StackSpec{
 		{
 			AddRule:   MinusOneRule,
@@ -154,3 +153,8 @@ func (*Klondike) Talon() bool {
 
 // Redeal
 func (*Klondike) Redeal(_ *state.Talon, _ []*state.Tableau) {}
+
+// FoundationBase
+func (*Klondike) FoundationBase() bool {
+	return false
+}
