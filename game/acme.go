@@ -145,3 +145,8 @@ func (*Acme) Talon() bool {
 
 // Redeal
 func (*Acme) Redeal(_ *state.Talon, _ []*state.Tableau) {}
+
+// FoundationBase
+func (*Acme) FoundationBase() bool {
+	return false
+}

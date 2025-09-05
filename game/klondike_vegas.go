@@ -157,3 +157,8 @@ func (*KlondikeVegas) Talon() bool {
 
 // Redeal
 func (*KlondikeVegas) Redeal(_ *state.Talon, _ []*state.Tableau) {}
+
+// FoundationBase
+func (*KlondikeVegas) FoundationBase() bool {
+	return false
+}

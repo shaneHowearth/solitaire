@@ -197,3 +197,8 @@ func (*AcesAndKings) Talon() bool {
 
 // Redeal
 func (*AcesAndKings) Redeal(_ *state.Talon, _ []*state.Tableau) {}
+
+// FoundationBase
+func (*AcesAndKings) FoundationBase() bool {
+	return false
+}

@@ -360,3 +360,8 @@ func (*AcesSquare) Talon() bool {
 
 // Redeal
 func (*AcesSquare) Redeal(_ *state.Talon, _ []*state.Tableau) {}
+
+// FoundationBase
+func (*AcesSquare) FoundationBase() bool {
+	return false
+}
