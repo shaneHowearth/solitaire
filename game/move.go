@@ -45,25 +45,25 @@ func Move(source, destination *state.Stack) bool {
 
 	// This loop attempts to find the group of cards that may be moved.
 	for {
-		top, err := source.Top()
+		sourceTop, err := source.Top()
 		if err != nil {
 			break
 		}
 
-		if !top.Visible && (source.Type != state.StackTalon) {
+		if !sourceTop.Visible && (source.Type != state.StackTalon) {
 			break
 		}
 
 		count++
 
-		temp.Add(top, true)
+		temp.Add(sourceTop, true)
 
 		_, err = source.Deal()
 		if err != nil {
 			log.Printf("Stack Deal err %v", err)
 		}
 
-		if destination.Rule(top) && destination.Type != state.StackTalon {
+		if destination.Rule(sourceTop) && destination.Type != state.StackTalon {
 			canMove = true
 			break
 		}
@@ -95,10 +95,10 @@ func Move(source, destination *state.Stack) bool {
 	}
 
 	if !canMove {
-		savedRule := source.Rule
-		source.Rule = func(state.SuitedCard) bool { return true }
 		// Put the cards back and finish.
 		for {
+			savedRule := source.Rule
+			source.Rule = func(state.SuitedCard) bool { return true }
 			top, err := temp.Top()
 			if err != nil {
 				source.Rule = savedRule
