@@ -195,6 +195,34 @@ func (instance *Instance) dealCards() {
 		instance.Talon.Waste.Add(card, true)
 	}
 
+	if instance.Game.FoundationBase() {
+		card := instance.Deck.Deal()
+		toChange := 99
+		switch card.Suit {
+		case state.Hearts:
+			toChange = 0
+		case state.Diamonds:
+			toChange = 1
+		case state.Clubs:
+			toChange = 2
+		case state.Spades:
+			toChange = 3
+		}
+
+		backUpRule := instance.Foundations[toChange].Stack.Rule
+		instance.Foundations[toChange].Stack.Rule = func(state.SuitedCard) bool { return true }
+		instance.Foundations[toChange].Stack.Add(card, true)
+		instance.Foundations[0].Base = state.SuitedCard{Rank: card.Rank, Suit: state.Hearts}
+		instance.Foundations[1].Base = state.SuitedCard{Rank: card.Rank, Suit: state.Diamonds}
+		instance.Foundations[2].Base = state.SuitedCard{Rank: card.Rank, Suit: state.Clubs}
+		instance.Foundations[3].Base = state.SuitedCard{Rank: card.Rank, Suit: state.Spades}
+		instance.Foundations[0].Stack.Base = state.SuitedCard{Rank: card.Rank, Suit: state.Hearts}
+		instance.Foundations[1].Stack.Base = state.SuitedCard{Rank: card.Rank, Suit: state.Diamonds}
+		instance.Foundations[2].Stack.Base = state.SuitedCard{Rank: card.Rank, Suit: state.Clubs}
+		instance.Foundations[3].Stack.Base = state.SuitedCard{Rank: card.Rank, Suit: state.Spades}
+		instance.Foundations[toChange].Stack.Rule = backUpRule
+	}
+
 	// Put the rest of the cards onto the talon.
 	for instance.Deck.Len() != 0 {
 		card := instance.Deck.Deal()
