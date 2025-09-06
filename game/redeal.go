@@ -9,7 +9,11 @@ func GapsRedeal(tableau []*state.Tableau, rowCount, colCount int) {
 	cardsToShuffle := state.NewStack(
 		rowCount,
 		state.SuitedCard{},
-		func(state.SuitedCard) bool { return true },
+		func(*state.Stack) func(state.SuitedCard) bool {
+			return func(state.SuitedCard) bool {
+				return true
+			}
+		},
 		state.StackUndefined,
 	)
 

@@ -26,10 +26,13 @@ func CreateTableaus(tableauSpec []StackSpec) []*Tableau {
 			Base: tableauSpec[idx].BaseCard.Rank,
 		}
 
-		stack := NewStack(RankCount,
+		stack := NewStack(
+			RankCount,
 			tableauSpec[idx].BaseCard,
-			func(card SuitedCard) bool {
-				return tableauSpec[idx].AddRule(tableau.Stack, card)
+			func(targetStack *Stack) func(SuitedCard) bool {
+				return func(card SuitedCard) bool {
+					return tableauSpec[idx].AddRule(targetStack, card)
+				}
 			},
 			StackTableau,
 		)

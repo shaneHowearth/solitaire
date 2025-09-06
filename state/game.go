@@ -22,7 +22,7 @@ func New(
 	// Talon Setup.
 	dealCount int,
 	perDealCount int,
-	talonRule func(SuitedCard) bool,
+	talonRule func(*Stack) func(SuitedCard) bool,
 ) *State {
 	return &State{
 		Deck: CreateDecks(decks),

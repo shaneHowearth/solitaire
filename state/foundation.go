@@ -33,8 +33,10 @@ func CreateFoundations(foundationSpec []StackSpec) []*Foundation {
 
 		stack := NewStack(RankCount,
 			foundationSpec[i].BaseCard,
-			func(card SuitedCard) bool {
-				return foundationSpec[i].AddRule(foundation.Stack, card)
+			func(foundationStack *Stack) func(SuitedCard) bool {
+				return func(card SuitedCard) bool {
+					return foundationSpec[i].AddRule(foundationStack, card)
+				}
 			},
 			StackFoundation,
 		)

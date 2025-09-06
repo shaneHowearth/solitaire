@@ -11,6 +11,7 @@ type Stack struct {
 	cards           *[]SuitedCard
 	Base            SuitedCard
 	Rule            func(SuitedCard) bool
+	ruleFactory     func(*Stack) func(SuitedCard) bool
 	Type            StackType
 	Received        int // count how many times this stack has received cards.
 	MaxRedeals      int
@@ -41,15 +42,28 @@ const (
 
 // NewStack - Create a new stack with an empty slice of SuitedCards that has a
 // capacity of n.
-func NewStack(number int, base SuitedCard, rule func(SuitedCard) bool, componentType StackType) *Stack {
+func NewStack(
+	number int,
+	base SuitedCard,
+	// rule func(SuitedCard) bool,
+	ruleFactory func(*Stack) func(SuitedCard) bool,
+	componentType StackType,
+) *Stack {
 	cards := make([]SuitedCard, 0, number)
 
-	return &Stack{
-		Base:  base,
-		cards: &cards,
-		Rule:  rule,
-		Type:  componentType,
+	stack := &Stack{
+		Base:        base,
+		cards:       &cards,
+		ruleFactory: ruleFactory,
+		Type:        componentType,
 	}
+
+	// Create the actual rule using the factory
+	if ruleFactory != nil {
+		stack.Rule = ruleFactory(stack)
+	}
+
+	return stack
 }
 
 // Len - return the length of the stack.
@@ -64,6 +78,14 @@ func (stack *Stack) Top() (SuitedCard, error) {
 	}
 
 	return (*stack.cards)[stack.Len()-1], nil
+}
+
+// RebindRule -
+func (stack *Stack) RebindRule(targetStack *Stack) {
+	if stack.ruleFactory != nil {
+		targetStack.Rule = stack.ruleFactory(targetStack)
+		targetStack.ruleFactory = stack.ruleFactory
+	}
 }
 
 const blankCard = "--"
