@@ -362,7 +362,7 @@ func (tableau solitaire.Tableau, card solitaire.SuitedCard) bool {
 - [ ] [Royal Parade]()
 - [ ] [Royal Rendezvous]()
 - [ ] [Russian Bank+]()
-- [ ] [Russian]()
+- [x] [Russian](https://en.wikipedia.org/wiki/Yukon_(solitaire))
 ### S
 - [ ] [Salic Law]()
 - [ ] [Scorpion]()
@@ -434,3 +434,5 @@ func (tableau solitaire.Tableau, card solitaire.SuitedCard) bool {
 - [ ] [Wildflower]()
 - [ ] [Will o' the Wisp]()
 - [ ] [Windmill]()
+### Y
+- [x] [Yukon](https://en.wikipedia.org/wiki/Yukon_(solitaire))
