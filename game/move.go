@@ -98,12 +98,54 @@ func Move(source, destination *state.Stack) bool {
 		}
 	}
 
+	// Check that all the cards on the temp stack can be moved.
+	// This fixes a bug where the temp stack might have the top card ok to be
+	// moved, but some of the cards beneath it don't belong.
+	temp2 := state.NewStack(
+		source.Len(),
+		state.SuitedCard{},
+		func(*state.Stack) func(state.SuitedCard) bool {
+			return func(state.SuitedCard) bool {
+				return true
+			}
+		},
+		state.StackUndefined,
+	)
+
+	if canMove && temp.Len() > 0 {
+		// Clone the destination for testing
+		testDest := destination.Clone()
+
+		// Try placing cards directly on the cloned destination
+		sequenceValid := true
+		for i := temp.Len() - 1; i >= 0; i-- {
+			card, _ := temp.Deal()
+			temp2.Add(card, true)
+
+			if !testDest.Rule(card) {
+				sequenceValid = false
+				break
+			}
+
+			testDest.Add(card, true) // Add to test next card
+		}
+
+		// Save remaining cards from temp if we broke early
+		for temp.Len() > 0 {
+			card, _ := temp.Deal()
+			temp2.Add(card, true)
+		}
+		canMove = sequenceValid
+	}
+
+	temp2.Reverse()
+
 	if !canMove {
 		// Put the cards back and finish.
 		for {
 			savedRule := source.Rule
 			source.Rule = func(state.SuitedCard) bool { return true }
-			top, err := temp.Top()
+			top, err := temp2.Top()
 			if err != nil {
 				source.Rule = savedRule
 				break
@@ -111,8 +153,6 @@ func Move(source, destination *state.Stack) bool {
 
 			stackTop, _ := source.Top()
 			if stackTop.Rank == top.Rank && stackTop.Suit == top.Suit {
-				log.Printf("Got same card %v %v", stackTop, top)
-
 				source.Rule = savedRule
 
 				break
@@ -124,13 +164,28 @@ func Move(source, destination *state.Stack) bool {
 				source.Add(top, true)
 			}
 
+			_, _ = temp2.Deal()
+		}
+
+		// Then, restore any cards still in temp
+		for {
+			top, err := temp.Top()
+			if err != nil {
+				break
+			}
+
+			if source.Type == state.StackTalon {
+				source.Add(top, false)
+			} else {
+				source.Add(top, true)
+			}
 			_, _ = temp.Deal()
 		}
 	} else {
 		// If the card can be added to the destination add it, and drop it from the
 		// source.
 		for {
-			top, err := temp.Top()
+			top, err := temp2.Top()
 			if err != nil {
 				break
 			}
@@ -141,7 +196,7 @@ func Move(source, destination *state.Stack) bool {
 				destination.Add(top, true)
 			}
 			// Pull the top card off the source stack.
-			_, _ = temp.Deal()
+			_, _ = temp2.Deal()
 		}
 		// Make the top card visible.
 		if source.Type == state.StackTableau || source.Type == state.StackReserve {
