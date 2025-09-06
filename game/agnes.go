@@ -1,8 +1,6 @@
 package game
 
 import (
-	"log"
-
 	"github.com/shanehowearth/solitaire/state"
 )
 
@@ -107,23 +105,51 @@ func (*Agnes) Tableau() []state.StackSpec {
 
 // Foundations - how the foundations are defined.
 func (*Agnes) Foundations() []state.StackSpec {
-	// TODO: The Basecard is set when the first deal happens.
+	var AgnesPlusOneRule = func(foundation *state.Stack, card state.SuitedCard) bool {
+		// Handle when the foundation is empty.
+		if foundation.Len() == 0 {
+			if card.Suit == foundation.Base.Suit && card.Rank == foundation.Base.Rank {
+				return true
+			}
+		}
+
+		// Get the card currently at the top of the foundation.
+		topCard, err := foundation.Top()
+		if err != nil {
+			return false
+		}
+
+		// Allow Aces to go onto Kings (of the same suit).
+		if (card.Suit == topCard.Suit) && (topCard.Rank == state.King && card.Rank == state.Ace) {
+			return true
+		}
+
+		// If the card is the same suit, and is one up in rank
+		// then it can go onto the foundation.
+		if card.Suit == foundation.Base.Suit && (card.Rank-topCard.Rank) == 1 {
+			return true
+		}
+
+		// All other cases the card should not be added to the foundation.
+		return false
+	}
+
 	return []state.StackSpec{
 		{
 			BaseCard: state.SuitedCard{Rank: state.Ace, Suit: state.Hearts},
-			AddRule:  PlusOneRule,
+			AddRule:  AgnesPlusOneRule,
 		},
 		{
 			BaseCard: state.SuitedCard{Rank: state.Ace, Suit: state.Diamonds},
-			AddRule:  PlusOneRule,
+			AddRule:  AgnesPlusOneRule,
 		},
 		{
 			BaseCard: state.SuitedCard{Rank: state.Ace, Suit: state.Clubs},
-			AddRule:  PlusOneRule,
+			AddRule:  AgnesPlusOneRule,
 		},
 		{
 			BaseCard: state.SuitedCard{Rank: state.Ace, Suit: state.Spades},
-			AddRule:  PlusOneRule,
+			AddRule:  AgnesPlusOneRule,
 		},
 	}
 }
@@ -147,8 +173,6 @@ func (*Agnes) MaxRedeals() int {
 
 // Move -
 func (*Agnes) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
-	log.Printf("Agnes Move source %s dest %s", source.Base.Rank.String(), destination.Base.Rank.String())
-	log.Printf("Agnes Move source %s dest %s", source.Base.Suit.String(), destination.Base.Suit.String())
 	return Move(source, destination)
 }
 
