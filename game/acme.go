@@ -132,7 +132,7 @@ func (*Acme) MaxRedeals() int {
 
 // Move -
 func (*Acme) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
-	return Move(source, destination)
+	return Move(source, destination, true)
 }
 
 // Compact
