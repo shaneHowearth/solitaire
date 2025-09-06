@@ -89,6 +89,9 @@ func (instance *Instance) onComponentSelected(
 		fromStack = instance.Tableau[fromIndex].Stack
 	case state.StackTalon:
 		fromStack = instance.Talon.Stock
+		if !instance.Game.Talon() {
+			return
+		}
 	case state.StackWaste:
 		fromStack = instance.Talon.Waste
 	case state.StackReserve:
