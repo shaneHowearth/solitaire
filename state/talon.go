@@ -20,16 +20,18 @@ type Talon struct {
 // NewTalon - Create a new talon.
 func NewTalon(
 	dealCount, perDealCount int,
-	rule func(SuitedCard) bool,
+	ruleFactory func(*Stack) func(SuitedCard) bool,
 ) *Talon {
 	const stackSize = 52
 
 	stock := NewStack(
 		stackSize,
 		SuitedCard{},
-		func(SuitedCard) bool {
-			// Let anything on.
-			return true
+		func(targetStack *Stack) func(SuitedCard) bool {
+			return func(card SuitedCard) bool {
+				// Let anything on.
+				return true
+			}
 		},
 		StackTalon,
 	)
@@ -39,7 +41,7 @@ func NewTalon(
 	waste := NewStack(
 		stackSize,
 		SuitedCard{},
-		rule,
+		ruleFactory,
 		StackWaste,
 	)
 

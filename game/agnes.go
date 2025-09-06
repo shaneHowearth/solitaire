@@ -41,12 +41,12 @@ func (*Agnes) Tableau() []state.StackSpec {
 	var agnesRule = func(tableau *state.Stack, card state.SuitedCard) bool {
 		// Handle when the tableau is empty.
 		// Nothing can be added to an empty tableau except when dealing.
-		if (*tableau).Len() == 0 {
+		if tableau.Len() == 0 {
 			return false
 		}
 
 		// Get the card currently at the top of the tableau.
-		topCard, err := (*tableau).Top()
+		topCard, err := tableau.Top()
 		if err != nil {
 			return false
 		}

@@ -23,8 +23,10 @@ func CreateReserves(reserveSpec []StackSpec) []*Reserve {
 
 		stack := NewStack(RankCount,
 			reserveSpec[i].BaseCard,
-			func(card SuitedCard) bool {
-				return reserveSpec[i].AddRule(reserve.Stack, card)
+			func(targetStack *Stack) func(SuitedCard) bool {
+				return func(card SuitedCard) bool {
+					return reserveSpec[i].AddRule(targetStack, card)
+				}
 			},
 			StackReserve,
 		)

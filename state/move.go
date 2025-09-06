@@ -37,3 +37,21 @@ func (stack *Stack) Deal() (SuitedCard, error) {
 func (stack *Stack) Reverse() {
 	slices.Reverse(*stack.cards)
 }
+
+func (stack *Stack) Clone() *Stack {
+	clone := NewStack(
+		stack.Len(),
+		stack.Base,
+		stack.ruleFactory,
+		stack.Type,
+	)
+
+	cards := make([]SuitedCard, stack.Len())
+	for idx := 0; idx < stack.Len(); idx++ {
+		cards[idx] = (*stack.cards)[idx]
+	}
+
+	clone.cards = &cards
+
+	return clone
+}

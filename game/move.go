@@ -22,7 +22,11 @@ func Move(source, destination *state.Stack) bool {
 	temp := state.NewStack(
 		source.Len(),
 		state.SuitedCard{},
-		func(state.SuitedCard) bool { return true },
+		func(*state.Stack) func(state.SuitedCard) bool {
+			return func(state.SuitedCard) bool {
+				return true
+			}
+		},
 		state.StackUndefined,
 	)
 
@@ -150,8 +154,6 @@ func Move(source, destination *state.Stack) bool {
 			source.Add(newTop, true)
 		}
 	}
-
-	//
 
 	return true
 }

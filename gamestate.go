@@ -26,8 +26,10 @@ func (instance *Instance) setupGameState() {
 		instance.Game.MaxRedeals(),
 		1, // how many cards per deal.
 		// Talon rule is to allow everything to be added to its stacks.
-		func(state.SuitedCard) bool {
-			return true
+		func(*state.Stack) func(state.SuitedCard) bool {
+			return func(state.SuitedCard) bool {
+				return true
+			}
 		},
 	)
 
