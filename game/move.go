@@ -7,7 +7,7 @@ import (
 )
 
 // Move - Move card(s) from one stack to another.
-func Move(source, destination *state.Stack) bool {
+func Move(source, destination *state.Stack, keepSequence bool) bool {
 	if destination == nil {
 		return false
 	}
@@ -118,16 +118,18 @@ func Move(source, destination *state.Stack) bool {
 
 		// Try placing cards directly on the cloned destination
 		sequenceValid := true
-		for i := temp.Len() - 1; i >= 0; i-- {
-			card, _ := temp.Deal()
-			temp2.Add(card, true)
+		if keepSequence {
+			for i := temp.Len() - 1; i >= 0; i-- {
+				card, _ := temp.Deal()
+				temp2.Add(card, true)
 
-			if !testDest.Rule(card) {
-				sequenceValid = false
-				break
+				if !testDest.Rule(card) {
+					sequenceValid = false
+					break
+				}
+
+				testDest.Add(card, true) // Add to test next card
 			}
-
-			testDest.Add(card, true) // Add to test next card
 		}
 
 		// Save remaining cards from temp if we broke early
@@ -181,33 +183,35 @@ func Move(source, destination *state.Stack) bool {
 			}
 			_, _ = temp.Deal()
 		}
-	} else {
-		// If the card can be added to the destination add it, and drop it from the
-		// source.
-		for {
-			top, err := temp2.Top()
-			if err != nil {
-				break
-			}
 
-			if destination.Type == state.StackTalon {
-				destination.Add(top, false)
-			} else {
-				destination.Add(top, true)
-			}
-			// Pull the top card off the source stack.
-			_, _ = temp2.Deal()
-		}
-		// Make the top card visible.
-		if source.Type == state.StackTableau || source.Type == state.StackReserve {
-			newTop, err := source.Top()
-			if err != nil {
-				return true
-			}
+		return true
+	}
 
-			_, _ = source.Deal()
-			source.Add(newTop, true)
+	// If the card can be added to the destination add it, and drop it from the
+	// source.
+	for {
+		top, err := temp2.Top()
+		if err != nil {
+			break
 		}
+
+		if destination.Type == state.StackTalon {
+			destination.Add(top, false)
+		} else {
+			destination.Add(top, true)
+		}
+		// Pull the top card off the source stack.
+		_, _ = temp2.Deal()
+	}
+	// Make the top card visible.
+	if source.Type == state.StackTableau || source.Type == state.StackReserve {
+		newTop, err := source.Top()
+		if err != nil {
+			return true
+		}
+
+		_, _ = source.Deal()
+		source.Add(newTop, true)
 	}
 
 	return true
