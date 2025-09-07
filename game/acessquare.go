@@ -1,8 +1,6 @@
 package game
 
 import (
-	"log"
-
 	"github.com/shanehowearth/solitaire/state"
 )
 
@@ -276,7 +274,6 @@ func (*AcesSquare) Move(first, second *state.Stack, _ []*state.Tableau) bool {
 
 	// First and Second have to be 'next' to each other.
 	// They can be on top of one another, side by side, or on an angle.
-	log.Printf("first %d second %d", first.TableauPosition, second.TableauPosition)
 
 	// Convert 1D indices to 2D coordinates
 	row1, col1 := first.TableauPosition/numAcesSquareCols, first.TableauPosition%numAcesSquareCols
@@ -349,8 +346,6 @@ func (AcesSquare) Compact(stock, waste *state.Stack, tableaus []*state.Tableau) 
 		return
 	}
 	waste.Add(stockCard, true)
-
-	log.Printf("Compaction complete")
 }
 
 // Talon
