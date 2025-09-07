@@ -30,7 +30,7 @@ type Display interface {
 	FoundationTitle(num int, value string)
 	FoundationPrint(num int, value []string)
 	ReservePrint(idx int, value []string)
-	TableauPrint(idx int, value []string)
+	TableauPrint(idx int, value []string, showCount int)
 	TalonPrint(value []string)
 	WastePrint(value []string)
 

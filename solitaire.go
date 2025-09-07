@@ -163,6 +163,8 @@ func (instance *Instance) dealCards() {
 			instance.Tableau[idx].Stack.Add(card, true)
 		}
 
+		instance.Tableau[idx].Stack.ShowCount = tableauSpec[idx].ShowCount
+
 		// Return the rule to its correct state.
 		instance.Tableau[idx].Stack.Rule = rule
 	}

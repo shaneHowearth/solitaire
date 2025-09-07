@@ -17,6 +17,7 @@ type Stack struct {
 	MaxRedeals      int
 	TableauPosition int // Simple count to determine where in the Tableau this is.
 	SkipCards       map[SuitedCard]struct{}
+	ShowCount       int // Number of cards to be shown in the stack.
 }
 
 // StackType represents the type of game component.
