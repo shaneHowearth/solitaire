@@ -310,25 +310,36 @@ func (display *Display) ReservePrint(idx int, value []string) {
 }
 
 // TableauPrint -
-func (display *Display) TableauPrint(idx int, value []string) {
+func (display *Display) TableauPrint(idx int, value []string, showCount int) {
 	if len(value) > 0 {
-		for i := range value {
+		for valIdx := range value {
 			textColor := "[-]"
-			if strings.Contains(value[i], state.Hearts.String()) ||
-				strings.Contains(value[i], state.Diamonds.String()) {
+			if strings.Contains(value[valIdx], state.Hearts.String()) ||
+				strings.Contains(value[valIdx], state.Diamonds.String()) {
 				textColor = "[red]"
 			}
-			value[i] = fmt.Sprintf("%s%s%s", textColor, value[i], "[-]")
+			value[valIdx] = fmt.Sprintf("%s%s%s", textColor, value[valIdx], "[-]")
+		}
+
+		// Only show the number of cards that the game is configured to show.
+		show := 0
+		if showCount != 0 {
+			show = len(value) - showCount
+			if show < 0 {
+				show = 0
+			}
 		}
 
 		display.tableau[idx].SetText(
-			strings.Join(value, "\n"),
+			strings.Join(value[show:], "\n"),
 		)
-	} else {
-		display.tableau[idx].SetText(
-			emptyStack,
-		)
+
+		return
 	}
+
+	display.tableau[idx].SetText(
+		emptyStack,
+	)
 }
 
 // Update the selectComponent method to use the callback:

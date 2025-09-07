@@ -48,6 +48,7 @@ func (instance *Instance) updateDisplay() {
 	for idx := range instance.Tableau {
 		instance.Display.TableauPrint(idx,
 			instance.Tableau[idx].Stack.Cards(),
+			instance.Tableau[idx].Stack.ShowCount,
 		)
 	}
 
