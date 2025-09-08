@@ -2,10 +2,12 @@ package gui
 
 import (
 	"fmt"
+	"image/color"
 	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 	"github.com/shanehowearth/solitaire/game"
@@ -192,8 +194,13 @@ func (display *DisplayGUI) createGamePage(
 		)
 	}
 
-	// Return the content directly - keyboard handling is now at window level
-	return content
+	// Create a green background rectangle
+	greenBackground := canvas.NewRectangle(color.RGBA{0, 128, 0, 255}) // Solitaire table green
+
+	// Layer the background behind the content
+	gamePageWithBackground := container.NewBorder(nil, nil, nil, nil, greenBackground, content)
+
+	return gamePageWithBackground
 }
 
 // Update methods for different stack types
