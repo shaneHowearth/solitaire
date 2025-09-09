@@ -231,9 +231,6 @@ func (display *DisplayGUI) WastePrint(value []string) {
 	if display.waste != nil {
 		if len(value) > 0 {
 			text := value[len(value)-1]
-			if strings.Contains(text, "♥") || strings.Contains(text, "♦") {
-				text = fmt.Sprintf("[red]%s[-]", text)
-			}
 			display.waste.SetCards([]string{text})
 		} else {
 			display.waste.Clear()
@@ -254,9 +251,6 @@ func (display *DisplayGUI) FoundationPrint(num int, value []string) {
 			texts := make([]string, len(value))
 			for i, v := range value {
 				text := v
-				if strings.Contains(text, "♥") || strings.Contains(text, "♦") {
-					text = fmt.Sprintf("[red]%s[-]", text)
-				}
 				texts[i] = text
 			}
 			display.foundations[num].SetCards(texts)
@@ -272,9 +266,6 @@ func (display *DisplayGUI) ReservePrint(idx int, value []string) {
 			texts := make([]string, len(value))
 			for i, v := range value {
 				text := v
-				if strings.Contains(text, "♥") || strings.Contains(text, "♦") {
-					text = fmt.Sprintf("[red]%s[-]", text)
-				}
 				texts[i] = text
 			}
 			display.reserves[idx].SetCards(texts)
@@ -290,9 +281,6 @@ func (display *DisplayGUI) TableauPrint(idx int, value []string, _ int) {
 			texts := make([]string, len(value))
 			for i, v := range value {
 				text := v
-				if strings.Contains(text, "♥") || strings.Contains(text, "♦") {
-					text = fmt.Sprintf("[red]%s[-]", text)
-				}
 				texts[i] = text
 			}
 			display.tableau[idx].SetCards(texts)
