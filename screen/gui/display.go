@@ -123,9 +123,10 @@ func (display *DisplayGUI) createGamePage(
 		}
 	}
 
-	// Tableau
-	display.tableau = make([]*PileWidget, tableauWidth)
-	for i := 0; i < tableauWidth; i++ {
+	// Tableau - create total tableau widgets (width * height)
+	totalTableauColumns := tableauWidth * tableauHeight
+	display.tableau = make([]*PileWidget, totalTableauColumns)
+	for i := 0; i < totalTableauColumns; i++ {
 		display.tableau[i] = NewPileWidget(fmt.Sprintf("Column %d", i+1), state.StackTableau, i, display)
 	}
 
@@ -151,10 +152,20 @@ func (display *DisplayGUI) createGamePage(
 		}
 	}
 
-	// Tableau row
-	tableauRow := container.NewHBox()
-	for _, col := range display.tableau {
-		tableauRow.Add(col)
+	// Tableau rows - distribute columns across multiple rows
+	var tableauRows []*fyne.Container
+
+	colIndex := 0
+	for row := 0; row < tableauHeight && colIndex < totalTableauColumns; row++ {
+		tableauRow := container.NewHBox()
+
+		// Add 'tableauWidth' columns to each row
+		for col := 0; col < tableauWidth && colIndex < totalTableauColumns; col++ {
+			tableauRow.Add(display.tableau[colIndex])
+			colIndex++
+		}
+
+		tableauRows = append(tableauRows, tableauRow)
 	}
 
 	// Controls
@@ -174,25 +185,27 @@ func (display *DisplayGUI) createGamePage(
 	instructions.Wrapping = fyne.TextWrapWord
 
 	// Main layout - use NewVBox and keep the layout manager
-	var content *fyne.Container
-	if middleRow != nil {
-		content = container.NewVBox(
-			widget.NewLabel(fmt.Sprintf("Playing: %s", name)),
-			instructions,
-			topRow,
-			middleRow,
-			tableauRow,
-			controlsRow,
-		)
-	} else {
-		content = container.NewVBox(
-			widget.NewLabel(fmt.Sprintf("Playing: %s", name)),
-			instructions,
-			topRow,
-			tableauRow,
-			controlsRow,
-		)
+	contentItems := []fyne.CanvasObject{
+		widget.NewLabel(fmt.Sprintf("Playing: %s", name)),
+		instructions,
+		topRow,
 	}
+
+	// Add middle row if it exists
+	if middleRow != nil {
+		contentItems = append(contentItems, middleRow)
+	}
+
+	// Add all tableau rows
+	for _, tableauRow := range tableauRows {
+		contentItems = append(contentItems, tableauRow)
+	}
+
+	// Add controls at the end
+	contentItems = append(contentItems, controlsRow)
+
+	// Create the main content container
+	content := container.NewVBox(contentItems...)
 
 	// Create a green background rectangle
 	greenBackground := canvas.NewRectangle(color.RGBA{0, 128, 0, 255}) // Solitaire table green
