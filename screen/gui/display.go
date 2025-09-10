@@ -280,26 +280,38 @@ func (display *DisplayGUI) TableauPrint(idx int, value []string, _ int) {
 
 // Selection handling
 func (display *DisplayGUI) selectComponent(componentType state.StackType, index int) {
+	fmt.Printf("DEBUG: selectComponent called with type=%d, index=%d\n", componentType, index)
+	fmt.Printf("DEBUG: Current selection: type=%d, index=%d\n", display.selectedComponentType, display.selectedIndex)
+
 	if display.processingClick {
+		fmt.Printf("DEBUG: Already processing click, ignoring\n")
 		return
 	}
 
 	display.processingClick = true
 	defer func() {
 		display.processingClick = false
+		fmt.Printf("DEBUG: Finished processing click\n")
 	}()
 
 	// If something is already selected, try to make a move
 	if display.selectedIndex != -1 {
+		fmt.Printf("DEBUG: Making move from (%d,%d) to (%d,%d)\n",
+			display.selectedComponentType, display.selectedIndex, componentType, index)
+
 		if display.componentSelectedCallback != nil {
+			fmt.Printf("DEBUG: Calling componentSelectedCallback\n")
 			display.componentSelectedCallback(
 				display.selectedComponentType, display.selectedIndex,
 				componentType, index,
 			)
+		} else {
+			fmt.Printf("DEBUG: componentSelectedCallback is nil!\n")
 		}
 		display.clearCurrentSelection()
 	} else {
 		// Make new selection
+		fmt.Printf("DEBUG: Making new selection: type=%d, index=%d\n", componentType, index)
 		display.selectedComponentType = componentType
 		display.selectedIndex = index
 		display.highlightSelection()
@@ -307,14 +319,82 @@ func (display *DisplayGUI) selectComponent(componentType state.StackType, index 
 }
 
 func (display *DisplayGUI) highlightSelection() {
-	// This would highlight the selected component
-	// Implementation depends on how you want to show selection
+	fmt.Printf("DEBUG: Highlighting selection: type=%d, index=%d\n",
+		display.selectedComponentType, display.selectedIndex)
+
+	// Clear any existing selection first
+	display.clearVisualSelection()
+
+	// Find and highlight the selected component
+	switch display.selectedComponentType {
+	case state.StackTalon:
+		if display.stock != nil {
+			display.highlightPile(display.stock)
+		}
+	case state.StackWaste:
+		if display.waste != nil {
+			display.highlightPile(display.waste)
+		}
+	case state.StackFoundation:
+		if display.selectedIndex < len(display.foundations) && display.foundations[display.selectedIndex] != nil {
+			display.highlightPile(display.foundations[display.selectedIndex])
+		}
+	case state.StackReserve:
+		if display.selectedIndex < len(display.reserves) && display.reserves[display.selectedIndex] != nil {
+			display.highlightPile(display.reserves[display.selectedIndex])
+		}
+	case state.StackTableau:
+		if display.selectedIndex < len(display.tableau) && display.tableau[display.selectedIndex] != nil {
+			display.highlightPile(display.tableau[display.selectedIndex])
+		}
+	}
 }
 
 func (display *DisplayGUI) clearCurrentSelection() {
+	fmt.Printf("DEBUG: Clearing selection (was type=%d, index=%d)\n",
+		display.selectedComponentType, display.selectedIndex)
+
+	// Clear visual selection from previously selected component
+	display.clearVisualSelection()
+
 	display.selectedComponentType = -1
 	display.selectedIndex = -1
-	// Clear any visual selection indicators
+}
+
+func (display *DisplayGUI) highlightPile(pile *PileWidget) {
+	fmt.Printf("DEBUG: Highlighting pile: %s\n", pile.title)
+
+	// Highlight the top card if there are cards
+	if len(pile.cards) > 0 {
+		topCard := pile.cards[len(pile.cards)-1]
+		topCard.SetSelected(true)
+	}
+}
+
+// Helper method to clear visual selection
+func (display *DisplayGUI) clearVisualSelection() {
+	fmt.Printf("DEBUG: Clearing visual selection\n")
+
+	// Clear selection from all piles
+	allPiles := []*PileWidget{}
+	if display.stock != nil {
+		allPiles = append(allPiles, display.stock)
+	}
+	if display.waste != nil {
+		allPiles = append(allPiles, display.waste)
+	}
+	allPiles = append(allPiles, display.foundations...)
+	allPiles = append(allPiles, display.tableau...)
+	allPiles = append(allPiles, display.reserves...)
+
+	for _, pile := range allPiles {
+		if pile == nil {
+			continue
+		}
+		for _, card := range pile.cards {
+			card.SetSelected(false)
+		}
+	}
 }
 
 // Interface methods
@@ -374,10 +454,22 @@ func (display *DisplayGUI) ShowWinnerModal(winner string, score int) {
 }
 
 func (display *DisplayGUI) handleCardDrop(card *CardWidget, target fyne.CanvasObject) {
+	fmt.Printf("DEBUG: handleCardDrop called\n")
+
 	if pile, ok := target.(*PileWidget); ok {
-		if display.canMoveCardToPile(card, pile) {
-			display.moveCardToPile(card, pile)
+		fmt.Printf("DEBUG: Drop target is pile: %s\n", pile.title)
+
+		// Use the game's callback to handle the move
+		if display.componentSelectedCallback != nil {
+			display.componentSelectedCallback(
+				card.stackType, card.index,
+				pile.stackType, pile.index,
+			)
+		} else {
+			fmt.Printf("DEBUG: No callback set for handling moves\n")
 		}
+	} else {
+		fmt.Printf("DEBUG: Drop target is not a pile: %T\n", target)
 	}
 }
 
@@ -422,6 +514,8 @@ func (display *DisplayGUI) moveCardToPile(card *CardWidget, targetPile *PileWidg
 }
 
 func (display *DisplayGUI) findObjectAtPosition(pos fyne.Position) fyne.CanvasObject {
+	fmt.Printf("DEBUG: Finding object at position: %v\n", pos)
+
 	// Check all piles to see if position is within their bounds
 	allPiles := []*PileWidget{}
 	if display.stock != nil {
@@ -443,9 +537,28 @@ func (display *DisplayGUI) findObjectAtPosition(pos fyne.Position) fyne.CanvasOb
 
 		if pos.X >= pilePos.X && pos.X <= pilePos.X+pileSize.Width &&
 			pos.Y >= pilePos.Y && pos.Y <= pilePos.Y+pileSize.Height {
+			fmt.Printf("DEBUG: Found pile at position: %s\n", pile.title)
 			return pile
 		}
 	}
 
+	fmt.Printf("DEBUG: No pile found at position\n")
 	return nil
+}
+
+// Bring card to front during drag to solve z-order issues
+func (display *DisplayGUI) bringCardToFront(card *CardWidget) {
+	fmt.Printf("DEBUG: Bringing card to front: %s\n", card.cardName)
+
+	// Store reference to dragged card
+	display.draggedCard = card
+
+	// In Fyne, we can't easily change z-order of widgets in containers
+	// But we can work around this by ensuring the card is rendered last
+	// The card's position will be updated and it should appear on top
+
+	// Force refresh of the entire display to ensure proper rendering order
+	if display.Window != nil && display.Window.Content() != nil {
+		display.Window.Content().Refresh()
+	}
 }

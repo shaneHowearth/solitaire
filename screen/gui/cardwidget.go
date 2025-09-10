@@ -3,8 +3,11 @@ package gui
 import (
 	"fmt"
 	"image/color"
+	"log"
 	"os"
+	"path/filepath"
 	"strings"
+	"sync"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -13,289 +16,487 @@ import (
 	"github.com/shanehowearth/solitaire/state"
 )
 
+const (
+	// Card dimensions
+	CardWidth  = 80
+	CardHeight = 120
+
+	// Drag sensitivity threshold
+	DragThreshold = 3.0
+)
+
+var (
+	// Color constants
+	WhiteColor       = color.RGBA{255, 255, 255, 255}
+	BlackColor       = color.RGBA{0, 0, 0, 255}
+	GreenColor       = color.RGBA{0, 100, 0, 255}
+	DarkGrayColor    = color.RGBA{50, 50, 50, 255}
+	YellowColor      = color.RGBA{255, 255, 0, 255}
+	SemiYellowColor  = color.RGBA{255, 255, 100, 150}
+	TransparentColor = color.Transparent
+
+	// URI cache to avoid reloading the same images
+	uriCache    = make(map[string]fyne.URI)
+	uriCacheMux sync.RWMutex
+)
+
+// CardState represents the visual state of a card
+type CardState int
+
+const (
+	CardStateNormal CardState = iota
+	CardStateSelected
+	CardStateDragging
+	CardStateEmpty
+	CardStateBack
+)
+
 // CardWidget represents a single card that can be tapped and dragged
 type CardWidget struct {
 	widget.BaseWidget
-	rect      *canvas.Rectangle
-	text      *canvas.Text
-	image     *canvas.Image
+
+	// Visual components
+	rect  *canvas.Rectangle
+	text  *canvas.Text
+	image *canvas.Image
+
+	// Card properties
 	cardName  string
 	stackType state.StackType
 	index     int
-	display   *DisplayGUI
-	selected  bool
+	state     CardState
+
+	// References
+	display *DisplayGUI
 
 	// Drag state
-	dragging    bool
-	dragStart   fyne.Position
-	originalPos fyne.Position
+	isDragging     bool
+	dragStartPos   fyne.Position
+	mouseStartPos  fyne.Position
+	originalParent fyne.CanvasObject
+
+	// Cached values
+	minSize fyne.Size
 }
 
+// NewCardWidgetFromString creates a card widget from a card string representation
 func NewCardWidgetFromString(cardStr string, display *DisplayGUI) *CardWidget {
 	c := &CardWidget{
-		rect:     canvas.NewRectangle(color.RGBA{255, 255, 255, 255}), // White background
-		text:     canvas.NewText(cardStr, color.Black),
+		rect:     canvas.NewRectangle(WhiteColor),
+		text:     canvas.NewText(cardStr, BlackColor),
 		cardName: cardStr,
 		display:  display,
 		index:    0,
+		state:    CardStateNormal,
+		minSize:  fyne.NewSize(CardWidth, CardHeight),
 	}
 
-	// Set text properties
-	c.text.Alignment = fyne.TextAlignCenter
-	c.text.TextStyle = fyne.TextStyle{Bold: true}
-
+	c.setupText()
 	c.ExtendBaseWidget(c)
 	return c
 }
 
+// NewCardWidget creates an empty card widget for a specific stack position
 func NewCardWidget(stackType state.StackType, index int, display *DisplayGUI) *CardWidget {
 	c := &CardWidget{
-		rect:      canvas.NewRectangle(color.RGBA{0, 100, 0, 255}), // Green background
-		text:      canvas.NewText("", color.Black),
+		rect:      canvas.NewRectangle(GreenColor),
+		text:      canvas.NewText("", BlackColor),
 		stackType: stackType,
 		index:     index,
 		display:   display,
+		state:     CardStateEmpty,
+		minSize:   fyne.NewSize(CardWidth, CardHeight),
 	}
+
+	c.setupText()
 	c.ExtendBaseWidget(c)
 	return c
 }
 
+// setupText configures the text properties
+func (c *CardWidget) setupText() {
+	if c.text != nil {
+		c.text.Alignment = fyne.TextAlignCenter
+		c.text.TextStyle = fyne.TextStyle{Bold: true}
+	}
+}
+
+// SetText sets the card text and updates the visual representation
 func (c *CardWidget) SetText(text string) {
 	c.cardName = text
 
-	// If we have a valid card name, try to load the image
 	if text != "" && text != " " {
-		c.SetCardImage(text)
+		if err := c.setCardImage(text); err != nil {
+			log.Printf("Failed to set card image for %s: %v", text, err)
+			// Fallback to text display
+			c.setTextDisplay(text)
+		}
 	} else {
 		c.SetEmpty()
 	}
 }
 
+// SetEmpty configures the card as empty
 func (c *CardWidget) SetEmpty() {
 	c.cardName = ""
+	c.state = CardStateEmpty
 	c.text.Text = ""
-	c.image = nil                                  // Remove image for empty cards
-	c.rect.FillColor = color.RGBA{50, 50, 50, 255} // Dark gray for empty
-	c.Refresh()
+	c.image = nil
+	c.updateAppearance()
 }
 
+// SetCardBack configures the card to show its back
 func (c *CardWidget) SetCardBack() {
 	c.cardName = "BACK"
+	c.state = CardStateBack
 
-	// Load card back image
-	resource := storage.NewFileURI("./cmd/fyne/cards/back01.png")
-	c.image = canvas.NewImageFromURI(resource)
-	c.image.FillMode = canvas.ImageFillContain
-
-	// Hide text and make background transparent
-	c.text.Text = ""
-	c.rect.FillColor = color.Transparent
-	c.Refresh()
+	if err := c.loadCardBackImage(); err != nil {
+		log.Printf("Failed to load card back image: %v", err)
+		c.setTextDisplay("BACK")
+	}
 }
 
-func (c *CardWidget) getImagePath(cardName string) string {
-	if cardName == "BACK" {
-		return "./cmd/fyne/cards/back01.png"
+// loadCardBackImage loads the card back image
+func (c *CardWidget) loadCardBackImage() error {
+	imagePath := "./cmd/fyne/cards/back01.png"
+	image, err := c.getOrCreateImage(imagePath)
+	if err != nil {
+		return err
 	}
 
-	var rank, suit string
+	c.image = image
+	c.text.Text = ""
+	c.updateAppearance()
+	return nil
+}
 
-	// Parse the card name with better error handling
+// setTextDisplay sets up the card for text-only display
+func (c *CardWidget) setTextDisplay(text string) {
+	c.text.Text = text
+	c.image = nil
+	c.updateAppearance()
+}
+
+// getImagePath generates the file path for a card image
+func (c *CardWidget) getImagePath(cardName string) (string, error) {
+	if cardName == "BACK" {
+		return "./cmd/fyne/cards/back01.png", nil
+	}
+
 	if len(cardName) < 2 {
-		return "./cmd/fyne/cards/back01.png" // Fallback to card back
+		return "", fmt.Errorf("invalid card name: too short")
 	}
 
 	parts := strings.Split(cardName, " ")
 	if len(parts) != 2 {
-		return "./cmd/fyne/cards/back01.png" // Invalid rank, show card back
-	}
-	suitPart := parts[1]
-	rankPart := parts[0]
-
-	// Convert rank
-	switch rankPart {
-	case "Ace":
-		rank = "01"
-	case "Jack":
-		rank = "11"
-	case "Queen":
-		rank = "12"
-	case "King":
-		rank = "13"
-	case "10":
-		rank = "10"
-	default:
-		if len(rankPart) == 1 && rankPart >= "2" && rankPart <= "9" {
-			rank = fmt.Sprintf("0%s", rankPart)
-		} else {
-			return "./cmd/fyne/cards/back01.png" // Invalid rank, show card back
-		}
+		return "", fmt.Errorf("invalid card name format: %s", cardName)
 	}
 
-	// Convert suit
-	switch suitPart {
-	case "♠":
-		suit = "s" // Spades
-	case "♥":
-		suit = "h" // Hearts
-	case "♦":
-		suit = "d" // Diamonds
-	case "♣":
-		suit = "c" // Clubs
-	default:
-		return "./cmd/fyne/cards/back01.png" // Invalid suit, show card back
+	rank, err := c.parseRank(parts[0])
+	if err != nil {
+		return "", fmt.Errorf("invalid rank: %w", err)
 	}
 
-	// Construct file path - adjust this to match your file structure
-	return fmt.Sprintf("./cmd/fyne/cards/%s%s.png", rank, suit)
+	suit, err := c.parseSuit(parts[1])
+	if err != nil {
+		return "", fmt.Errorf("invalid suit: %w", err)
+	}
+
+	return filepath.Join("./cmd/fyne/cards", fmt.Sprintf("%s%s.png", rank, suit)), nil
 }
 
-func (c *CardWidget) SetCardImage(cardName string) {
-	c.cardName = cardName
+// parseRank converts a rank string to its file representation
+func (c *CardWidget) parseRank(rankStr string) (string, error) {
+	switch rankStr {
+	case "Ace":
+		return "01", nil
+	case "Jack":
+		return "11", nil
+	case "Queen":
+		return "12", nil
+	case "King":
+		return "13", nil
+	case "10":
+		return "10", nil
+	default:
+		if len(rankStr) == 1 && rankStr >= "2" && rankStr <= "9" {
+			return fmt.Sprintf("0%s", rankStr), nil
+		}
+		return "", fmt.Errorf("unknown rank: %s", rankStr)
+	}
+}
 
-	// Get the image path
-	imagePath := c.getImagePath(cardName)
+// parseSuit converts a suit symbol to its file representation
+func (c *CardWidget) parseSuit(suitStr string) (string, error) {
+	switch suitStr {
+	case "♠":
+		return "s", nil // Spades
+	case "♥":
+		return "h", nil // Hearts
+	case "♦":
+		return "d", nil // Diamonds
+	case "♣":
+		return "c", nil // Clubs
+	default:
+		return "", fmt.Errorf("unknown suit: %s", suitStr)
+	}
+}
 
-	// Load the image
+// getOrCreateImage returns a cached image or creates a new one
+func (c *CardWidget) getOrCreateImage(imagePath string) (*canvas.Image, error) {
+	uriCacheMux.RLock()
+	if cachedURI, exists := uriCache[imagePath]; exists {
+		uriCacheMux.RUnlock()
+		// Create a new image instance from the cached URI
+		newImage := canvas.NewImageFromURI(cachedURI)
+		newImage.FillMode = canvas.ImageFillContain
+		return newImage, nil
+	}
+	uriCacheMux.RUnlock()
+
+	// Check if file exists
 	if _, err := os.Stat(imagePath); os.IsNotExist(err) {
-		fmt.Printf("ERROR: Card image file does not exist: %s\n", imagePath)
-		// Instead of failing silently, let's show text as fallback
-		c.image = nil
-		c.text.Text = cardName
-		c.rect.FillColor = color.RGBA{255, 255, 255, 255} // White background
-		c.Refresh()
-		return
+		return nil, fmt.Errorf("image file does not exist: %s", imagePath)
 	}
 
 	resource := storage.NewFileURI(imagePath)
-	c.image = canvas.NewImageFromURI(resource)
-	c.image.FillMode = canvas.ImageFillContain
+	image := canvas.NewImageFromURI(resource)
+	image.FillMode = canvas.ImageFillContain
 
-	// Hide text when showing image
+	// Cache the URI
+	uriCacheMux.Lock()
+	uriCache[imagePath] = resource
+	uriCacheMux.Unlock()
+
+	return image, nil
+}
+
+// setCardImage sets the card image from card name
+func (c *CardWidget) setCardImage(cardName string) error {
+	c.cardName = cardName
+
+	imagePath, err := c.getImagePath(cardName)
+	if err != nil {
+		return err
+	}
+
+	image, err := c.getOrCreateImage(imagePath)
+	if err != nil {
+		return err
+	}
+
+	c.image = image
 	c.text.Text = ""
-	c.rect.FillColor = color.Transparent
+	c.state = CardStateNormal
+	c.updateAppearance()
+	return nil
+}
 
+// updateAppearance updates the visual appearance based on current state
+func (c *CardWidget) updateAppearance() {
+	switch c.state {
+	case CardStateEmpty:
+		c.rect.FillColor = DarkGrayColor
+	case CardStateSelected:
+		if c.image != nil {
+			c.rect.FillColor = SemiYellowColor
+		} else {
+			c.rect.FillColor = YellowColor
+		}
+	case CardStateDragging:
+		if c.image != nil {
+			c.rect.FillColor = SemiYellowColor
+		} else {
+			c.rect.FillColor = YellowColor
+		}
+	case CardStateBack, CardStateNormal:
+		if c.image != nil {
+			c.rect.FillColor = TransparentColor
+		} else {
+			c.rect.FillColor = WhiteColor
+		}
+	}
 	c.Refresh()
 }
 
-// Implement fyne.Draggable interface
+// MouseDown handles mouse press events
+func (c *CardWidget) MouseDown(e *fyne.PointEvent) {
+	c.mouseStartPos = e.Position
+	c.dragStartPos = c.Position()
+}
+
+// Dragged handles drag events
 func (c *CardWidget) Dragged(e *fyne.DragEvent) {
-	if !c.dragging {
-		return
+	if !c.isDragging {
+		// Check if we've moved far enough to start dragging
+		distance := c.calculateDistance(e.Position, c.mouseStartPos)
+		if distance < DragThreshold {
+			return
+		}
+
+		c.startDragging()
 	}
 
-	// Calculate new position based on drag offset
-	newPos := fyne.NewPos(
-		c.originalPos.X+e.Position.X-c.dragStart.X,
-		c.originalPos.Y+e.Position.Y-c.dragStart.Y,
-	)
-
-	// Move the card
+	newPos := c.calculateDragPosition(e.Position)
 	c.Move(newPos)
-
-	// Optional: Show drag feedback
-	if c.image != nil {
-		c.rect.FillColor = color.RGBA{255, 255, 100, 100} // Semi-transparent yellow
-	} else {
-		c.rect.FillColor = color.RGBA{255, 255, 100, 255} // Yellow
-	}
-	c.rect.Refresh()
 }
 
+// calculateDistance calculates the distance between two points
+func (c *CardWidget) calculateDistance(p1, p2 fyne.Position) float64 {
+	dx := float64(p1.X - p2.X)
+	dy := float64(p1.Y - p2.Y)
+	return dx*dx + dy*dy // Using squared distance to avoid sqrt
+}
+
+// startDragging initializes the drag operation
+func (c *CardWidget) startDragging() {
+	c.isDragging = true
+	c.state = CardStateDragging
+	c.display.bringCardToFront(c)
+	c.updateAppearance()
+}
+
+// calculateDragPosition calculates the new position during drag
+func (c *CardWidget) calculateDragPosition(dragPos fyne.Position) fyne.Position {
+	return fyne.NewPos(
+		c.dragStartPos.X+dragPos.X-c.mouseStartPos.X,
+		c.dragStartPos.Y+dragPos.Y-c.mouseStartPos.Y,
+	)
+}
+
+// DragEnd handles the end of drag operations
 func (c *CardWidget) DragEnd() {
-	if !c.dragging {
+	if !c.isDragging {
 		return
 	}
 
-	c.dragging = false
+	c.isDragging = false
+	c.state = CardStateNormal
 
-	// Find what's under the cursor
-	dropTarget := c.findDropTarget()
-
-	if dropTarget != nil {
-		// Valid drop - let the display handle the move
-		c.display.handleCardDrop(c, dropTarget)
+	if dropTarget := c.findDropTarget(); dropTarget != nil {
+		c.handleSuccessfulDrop(dropTarget)
 	} else {
-		// Invalid drop - snap back to original position
-		c.Move(c.originalPos)
+		c.snapBackToOriginalPosition()
 	}
 
-	// Restore normal appearance
-	c.SetSelected(c.selected)
+	c.updateAppearance()
 }
 
-func (c *CardWidget) findDropTarget() fyne.CanvasObject {
-	// Get current position
-	currentPos := c.Position()
+// findDropTarget finds a valid drop target at the current position
+func (c *CardWidget) findDropTarget() *PileWidget {
+	cardPos := c.Position()
 	cardSize := c.Size()
-	centerPos := fyne.NewPos(
-		currentPos.X+cardSize.Width/2,
-		currentPos.Y+cardSize.Height/2,
-	)
 
-	// Find what object is at the center of the card
-	return c.display.findObjectAtPosition(centerPos)
+	for _, pile := range c.getAllPiles() {
+		if pile == nil || c.isSamePile(pile) {
+			continue
+		}
+
+		pilePos := pile.Position()
+		pileSize := pile.Size()
+
+		// Check if rectangles overlap
+		if c.rectanglesOverlap(cardPos, cardSize, pilePos, pileSize) {
+			return pile
+		}
+	}
+
+	return nil
 }
 
-// Implement standard widget methods
+// isSamePile checks if the pile is the same as the card's origin
+func (c *CardWidget) isSamePile(pile *PileWidget) bool {
+	return pile.stackType == c.stackType && pile.index == c.index
+}
+
+// rectanglesOverlap checks if two rectangles overlap
+func (c *CardWidget) rectanglesOverlap(pos1 fyne.Position, size1 fyne.Size, pos2 fyne.Position, size2 fyne.Size) bool {
+	return pos1.X < pos2.X+size2.Width && pos1.X+size1.Width > pos2.X &&
+		pos1.Y < pos2.Y+size2.Height && pos1.Y+size1.Height > pos2.Y
+}
+
+// getAllPiles returns all available pile widgets
+func (c *CardWidget) getAllPiles() []*PileWidget {
+	var allPiles []*PileWidget
+
+	if c.display.stock != nil {
+		allPiles = append(allPiles, c.display.stock)
+	}
+	if c.display.waste != nil {
+		allPiles = append(allPiles, c.display.waste)
+	}
+
+	allPiles = append(allPiles, c.display.foundations...)
+	allPiles = append(allPiles, c.display.tableau...)
+	allPiles = append(allPiles, c.display.reserves...)
+
+	return allPiles
+}
+
+// handleSuccessfulDrop processes a successful drop operation
+func (c *CardWidget) handleSuccessfulDrop(targetPile *PileWidget) {
+	if c.display.componentSelectedCallback != nil {
+		c.display.componentSelectedCallback(
+			c.stackType, c.index,
+			targetPile.stackType, targetPile.index,
+		)
+	}
+}
+
+// snapBackToOriginalPosition moves the card back to its starting position
+func (c *CardWidget) snapBackToOriginalPosition() {
+	c.Move(c.dragStartPos)
+}
+
+// Tapped handles tap events
+func (c *CardWidget) Tapped(e *fyne.PointEvent) {
+	if !c.isDragging {
+		c.display.selectComponent(c.stackType, c.index)
+	}
+}
+
+// SetSelected updates the selection state
+func (c *CardWidget) SetSelected(selected bool) {
+	if selected {
+		c.state = CardStateSelected
+	} else {
+		c.state = CardStateNormal
+	}
+	c.updateAppearance()
+}
+
+// CreateRenderer creates the widget renderer
 func (c *CardWidget) CreateRenderer() fyne.WidgetRenderer {
 	return &cardRenderer{card: c}
 }
 
-func (c *CardWidget) Tapped(e *fyne.PointEvent) {
-	// Start drag operation
-	c.dragging = true
-	c.dragStart = e.Position
-	c.originalPos = c.Position()
-
-	// Also handle selection
-	c.display.selectComponent(c.stackType, c.index)
+// MinSize returns the minimum size of the widget
+func (c *CardWidget) MinSize() fyne.Size {
+	return c.minSize
 }
 
-func (c *CardWidget) SetSelected(selected bool) {
-	c.selected = selected
-	if selected {
-		// For image cards, add a border or overlay instead of changing background
-		if c.image != nil {
-			c.rect.FillColor = color.RGBA{255, 255, 0, 100} // Semi-transparent yellow
-		} else {
-			c.rect.FillColor = color.RGBA{255, 255, 0, 255} // Yellow for selection
-		}
-	} else {
-		// For image cards, make background transparent
-		if c.image != nil {
-			c.rect.FillColor = color.Transparent
-		} else {
-			c.rect.FillColor = color.RGBA{0, 100, 0, 255} // Green default
-		}
-	}
-	c.rect.Refresh()
-}
-
-// cardRenderer implementation
+// cardRenderer implements the widget renderer
 type cardRenderer struct {
 	card *CardWidget
 }
 
+// MinSize returns the minimum size for the renderer
 func (r *cardRenderer) MinSize() fyne.Size {
-	return fyne.NewSize(80, 120) // Standard card size
+	return r.card.minSize
 }
 
+// Objects returns the objects to be rendered
 func (r *cardRenderer) Objects() []fyne.CanvasObject {
-	// Return objects dynamically, not from a stored slice
-	objects := []fyne.CanvasObject{}
+	objects := make([]fyne.CanvasObject, 0, 3)
 
-	// Always include the rectangle (for background/border)
 	if r.card.rect != nil {
 		objects = append(objects, r.card.rect)
 	}
 
-	// Include text if it has content
 	if r.card.text != nil && r.card.text.Text != "" {
 		objects = append(objects, r.card.text)
 	}
 
-	// Include image if it exists
 	if r.card.image != nil {
 		objects = append(objects, r.card.image)
 	}
@@ -303,26 +504,19 @@ func (r *cardRenderer) Objects() []fyne.CanvasObject {
 	return objects
 }
 
-func (r *cardRenderer) Destroy() {
-	// Cleanup if needed
-}
-
+// Layout arranges the objects within the widget
 func (r *cardRenderer) Layout(size fyne.Size) {
-	// Layout rectangle (background/border)
 	if r.card.rect != nil {
 		r.card.rect.Resize(size)
 		r.card.rect.Move(fyne.NewPos(0, 0))
 	}
 
-	// Layout image if it exists
 	if r.card.image != nil {
 		r.card.image.Move(fyne.NewPos(0, 0))
 		r.card.image.Resize(size)
 	}
 
-	// Layout text if it has content
 	if r.card.text != nil && r.card.text.Text != "" {
-		// Center the text
 		textSize := r.card.text.MinSize()
 		r.card.text.Move(fyne.NewPos(
 			(size.Width-textSize.Width)/2,
@@ -332,8 +526,8 @@ func (r *cardRenderer) Layout(size fyne.Size) {
 	}
 }
 
+// Refresh refreshes the visual components
 func (r *cardRenderer) Refresh() {
-	// Refresh the individual objects
 	if r.card.rect != nil {
 		r.card.rect.Refresh()
 	}
@@ -342,5 +536,20 @@ func (r *cardRenderer) Refresh() {
 	}
 	if r.card.image != nil {
 		r.card.image.Refresh()
+	}
+}
+
+// Destroy cleans up resources
+func (r *cardRenderer) Destroy() {
+	// Cleanup if needed - URIs are cached globally
+}
+
+// ClearURICache clears the global URI cache (useful for cleanup or memory management)
+func ClearURICache() {
+	uriCacheMux.Lock()
+	defer uriCacheMux.Unlock()
+
+	for key := range uriCache {
+		delete(uriCache, key)
 	}
 }
