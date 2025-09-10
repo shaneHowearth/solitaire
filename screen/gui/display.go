@@ -34,6 +34,9 @@ type DisplayGUI struct {
 	processingClick       bool
 	Selected              string
 
+	// Card being dragged.
+	draggedCard *CardWidget
+
 	// Callbacks
 	componentSelectedCallback func(state.StackType, int, state.StackType, int)
 	gameSelectedCallback      func(game.Variant)
@@ -248,12 +251,7 @@ func (display *DisplayGUI) FoundationTitle(num int, value string) {
 func (display *DisplayGUI) FoundationPrint(num int, value []string) {
 	if num < len(display.foundations) && display.foundations[num] != nil {
 		if len(value) > 0 {
-			texts := make([]string, len(value))
-			for i, v := range value {
-				text := v
-				texts[i] = text
-			}
-			display.foundations[num].SetCards(texts)
+			display.foundations[num].SetCards(value)
 		} else {
 			display.foundations[num].Clear()
 		}
@@ -263,12 +261,7 @@ func (display *DisplayGUI) FoundationPrint(num int, value []string) {
 func (display *DisplayGUI) ReservePrint(idx int, value []string) {
 	if idx < len(display.reserves) && display.reserves[idx] != nil {
 		if len(value) > 0 {
-			texts := make([]string, len(value))
-			for i, v := range value {
-				text := v
-				texts[i] = text
-			}
-			display.reserves[idx].SetCards(texts)
+			display.reserves[idx].SetCards(value)
 		} else {
 			display.reserves[idx].Clear()
 		}
@@ -278,12 +271,7 @@ func (display *DisplayGUI) ReservePrint(idx int, value []string) {
 func (display *DisplayGUI) TableauPrint(idx int, value []string, _ int) {
 	if idx < len(display.tableau) && display.tableau[idx] != nil {
 		if len(value) > 0 {
-			texts := make([]string, len(value))
-			for i, v := range value {
-				text := v
-				texts[i] = text
-			}
-			display.tableau[idx].SetCards(texts)
+			display.tableau[idx].SetCards(value)
 		} else {
 			display.tableau[idx].Clear()
 		}
@@ -383,4 +371,81 @@ func (display *DisplayGUI) ShowWinnerModal(winner string, score int) {
 		display.Window.Canvas(),
 	)
 	modal.Show()
+}
+
+func (display *DisplayGUI) handleCardDrop(card *CardWidget, target fyne.CanvasObject) {
+	if pile, ok := target.(*PileWidget); ok {
+		if display.canMoveCardToPile(card, pile) {
+			display.moveCardToPile(card, pile)
+		}
+	}
+}
+
+func (display *DisplayGUI) canMoveCardToPile(card *CardWidget, pile *PileWidget) bool {
+	// Implement your solitaire rules here
+	switch pile.stackType {
+	case state.StackFoundation:
+		return display.isValidFoundationMove(card, pile)
+	case state.StackTableau:
+		return display.isValidTableauMove(card, pile)
+	default:
+		return false
+	}
+}
+
+func (display *DisplayGUI) isValidFoundationMove(card *CardWidget, pile *PileWidget) bool {
+	// Foundation rules: Same suit, ascending order
+	if len(pile.cards) == 0 {
+		return strings.HasPrefix(card.cardName, "Ace")
+	}
+	// Add more validation logic here
+	return false
+}
+
+func (display *DisplayGUI) isValidTableauMove(card *CardWidget, pile *PileWidget) bool {
+	// Tableau rules: Alternating colors, descending order
+	if len(pile.cards) == 0 {
+		return strings.HasPrefix(card.cardName, "King")
+	}
+	// Add more validation logic here
+	return false
+}
+
+func (display *DisplayGUI) moveCardToPile(card *CardWidget, targetPile *PileWidget) {
+	// This would typically trigger a callback to your game logic
+	if display.componentSelectedCallback != nil {
+		display.componentSelectedCallback(
+			card.stackType, card.index,
+			targetPile.stackType, targetPile.index,
+		)
+	}
+}
+
+func (display *DisplayGUI) findObjectAtPosition(pos fyne.Position) fyne.CanvasObject {
+	// Check all piles to see if position is within their bounds
+	allPiles := []*PileWidget{}
+	if display.stock != nil {
+		allPiles = append(allPiles, display.stock)
+	}
+	if display.waste != nil {
+		allPiles = append(allPiles, display.waste)
+	}
+	allPiles = append(allPiles, display.foundations...)
+	allPiles = append(allPiles, display.tableau...)
+	allPiles = append(allPiles, display.reserves...)
+
+	for _, pile := range allPiles {
+		if pile == nil {
+			continue
+		}
+		pilePos := pile.Position()
+		pileSize := pile.Size()
+
+		if pos.X >= pilePos.X && pos.X <= pilePos.X+pileSize.Width &&
+			pos.Y >= pilePos.Y && pos.Y <= pilePos.Y+pileSize.Height {
+			return pile
+		}
+	}
+
+	return nil
 }
