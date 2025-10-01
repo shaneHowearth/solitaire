@@ -256,6 +256,10 @@ func (*AcesSquare) MaxRedeals() int {
 
 // Move -
 func (*AcesSquare) Move(first, second *state.Stack, _ []*state.Tableau) bool {
+	if second.Type == state.StackWaste && first.Type != state.StackTalon {
+		return false
+	}
+
 	// Are the first and second "touching"
 	// first.
 	firstCard, err := first.Top()

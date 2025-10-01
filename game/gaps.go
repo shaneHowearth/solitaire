@@ -103,6 +103,11 @@ func (*Gaps) Move(source, destination *state.Stack, tableau []*state.Tableau) bo
 		return false
 	}
 
+	// Waste can only accept cards from the talon.
+	if destination.Type == state.StackWaste && source.Type != state.StackTalon {
+		return false
+	}
+
 	// Only one card per tableau.
 	if destination.Len() > 0 {
 		return false

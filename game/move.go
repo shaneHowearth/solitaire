@@ -17,6 +17,11 @@ func Move(source, destination *state.Stack, keepSequence bool) bool {
 		return false
 	}
 
+	if destination.Type == state.StackWaste && source.Type != state.StackTalon {
+		// Waste can only receive cards from the stock.
+		return false
+	}
+
 	// Can we move multiple cards?
 	// Temporary stack that will hold cards that will be moved.
 	temp := state.NewStack(
