@@ -162,3 +162,9 @@ func (*KlondikeVegas) Redeal(_ *state.Talon, _ []*state.Tableau) {}
 func (*KlondikeVegas) FoundationBase() bool {
 	return false
 }
+
+// AvailableMoves - rerturn a list of the available moves.
+func (*KlondikeVegas) AvailableMoves([]state.Tableau, []state.Foundation, []state.Talon, []state.Reserve) []string {
+	// TODO
+	return []string{}
+}

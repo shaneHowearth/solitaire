@@ -181,3 +181,9 @@ func (*Russian) Redeal(_ *state.Talon, _ []*state.Tableau) {}
 func (*Russian) FoundationBase() bool {
 	return false
 }
+
+// AvailableMoves - rerturn a list of the available moves.
+func (*Russian) AvailableMoves([]state.Tableau, []state.Foundation, []state.Talon, []state.Reserve) []string {
+	// TODO
+	return []string{}
+}
