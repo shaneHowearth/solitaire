@@ -208,6 +208,9 @@ func (display *Display) createGamePage(
 	// Add the main rows to the window container.
 	mainRows.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Rune() {
+		case 'h', 'H':
+			display.gameHint()
+			return nil
 		case 'm', 'M':
 			display.Show("Games")
 			return nil

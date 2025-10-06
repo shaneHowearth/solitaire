@@ -39,6 +39,9 @@ type Display interface {
 	ClearSelection()
 	HasSelection() bool
 
+	// Game Hint.
+	SetHintsCallback(callback func())
+
 	// Winner modal.
 	ShowWinnerModal(string, int)
 }
