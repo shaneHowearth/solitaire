@@ -162,56 +162,40 @@ func (*Yukon) FoundationBase() bool {
 	return false
 }
 
-// AvailableMoves - return a list of the available moves.
 func (yukon *Yukon) AvailableMoves(tableau []state.Tableau,
-	_ []state.Foundation,
+	foundations []state.Foundation,
 	_ []state.Talon,
 	_ []state.Reserve,
 ) []string {
 	hints := []string{}
 
-	// For each destination tableau
-	for destinationIdx := range tableau {
-		// Check each source tableau
+	// Check tableau to foundation moves
+	for foundationIdx := range foundations {
 		for sourceIdx := range tableau {
-			if destinationIdx == sourceIdx {
+			if hint := yukon.checkMove(
+				tableau[sourceIdx].Stack,
+				foundations[foundationIdx].Stack,
+				fmt.Sprintf("Tableau %d", sourceIdx+1),
+				fmt.Sprintf("Foundation %d", foundationIdx+1),
+			); hint != "" {
+				hints = append(hints, hint)
+			}
+		}
+	}
+
+	// Check tableau to tableau moves
+	for destIdx := range tableau {
+		for sourceIdx := range tableau {
+			if destIdx == sourceIdx {
 				continue
 			}
-
-			// Check if cards can be moved
-			canMove, numCards := CanMove(
+			if hint := yukon.checkMove(
 				tableau[sourceIdx].Stack,
-				tableau[destinationIdx].Stack,
-				false, // Yukon doesn't require sequence
-			)
-
-			if canMove && numCards > 0 {
-				// Find which card is being moved
-				sourceStack := tableau[sourceIdx].Stack.Clone()
-
-				// Collect the cards that would be moved
-				cardsToMove := make([]state.SuitedCard, 0, numCards)
-				for i := 0; i < numCards; i++ {
-					card, err := sourceStack.Top()
-					if err != nil {
-						break
-					}
-					cardsToMove = append(cardsToMove, card)
-					sourceStack.Deal()
-				}
-
-				if len(cardsToMove) > 0 {
-					// The last card in cardsToMove is the bottom card (the one that matches destination rule)
-					bottomCard := cardsToMove[len(cardsToMove)-1]
-
-					if numCards == 1 {
-						hints = append(hints, fmt.Sprintf("Move %s %s from Tableau %d to Tableau %d",
-							bottomCard.Rank.String(), bottomCard.Suit.String(), sourceIdx+1, destinationIdx+1))
-					} else {
-						hints = append(hints, fmt.Sprintf("Move %s %s (+ %d card(s)) from Tableau %d to Tableau %d",
-							bottomCard.Rank.String(), bottomCard.Suit.String(), numCards-1, sourceIdx+1, destinationIdx+1))
-					}
-				}
+				tableau[destIdx].Stack,
+				fmt.Sprintf("Tableau %d", sourceIdx+1),
+				fmt.Sprintf("Tableau %d", destIdx+1),
+			); hint != "" {
+				hints = append(hints, hint)
 			}
 		}
 	}
@@ -219,33 +203,42 @@ func (yukon *Yukon) AvailableMoves(tableau []state.Tableau,
 	return hints
 }
 
-// AvailableMoves - rerturn a list of the available moves.
-// func (yukon *Yukon) AvailableMoves(tableau []state.Tableau,
-// 	_ []state.Foundation,
-// 	_ []state.Talon,
-// 	_ []state.Reserve,
-// ) []string {
-// 	hints := []string{}
+// checkMove checks if a move is possible and returns a formatted hint string
+func (yukon *Yukon) checkMove(source, destination *state.Stack, sourceName, destName string) string {
+	canMove, numCards := CanMove(source, destination, false)
 
-// 	// For each tableau: the bottom card (if there is one) tells us what cards
-// 	// can be moved onto that pile.
-// 	// Check each of the tableau (and top card of the foundations?) to see if
-// 	// any of the visible cards can be moved over to this tableau.
-// 	for destinationIdx := range tableau {
-// 		for sourceIdx := range tableau {
-// 			if destinationIdx == sourceIdx {
-// 				continue
-// 			}
-// 			if can, _ := CanMove(
-// 				tableau[sourceIdx].Stack,
-// 				tableau[destinationIdx].Stack,
-// 				false,
-// 			); can {
-// 				hints = append(hints, fmt.Sprintf("Tableau %d can be moved to Tableau %d", sourceIdx+1, destinationIdx+1))
-// 			}
+	if !canMove || numCards == 0 {
+		return ""
+	}
 
-// 		}
-// 	}
+	bottomCard, err := getBottomMovingCard(source, numCards)
+	if err != nil {
+		return ""
+	}
 
-// 	return hints
-// }
+	cardStr := fmt.Sprintf("%s %s", bottomCard.Rank.String(), bottomCard.Suit.String())
+
+	if numCards == 1 {
+		return fmt.Sprintf("Move %s from %s to %s", cardStr, sourceName, destName)
+	}
+
+	return fmt.Sprintf("Move %s (+ %d card(s)) from %s to %s",
+		cardStr, numCards-1, sourceName, destName)
+}
+
+// getBottomMovingCard returns the bottom card of the sequence that would be moved
+func getBottomMovingCard(source *state.Stack, numCards int) (state.SuitedCard, error) {
+	sourceClone := source.Clone()
+
+	var bottomCard state.SuitedCard
+	for i := 0; i < numCards; i++ {
+		card, err := sourceClone.Top()
+		if err != nil {
+			return state.SuitedCard{}, err
+		}
+		bottomCard = card
+		sourceClone.Deal()
+	}
+
+	return bottomCard, nil
+}
