@@ -165,6 +165,5 @@ func (*KlondikeVegas) FoundationBase() bool {
 
 // AvailableMoves - rerturn a list of the available moves.
 func (*KlondikeVegas) AvailableMoves([]state.Tableau, []state.Foundation, []state.Talon, []state.Reserve) []string {
-	// TODO
-	return []string{}
+	return []string{"This is Klondike Vegas style, there are no hints."}
 }
