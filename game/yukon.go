@@ -1,6 +1,10 @@
 package game
 
-import "github.com/shanehowearth/solitaire/state"
+import (
+	"fmt"
+
+	"github.com/shanehowearth/solitaire/state"
+)
 
 // Yukon - https://en.wikipedia.org/wiki/Yukon_(solitaire)
 type Yukon struct{}
@@ -157,3 +161,91 @@ func (*Yukon) Redeal(_ *state.Talon, _ []*state.Tableau) {}
 func (*Yukon) FoundationBase() bool {
 	return false
 }
+
+// AvailableMoves - return a list of the available moves.
+func (yukon *Yukon) AvailableMoves(tableau []state.Tableau,
+	_ []state.Foundation,
+	_ []state.Talon,
+	_ []state.Reserve,
+) []string {
+	hints := []string{}
+
+	// For each destination tableau
+	for destinationIdx := range tableau {
+		// Check each source tableau
+		for sourceIdx := range tableau {
+			if destinationIdx == sourceIdx {
+				continue
+			}
+
+			// Check if cards can be moved
+			canMove, numCards := CanMove(
+				tableau[sourceIdx].Stack,
+				tableau[destinationIdx].Stack,
+				false, // Yukon doesn't require sequence
+			)
+
+			if canMove && numCards > 0 {
+				// Find which card is being moved
+				sourceStack := tableau[sourceIdx].Stack.Clone()
+
+				// Collect the cards that would be moved
+				cardsToMove := make([]state.SuitedCard, 0, numCards)
+				for i := 0; i < numCards; i++ {
+					card, err := sourceStack.Top()
+					if err != nil {
+						break
+					}
+					cardsToMove = append(cardsToMove, card)
+					sourceStack.Deal()
+				}
+
+				if len(cardsToMove) > 0 {
+					// The last card in cardsToMove is the bottom card (the one that matches destination rule)
+					bottomCard := cardsToMove[len(cardsToMove)-1]
+
+					if numCards == 1 {
+						hints = append(hints, fmt.Sprintf("Move %s %s from Tableau %d to Tableau %d",
+							bottomCard.Rank.String(), bottomCard.Suit.String(), sourceIdx+1, destinationIdx+1))
+					} else {
+						hints = append(hints, fmt.Sprintf("Move %s %s (+ %d card(s)) from Tableau %d to Tableau %d",
+							bottomCard.Rank.String(), bottomCard.Suit.String(), numCards-1, sourceIdx+1, destinationIdx+1))
+					}
+				}
+			}
+		}
+	}
+
+	return hints
+}
+
+// AvailableMoves - rerturn a list of the available moves.
+// func (yukon *Yukon) AvailableMoves(tableau []state.Tableau,
+// 	_ []state.Foundation,
+// 	_ []state.Talon,
+// 	_ []state.Reserve,
+// ) []string {
+// 	hints := []string{}
+
+// 	// For each tableau: the bottom card (if there is one) tells us what cards
+// 	// can be moved onto that pile.
+// 	// Check each of the tableau (and top card of the foundations?) to see if
+// 	// any of the visible cards can be moved over to this tableau.
+// 	for destinationIdx := range tableau {
+// 		for sourceIdx := range tableau {
+// 			if destinationIdx == sourceIdx {
+// 				continue
+// 			}
+// 			if can, _ := CanMove(
+// 				tableau[sourceIdx].Stack,
+// 				tableau[destinationIdx].Stack,
+// 				false,
+// 			); can {
+// 				hints = append(hints, fmt.Sprintf("Tableau %d can be moved to Tableau %d", sourceIdx+1, destinationIdx+1))
+// 			}
+
+// 		}
+// 	}
+
+// 	return hints
+// }

@@ -223,3 +223,9 @@ func (*Gaps) HasWon(tableau []*state.Tableau, _ []*state.Foundation) bool {
 func (*Gaps) FoundationBase() bool {
 	return false
 }
+
+// AvailableMoves - rerturn a list of the available moves.
+func (*Gaps) AvailableMoves([]state.Tableau, []state.Foundation, []state.Talon, []state.Reserve) []string {
+	// TODO
+	return []string{}
+}

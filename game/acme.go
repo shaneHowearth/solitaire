@@ -150,3 +150,9 @@ func (*Acme) Redeal(_ *state.Talon, _ []*state.Tableau) {}
 func (*Acme) FoundationBase() bool {
 	return false
 }
+
+// AvailableMoves - rerturn a list of the available moves.
+func (*Acme) AvailableMoves([]state.Tableau, []state.Foundation, []state.Talon, []state.Reserve) []string {
+	// TODO
+	return []string{}
+}
