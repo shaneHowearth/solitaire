@@ -1,6 +1,10 @@
 package game
 
-import "github.com/shanehowearth/solitaire/state"
+import (
+	"fmt"
+
+	"github.com/shanehowearth/solitaire/state"
+)
 
 // Klondike - https://en.wikipedia.org/wiki/Klondike_(solitaire)
 type Klondike struct{}
@@ -159,8 +163,64 @@ func (*Klondike) FoundationBase() bool {
 	return false
 }
 
-// AvailableMoves - rerturn a list of the available moves.
-func (*Klondike) AvailableMoves([]state.Tableau, []state.Foundation, []state.Talon, []state.Reserve) []string {
-	// TODO
-	return []string{}
+// AvailableMoves - return a list of the available moves.
+func (*Klondike) AvailableMoves(tableau []state.Tableau, foundations []state.Foundation, talon []state.Talon, _ []state.Reserve) []string {
+	hints := []string{}
+
+	// Check tableau to foundation moves
+	for foundationIdx := range foundations {
+		for sourceIdx := range tableau {
+			if hint := checkMove(
+				tableau[sourceIdx].Stack,
+				foundations[foundationIdx].Stack,
+				fmt.Sprintf("Tableau %d", sourceIdx+1),
+				fmt.Sprintf("Foundation %d", foundationIdx+1),
+			); hint != "" {
+				hints = append(hints, hint)
+			}
+		}
+
+		// check if the waste can be moved to the foundation.
+		if hint := checkMove(
+			talon[0].Waste,
+			foundations[foundationIdx].Stack,
+			fmt.Sprintf("Waste"),
+			fmt.Sprintf("Foundation %d", foundationIdx+1),
+		); hint != "" {
+			hints = append(hints, hint)
+		}
+	}
+
+	// Check tableau to tableau moves
+	for destIdx := range tableau {
+		for sourceIdx := range tableau {
+			if destIdx == sourceIdx {
+				continue
+			}
+			if hint := checkMove(
+				tableau[sourceIdx].Stack,
+				tableau[destIdx].Stack,
+				fmt.Sprintf("Tableau %d", sourceIdx+1),
+				fmt.Sprintf("Tableau %d", destIdx+1),
+			); hint != "" {
+				hints = append(hints, hint)
+			}
+		}
+
+		// check if the waste can go on to the tableau as well.
+		if hint := checkMove(
+			talon[0].Waste,
+			tableau[destIdx].Stack,
+			fmt.Sprintf("Waste"),
+			fmt.Sprintf("Tableau %d", destIdx+1),
+		); hint != "" {
+			hints = append(hints, hint)
+		}
+	}
+
+	if len(hints) == 0 && talon[0].Stock.Len() > 0 {
+		hints = append(hints, "Deal another card from the Stock")
+	}
+
+	return hints
 }
