@@ -49,6 +49,10 @@ type Variant interface {
 	// HasWon - Checks if the Game has been Won.
 	HasWon([]*state.Tableau, []*state.Foundation) bool
 
+	// AvailableMoves - returns the function that returns a list of possible moves
+	// that can be made.
+	AvailableMoves([]state.Tableau, []state.Foundation, []state.Talon, []state.Reserve) []string
+
 	// MaxRedeals - Rule for how many times the stock can be dealt back to the
 	// talon/stock -1 indicates unlimited.
 	MaxRedeals() int
