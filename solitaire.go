@@ -2,6 +2,7 @@ package solitaire
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/shanehowearth/solitaire/game"
 	"github.com/shanehowearth/solitaire/screen"
@@ -43,10 +44,14 @@ func New() *Instance {
 // Start - start the game.
 func (instance *Instance) Start() error {
 
+	// Call the onGameSelected function when a game is selected.
 	instance.Display.SetGameSelectedCallback(instance.onGameSelected)
 
 	// Set up component selection callback.
 	instance.Display.SetComponentSelectedCallback(instance.onComponentSelected)
+
+	// Set up Hint function callback.
+	instance.Display.SetHintsCallback(instance.onHints)
 
 	// Show the list of games available to play.
 	instance.Display.Show("Games")
@@ -233,4 +238,36 @@ func (instance *Instance) dealCards() {
 		card := instance.Deck.Deal()
 		instance.Talon.Stock.Add(card, false)
 	}
+}
+
+func (instance *Instance) onHints() {
+	//TODO - fix this hack
+	hints := instance.Game.AvailableMoves(
+		func() []state.Tableau {
+			values := make([]state.Tableau, len(instance.Tableau))
+			for i, p := range instance.Tableau {
+				values[i] = *p
+			}
+			return values
+		}(),
+		func() []state.Foundation {
+			values := make([]state.Foundation, len(instance.Foundations))
+			for i, p := range instance.Foundations {
+				values[i] = *p
+			}
+			return values
+		}(),
+		func() []state.Talon {
+			return []state.Talon{*instance.Talon}
+		}(),
+		func() []state.Reserve {
+			values := make([]state.Reserve, len(instance.Reserves))
+			for i, p := range instance.Reserves {
+				values[i] = *p
+			}
+			return values
+		}(),
+	)
+
+	log.Printf("HINTS %#v", hints)
 }
