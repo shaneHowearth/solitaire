@@ -16,6 +16,12 @@ func checkMove(source, destination *state.Stack, sourceName, destName string) st
 		return ""
 	}
 
+	// Ignore moving piles to an empty stack, and leaving an empty stack.
+	// eg. King... to an empty stack
+	if destination.Len() == 0 && numCards == source.Len() {
+		return ""
+	}
+
 	bottomCard, err := getBottomMovingCard(source, numCards)
 	if err != nil {
 		return ""
