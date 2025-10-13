@@ -200,10 +200,10 @@ func (display *Display) createGamePage(
 
 	// Add the rows to the main rows container.
 	mainRows.
-		AddItem(title, 0, 1, false).
-		AddItem(foundationsRow, 6, 0, true).
-		AddItem(tableauArea, 0, 1, true).
-		AddItem(controls, 4, 0, false)
+		AddItem(title, 6, 0, false).         // Set the "how to" area to be 6 characters high.
+		AddItem(foundationsRow, 4, 0, true). // Set the foundations row to be 4 characters high.
+		AddItem(tableauArea, 0, 1, true).    // The tableau row is purely dynamic in height.
+		AddItem(controls, 4, 0, false)       // Set the controls row to be 4 characters high.
 
 	// Add the main rows to the window container.
 	mainRows.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
