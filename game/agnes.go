@@ -226,7 +226,7 @@ func (*Agnes) FoundationBase() bool {
 	return true
 }
 
-// AvailableMoves - rerturn a list of the available moves.
+// AvailableMoves - return a list of the available moves.
 func (*Agnes) AvailableMoves([]state.Tableau, []state.Foundation, []state.Talon, []state.Reserve) []string {
 	// TODO
 	return []string{}

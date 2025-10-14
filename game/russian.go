@@ -186,7 +186,7 @@ func (*Russian) FoundationBase() bool {
 	return false
 }
 
-// AvailableMoves - rerturn a list of the available moves.
+// AvailableMoves - return a list of the available moves.
 func (*Russian) AvailableMoves(
 	tableau []state.Tableau,
 	foundations []state.Foundation,
