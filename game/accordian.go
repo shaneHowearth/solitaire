@@ -189,7 +189,7 @@ func (*Accordian) FoundationBase() bool {
 	return false
 }
 
-// AvailableMoves - rerturn a list of the available moves.
+// AvailableMoves - return a list of the available moves.
 func (*Accordian) AvailableMoves([]state.Tableau, []state.Foundation, []state.Talon, []state.Reserve) []string {
 	// TODO
 	return []string{}

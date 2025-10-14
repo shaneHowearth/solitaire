@@ -365,7 +365,7 @@ func (*AcesSquare) FoundationBase() bool {
 	return false
 }
 
-// AvailableMoves - rerturn a list of the available moves.
+// AvailableMoves - return a list of the available moves.
 func (*AcesSquare) AvailableMoves([]state.Tableau, []state.Foundation, []state.Talon, []state.Reserve) []string {
 	// TODO
 	return []string{}
