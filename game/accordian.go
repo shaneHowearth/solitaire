@@ -1,6 +1,8 @@
 package game
 
 import (
+	"fmt"
+
 	"github.com/shanehowearth/solitaire/state"
 )
 
@@ -118,7 +120,7 @@ func (accordian *Accordian) Move(source, destination *state.Stack, tableau []*st
 
 // Compact
 func (*Accordian) Compact(_, _ *state.Stack, tableau []*state.Tableau) {
-	// Move the card to the left of an empty stack into the empty stack.
+	// Move the card(s) to the left of an empty stack into the empty stack.
 	for readIdx := range tableau {
 		if tableau[readIdx].Len() == 0 {
 			sourceIdx := -1
@@ -137,9 +139,16 @@ func (*Accordian) Compact(_, _ *state.Stack, tableau []*state.Tableau) {
 			// Shift everything from sourceIdx down to readIdx
 			for j := sourceIdx; j > readIdx; j-- {
 				if tableau[j].Len() > 0 {
-					card, err := tableau[j].Top()
-					if err == nil {
-						tableau[j-1].Stack.Add(card, true)
+					tableau[j].Stack.Reverse()
+
+					// // Step 2. Move to the destination.
+					for {
+						sourceTop, err := tableau[j].Top()
+						if err != nil {
+							break
+						}
+
+						tableau[j-1].Stack.Add(sourceTop, true)
 						_, _ = tableau[j].Stack.Deal()
 					}
 				}
