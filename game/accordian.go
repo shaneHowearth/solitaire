@@ -90,32 +90,11 @@ func (*Accordian) MaxRedeals() int {
 }
 
 // Move -
-func (*Accordian) Move(source, destination *state.Stack, tableau []*state.Tableau) bool {
-	// Nothing to move.
-	if source.Len() == 0 || destination.Len() == 0 {
+func (accordian *Accordian) Move(source, destination *state.Stack, tableau []*state.Tableau) bool {
+
+	if !accordian.checkMove(source, destination) {
 		return false
 	}
-
-	// destination location must be 1 or 3 places to the left, no more, no less.
-	diffPosition := source.TableauPosition - destination.TableauPosition
-	if diffPosition != 1 && diffPosition != 3 {
-		return false
-	}
-
-	topDestination, err := destination.Top()
-	if err != nil {
-		return false
-	}
-
-	topSource, err := source.Top()
-	if err != nil {
-		return false
-	}
-
-	if topDestination.Rank != topSource.Rank && topDestination.Suit != topSource.Suit {
-		return false
-	}
-
 	// Move the cards.
 	// Need to move the whole stack.
 
@@ -193,4 +172,33 @@ func (*Accordian) FoundationBase() bool {
 func (*Accordian) AvailableMoves([]state.Tableau, []state.Foundation, []state.Talon, []state.Reserve) []string {
 	// TODO
 	return []string{}
+}
+
+func (*Accordian) checkMove(source, destination *state.Stack) bool {
+	// Nothing to move.
+	if source.Len() == 0 || destination.Len() == 0 {
+		return false
+	}
+
+	// destination location must be 1 or 3 places to the left, no more, no less.
+	diffPosition := source.TableauPosition - destination.TableauPosition
+	if diffPosition != 1 && diffPosition != 3 {
+		return false
+	}
+
+	topDestination, err := destination.Top()
+	if err != nil {
+		return false
+	}
+
+	topSource, err := source.Top()
+	if err != nil {
+		return false
+	}
+
+	if topDestination.Rank != topSource.Rank && topDestination.Suit != topSource.Suit {
+		return false
+	}
+
+	return true
 }
