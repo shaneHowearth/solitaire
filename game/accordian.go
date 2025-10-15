@@ -177,12 +177,6 @@ func (*Accordian) FoundationBase() bool {
 	return false
 }
 
-// AvailableMoves - return a list of the available moves.
-func (*Accordian) AvailableMoves([]state.Tableau, []state.Foundation, []state.Talon, []state.Reserve) []string {
-	// TODO
-	return []string{}
-}
-
 func (*Accordian) checkMove(source, destination *state.Stack) bool {
 	// Nothing to move.
 	if source.Len() == 0 || destination.Len() == 0 {
@@ -210,4 +204,53 @@ func (*Accordian) checkMove(source, destination *state.Stack) bool {
 	}
 
 	return true
+}
+
+// AvailableMoves - return a list of the available moves.
+func (accordian *Accordian) AvailableMoves(
+	tableau []state.Tableau,
+	foundations []state.Foundation,
+	talon []state.Talon,
+	reserves []state.Reserve,
+) []string {
+	moves := []string{}
+	// create a map of all tableau, with a key of their current value.
+	for idx := range tableau {
+		// There are two possible stacks that need to be checked, +1 (the stack
+		// next to this one) and +3, the stack 3 across.
+		// Only checking those gives us a big o of O(2n)
+		checkOne := idx + 1
+		checkThree := idx + 3
+		if checkOne >= len(tableau) {
+			break
+		}
+
+		destinationTop, err := tableau[idx].Top()
+		if err != nil {
+			continue
+		}
+
+		if accordian.checkMove(tableau[checkOne].Stack, tableau[idx].Stack) {
+			sourceTop, _ := tableau[checkOne].Top()
+			moves = append(moves,
+				fmt.Sprintf("Stack %d that has %s %s on top can be moved to Stack %d that has %s %s on top",
+					checkOne, sourceTop.Rank.String(), sourceTop.Suit.String(),
+					idx, destinationTop.Rank.String(), destinationTop.Suit.String()))
+		}
+
+		if checkThree >= len(tableau) {
+			continue
+		}
+
+		if accordian.checkMove(tableau[checkThree].Stack, tableau[idx].Stack) {
+			sourceTop, _ := tableau[checkThree].Top()
+			moves = append(moves,
+				fmt.Sprintf("Stack %d that has %s %s on top can be moved to Stack %d that has %s %s on top",
+					checkThree, sourceTop.Rank.String(), sourceTop.Suit.String(),
+					idx, destinationTop.Rank.String(), destinationTop.Suit.String()))
+		}
+
+	}
+
+	return moves
 }
