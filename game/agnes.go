@@ -1,6 +1,8 @@
 package game
 
 import (
+	"fmt"
+
 	"github.com/shanehowearth/solitaire/state"
 )
 
@@ -227,7 +229,46 @@ func (*Agnes) FoundationBase() bool {
 }
 
 // AvailableMoves - return a list of the available moves.
-func (*Agnes) AvailableMoves([]state.Tableau, []state.Foundation, []state.Talon, []state.Reserve) []string {
-	// TODO
-	return []string{}
+func (*Agnes) AvailableMoves(
+	tableau []state.Tableau,
+	foundations []state.Foundation,
+	talon []state.Talon,
+	reserves []state.Reserve,
+) []string {
+	hints := []string{}
+
+	// Check tableau to foundation moves
+	for foundationIdx := range foundations {
+		for sourceIdx := range tableau {
+			if hint := checkMove(
+				tableau[sourceIdx].Stack,
+				foundations[foundationIdx].Stack,
+				fmt.Sprintf("Tableau %d", sourceIdx+1),
+				fmt.Sprintf("Foundation %d", foundationIdx+1),
+				true,
+			); hint != "" {
+				hints = append(hints, hint)
+			}
+		}
+	}
+
+	// Check tableau to tableau moves
+	for destIdx := range tableau {
+		for sourceIdx := range tableau {
+			if destIdx == sourceIdx {
+				continue
+			}
+			if hint := checkMove(
+				tableau[sourceIdx].Stack,
+				tableau[destIdx].Stack,
+				fmt.Sprintf("Tableau %d", sourceIdx+1),
+				fmt.Sprintf("Tableau %d", destIdx+1),
+				true,
+			); hint != "" {
+				hints = append(hints, hint)
+			}
+		}
+	}
+
+	return hints
 }
