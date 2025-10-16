@@ -9,7 +9,7 @@ import (
 )
 
 // checkMove checks if a move is possible and returns a formatted hint string
-func checkMove(source, destination *state.Stack, sourceName, destName string, keepSequence bool) string {
+func checkMove(source, destination *state.Stack, sourceName, destName string, keepSequence, noKings bool) string {
 	canMove, numCards := CanMove(source, destination, keepSequence)
 
 	if !canMove || numCards == 0 {
@@ -18,7 +18,7 @@ func checkMove(source, destination *state.Stack, sourceName, destName string, ke
 
 	// Ignore moving piles to an empty stack, and leaving an empty stack.
 	// eg. King... to an empty stack
-	if destination.Len() == 0 && numCards == source.Len() {
+	if noKings && destination.Len() == 0 && numCards == source.Len() {
 		return ""
 	}
 

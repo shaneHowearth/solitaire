@@ -176,6 +176,7 @@ func (*Klondike) AvailableMoves(tableau []state.Tableau, foundations []state.Fou
 				fmt.Sprintf("Tableau %d", sourceIdx+1),
 				fmt.Sprintf("Foundation %d", foundationIdx+1),
 				false,
+				true,
 			); hint != "" {
 				hints = append(hints, hint)
 			}
@@ -188,6 +189,7 @@ func (*Klondike) AvailableMoves(tableau []state.Tableau, foundations []state.Fou
 			fmt.Sprintf("Waste"),
 			fmt.Sprintf("Foundation %d", foundationIdx+1),
 			false,
+			true,
 		); hint != "" {
 			hints = append(hints, hint)
 		}
@@ -205,6 +207,7 @@ func (*Klondike) AvailableMoves(tableau []state.Tableau, foundations []state.Fou
 				fmt.Sprintf("Tableau %d", sourceIdx+1),
 				fmt.Sprintf("Tableau %d", destIdx+1),
 				false,
+				true,
 			); hint != "" {
 				hints = append(hints, hint)
 			}
@@ -217,6 +220,7 @@ func (*Klondike) AvailableMoves(tableau []state.Tableau, foundations []state.Fou
 			fmt.Sprintf("Waste"),
 			fmt.Sprintf("Tableau %d", destIdx+1),
 			false,
+			true,
 		); hint != "" {
 			hints = append(hints, hint)
 		}

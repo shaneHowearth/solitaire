@@ -204,6 +204,7 @@ func (*Russian) AvailableMoves(
 				fmt.Sprintf("Tableau %d", sourceIdx+1),
 				fmt.Sprintf("Foundation %d", foundationIdx+1),
 				false,
+				true,
 			); hint != "" {
 				hints = append(hints, hint)
 			}
@@ -222,6 +223,7 @@ func (*Russian) AvailableMoves(
 				fmt.Sprintf("Tableau %d", sourceIdx+1),
 				fmt.Sprintf("Tableau %d", destIdx+1),
 				false,
+				true,
 			); hint != "" {
 				hints = append(hints, hint)
 			}
