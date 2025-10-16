@@ -1,6 +1,10 @@
 package game
 
-import "github.com/shanehowearth/solitaire/state"
+import (
+	"fmt"
+
+	"github.com/shanehowearth/solitaire/state"
+)
 
 // AcesAndKings - https://en.wikipedia.org/wiki/Aces_and_Kings
 type AcesAndKings struct{}
@@ -204,7 +208,55 @@ func (*AcesAndKings) FoundationBase() bool {
 }
 
 // AvailableMoves - return a list of the available moves.
-func (*AcesAndKings) AvailableMoves([]state.Tableau, []state.Foundation, []state.Talon, []state.Reserve) []string {
-	// TODO
-	return []string{}
+func (*AcesAndKings) AvailableMoves(
+	tableau []state.Tableau,
+	foundations []state.Foundation,
+	talons []state.Talon,
+	reserves []state.Reserve,
+) []string {
+	hints := []string{}
+
+	// Check tableau to foundation moves
+	// and reserves to foundation moves.
+	for foundationIdx := range foundations {
+		for sourceIdx := range tableau {
+			if hint := checkMove(
+				tableau[sourceIdx].Stack,
+				foundations[foundationIdx].Stack,
+				fmt.Sprintf("Tableau %d", sourceIdx+1),
+				fmt.Sprintf("Foundation %d", foundationIdx+1),
+				true,
+				false,
+			); hint != "" {
+				hints = append(hints, hint)
+			}
+		}
+		for sourceIdx := range reserves {
+			if hint := checkMove(
+				reserves[sourceIdx].Stack,
+				foundations[foundationIdx].Stack,
+				fmt.Sprintf("Reserve %d", sourceIdx+1),
+				fmt.Sprintf("Foundation %d", foundationIdx+1),
+				true,
+				false,
+			); hint != "" {
+				hints = append(hints, hint)
+			}
+		}
+		for sourceIdx := range talons {
+			if hint := checkMove(
+				talons[sourceIdx].Waste,
+				foundations[foundationIdx].Stack,
+				fmt.Sprintf("Waste "),
+				fmt.Sprintf("Foundation %d", foundationIdx+1),
+				true,
+				false,
+			); hint != "" {
+				hints = append(hints, hint)
+			}
+		}
+
+	}
+
+	return hints
 }
