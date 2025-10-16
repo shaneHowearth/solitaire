@@ -1,6 +1,8 @@
 package game
 
 import (
+	"fmt"
+
 	"github.com/shanehowearth/solitaire/state"
 )
 
@@ -376,7 +378,41 @@ func (*AcesSquare) FoundationBase() bool {
 }
 
 // AvailableMoves - return a list of the available moves.
-func (*AcesSquare) AvailableMoves([]state.Tableau, []state.Foundation, []state.Talon, []state.Reserve) []string {
-	// TODO
-	return []string{}
+func (acessquare *AcesSquare) AvailableMoves(
+	tableau []state.Tableau,
+	_ []state.Foundation,
+	_ []state.Talon,
+	_ []state.Reserve,
+) []string {
+	hints := []string{}
+
+	for idx := range tableau {
+		for secIdx := range tableau {
+			if secIdx == idx {
+				continue
+			}
+			if acessquare.checkMove(tableau[idx].Stack, tableau[secIdx].Stack) {
+				target, err := tableau[idx].Stack.Top()
+				if err != nil {
+					continue
+				}
+				card, err := tableau[secIdx].Stack.Top()
+				if err != nil {
+					continue
+				}
+
+				row1, col1 := tableau[idx].Stack.TableauPosition/numAcesSquareCols, tableau[idx].Stack.TableauPosition%numAcesSquareCols
+				row2, col2 := tableau[secIdx].Stack.TableauPosition/numAcesSquareCols, tableau[secIdx].Stack.TableauPosition%numAcesSquareCols
+				hints = append(hints,
+					fmt.Sprintf("%s %s in row %d col %d can go onto %s %s in row %d col %d",
+						target.Rank.String(), target.Suit.String(),
+						row1, col1,
+						card.Rank.String(), card.Suit.String(),
+						row2, col2,
+					),
+				)
+			}
+		}
+	}
+	return hints
 }
