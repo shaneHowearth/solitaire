@@ -255,7 +255,16 @@ func (*AcesSquare) MaxRedeals() int {
 }
 
 // Move -
-func (*AcesSquare) Move(first, second *state.Stack, _ []*state.Tableau) bool {
+func (acessquare *AcesSquare) Move(first, second *state.Stack, _ []*state.Tableau) bool {
+	if acessquare.checkMove(first, second) {
+		_, _ = first.Deal()
+		_, _ = second.Deal()
+	}
+
+	return true
+}
+
+func (*AcesSquare) checkMove(first, second *state.Stack) bool {
 	if second.Type == state.StackWaste && first.Type != state.StackTalon {
 		return false
 	}
@@ -266,6 +275,7 @@ func (*AcesSquare) Move(first, second *state.Stack, _ []*state.Tableau) bool {
 	if err != nil {
 		return false
 	}
+
 	secondCard, err := second.Top()
 	if err != nil {
 		return false
@@ -294,11 +304,11 @@ func (*AcesSquare) Move(first, second *state.Stack, _ []*state.Tableau) bool {
 	}
 
 	if rowDiff <= 1 && colDiff <= 1 {
-		_, _ = first.Deal()
-		_, _ = second.Deal()
-	}
 
-	return true
+		return true
+
+	}
+	return false
 }
 
 func (AcesSquare) Compact(stock, waste *state.Stack, tableaus []*state.Tableau) {
