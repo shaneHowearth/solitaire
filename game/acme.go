@@ -1,6 +1,10 @@
 package game
 
-import "github.com/shanehowearth/solitaire/state"
+import (
+	"fmt"
+
+	"github.com/shanehowearth/solitaire/state"
+)
 
 // Acme - https://en.wikipedia.org/wiki/Acme_(card_game)
 type Acme struct{}
@@ -152,7 +156,92 @@ func (*Acme) FoundationBase() bool {
 }
 
 // AvailableMoves - return a list of the available moves.
-func (*Acme) AvailableMoves([]state.Tableau, []state.Foundation, []state.Talon, []state.Reserve) []string {
-	// TODO
-	return []string{}
+func (*Acme) AvailableMoves(
+	tableau []state.Tableau,
+	foundations []state.Foundation,
+	talons []state.Talon,
+	reserves []state.Reserve) []string {
+	hints := []string{}
+
+	for foundationIdx := range foundations {
+		for sourceIdx := range tableau {
+			if hint := checkMove(
+				tableau[sourceIdx].Stack,
+				foundations[foundationIdx].Stack,
+				fmt.Sprintf("Tableau %d", sourceIdx+1),
+				fmt.Sprintf("Foundation %d", foundationIdx+1),
+				true,
+				false,
+			); hint != "" {
+				hints = append(hints, hint)
+			}
+		}
+
+		for sourceIdx := range reserves {
+			if hint := checkMove(
+				reserves[sourceIdx].Stack,
+				foundations[foundationIdx].Stack,
+				fmt.Sprintf("Reserve %d", sourceIdx+1),
+				fmt.Sprintf("Foundation %d", foundationIdx+1),
+				true,
+				false,
+			); hint != "" {
+				hints = append(hints, hint)
+			}
+		}
+
+		for sourceIdx := range talons {
+			if hint := checkMove(
+				talons[sourceIdx].Waste,
+				foundations[foundationIdx].Stack,
+				fmt.Sprintf("Waste %d", sourceIdx+1),
+				fmt.Sprintf("Foundation %d", foundationIdx+1),
+				true,
+				false,
+			); hint != "" {
+				hints = append(hints, hint)
+			}
+		}
+	}
+	for destinationIdx := range tableau {
+		for sourceIdx := range tableau {
+			if hint := checkMove(
+				tableau[sourceIdx].Stack,
+				tableau[destinationIdx].Stack,
+				fmt.Sprintf("Tableau %d", sourceIdx+1),
+				fmt.Sprintf("Tableau %d", destinationIdx+1),
+				true,
+				false,
+			); hint != "" {
+				hints = append(hints, hint)
+			}
+		}
+
+		for sourceIdx := range reserves {
+			if hint := checkMove(
+				reserves[sourceIdx].Stack,
+				tableau[destinationIdx].Stack,
+				fmt.Sprintf("Reserve %d", sourceIdx+1),
+				fmt.Sprintf("Tableau %d", destinationIdx+1),
+				true,
+				false,
+			); hint != "" {
+				hints = append(hints, hint)
+			}
+		}
+
+		for sourceIdx := range talons {
+			if hint := checkMove(
+				talons[sourceIdx].Waste,
+				tableau[destinationIdx].Stack,
+				fmt.Sprintf("Waste %d", sourceIdx+1),
+				fmt.Sprintf("Tableau %d", destinationIdx+1),
+				true,
+				false,
+			); hint != "" {
+				hints = append(hints, hint)
+			}
+		}
+	}
+	return hints
 }
