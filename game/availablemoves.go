@@ -9,7 +9,11 @@ import (
 )
 
 // checkMove checks if a move is possible and returns a formatted hint string
-func checkMove(source, destination *state.Stack, sourceName, destName string, keepSequence, noKings bool) string {
+func checkMove(
+	source, destination *state.Stack,
+	sourceName, destName string,
+	keepSequence, noKings bool,
+) string {
 	canMove, numCards := CanMove(source, destination, keepSequence)
 
 	if !canMove || numCards == 0 {
