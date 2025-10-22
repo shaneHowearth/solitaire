@@ -51,7 +51,7 @@ type Variant interface {
 
 	// AvailableMoves - returns the function that returns a list of possible moves
 	// that can be made.
-	AvailableMoves([]state.Tableau, []state.Foundation, []state.Talon, []state.Reserve) []string
+	AvailableMoves([]state.Tableau, []state.Foundation, []state.Talon, []state.Reserve) []state.Move
 
 	// MaxRedeals - Rule for how many times the stock can be dealt back to the
 	// talon/stock -1 indicates unlimited.

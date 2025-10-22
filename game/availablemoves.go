@@ -3,42 +3,43 @@ package game
 // Helpers for checking if a move is available, or not.
 
 import (
-	"fmt"
-
 	"github.com/shanehowearth/solitaire/state"
 )
 
-// checkMove checks if a move is possible and returns a formatted hint string
+// checkMove checks if a move is possible and returns a state.Move
 func checkMove(
 	source, destination *state.Stack,
-	sourceName, destName string,
 	keepSequence, noKings bool,
-) string {
+) state.Move {
 	canMove, numCards := CanMove(source, destination, keepSequence)
 
 	if !canMove || numCards == 0 {
-		return ""
+		return state.Move{}
 	}
 
 	// Ignore moving piles to an empty stack, and leaving an empty stack.
 	// eg. King... to an empty stack
 	if noKings && destination.Len() == 0 && numCards == source.Len() {
-		return ""
+		return state.Move{}
 	}
 
-	bottomCard, err := getBottomMovingCard(source, numCards)
+	destinationTop, err := destination.Top()
 	if err != nil {
-		return ""
+		return state.Move{}
 	}
 
-	cardStr := fmt.Sprintf("%s %s", bottomCard.Rank.String(), bottomCard.Suit.String())
-
-	if numCards == 1 {
-		return fmt.Sprintf("Move %s from %s to %s", cardStr, sourceName, destName)
+	sourceBottomCard, err := getBottomMovingCard(source, numCards)
+	if err != nil {
+		return state.Move{}
 	}
 
-	return fmt.Sprintf("Move %s (+ %d card(s)) from %s to %s",
-		cardStr, numCards-1, sourceName, destName)
+	return state.Move{
+		Source:                *source,
+		Destination:           *destination,
+		NumberMoving:          numCards,
+		SourceCardTop:         sourceBottomCard,
+		DestinationCardBottom: destinationTop,
+	}
 }
 
 // getBottomMovingCard returns the bottom card of the sequence that would be moved

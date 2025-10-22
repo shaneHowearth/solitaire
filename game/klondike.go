@@ -1,8 +1,6 @@
 package game
 
 import (
-	"fmt"
-
 	"github.com/shanehowearth/solitaire/state"
 )
 
@@ -164,34 +162,35 @@ func (*Klondike) FoundationBase() bool {
 }
 
 // AvailableMoves - return a list of the available moves.
-func (*Klondike) AvailableMoves(tableau []state.Tableau, foundations []state.Foundation, talon []state.Talon, _ []state.Reserve) []string {
-	hints := []string{}
+func (*Klondike) AvailableMoves(
+	tableau []state.Tableau,
+	foundations []state.Foundation,
+	talon []state.Talon,
+	_ []state.Reserve,
+) []state.Move {
+	moves := []state.Move{}
 
 	// Check tableau to foundation moves
 	for foundationIdx := range foundations {
 		for sourceIdx := range tableau {
-			if hint := checkMove(
+			if move := checkMove(
 				tableau[sourceIdx].Stack,
 				foundations[foundationIdx].Stack,
-				fmt.Sprintf("Tableau %d", sourceIdx+1),
-				fmt.Sprintf("Foundation %d", foundationIdx+1),
 				false,
 				true,
-			); hint != "" {
-				hints = append(hints, hint)
+			); move.NumberMoving > 0 {
+				moves = append(moves, move)
 			}
 		}
 
 		// check if the waste can be moved to the foundation.
-		if hint := checkMove(
+		if move := checkMove(
 			talon[0].Waste,
 			foundations[foundationIdx].Stack,
-			fmt.Sprintf("Waste"),
-			fmt.Sprintf("Foundation %d", foundationIdx+1),
 			false,
 			true,
-		); hint != "" {
-			hints = append(hints, hint)
+		); move.NumberMoving > 0 {
+			moves = append(moves, move)
 		}
 	}
 
@@ -201,34 +200,26 @@ func (*Klondike) AvailableMoves(tableau []state.Tableau, foundations []state.Fou
 			if destIdx == sourceIdx {
 				continue
 			}
-			if hint := checkMove(
+			if move := checkMove(
 				tableau[sourceIdx].Stack,
 				tableau[destIdx].Stack,
-				fmt.Sprintf("Tableau %d", sourceIdx+1),
-				fmt.Sprintf("Tableau %d", destIdx+1),
 				false,
 				true,
-			); hint != "" {
-				hints = append(hints, hint)
+			); move.NumberMoving > 0 {
+				moves = append(moves, move)
 			}
 		}
 
 		// check if the waste can go on to the tableau as well.
-		if hint := checkMove(
+		if move := checkMove(
 			talon[0].Waste,
 			tableau[destIdx].Stack,
-			fmt.Sprintf("Waste"),
-			fmt.Sprintf("Tableau %d", destIdx+1),
 			false,
 			true,
-		); hint != "" {
-			hints = append(hints, hint)
+		); move.NumberMoving > 0 {
+			moves = append(moves, move)
 		}
 	}
 
-	if len(hints) == 0 && talon[0].Stock.Len() > 0 {
-		hints = append(hints, "Deal another card from the Stock")
-	}
-
-	return hints
+	return moves
 }
