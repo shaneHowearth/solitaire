@@ -1,9 +1,6 @@
 package game
 
 import (
-	"fmt"
-	"log"
-
 	"github.com/shanehowearth/solitaire/state"
 )
 
@@ -254,8 +251,9 @@ func (gaps *Gaps) AvailableMoves(
 	foundations []state.Foundation,
 	talon []state.Talon,
 	reserves []state.Reserve,
-) []string {
-	moves := []string{}
+) []state.Move {
+	moves := []state.Move{}
+
 	// create a map of all tableau, with a key of their current value.
 	tableauCards := map[state.SuitedCard]state.Tableau{}
 	empties := make([]int, 0, 4)
@@ -268,7 +266,6 @@ func (gaps *Gaps) AvailableMoves(
 		tableauCards[card] = tableau[idx]
 	}
 
-	log.Printf("Empties %#v", empties)
 	for emptyIdx := range empties {
 		card := state.SuitedCard{}
 		var err error
@@ -302,13 +299,24 @@ func (gaps *Gaps) AvailableMoves(
 			if !gaps.checkMove(tableau[empties[emptyIdx]].Stack, sourceTop, hackedTableau) {
 				continue
 			}
+			destinationTop, err := tableau[empties[emptyIdx]].Top()
+			if err != nil {
+				continue
+			}
 
-			cardStr := fmt.Sprintf("%s %s can be moved from row %d column %d to row %d column %d",
-				sourceTop.Rank.String(), sourceTop.Suit.String(),
-				tableauIdx/gapsColumns+1, tableauIdx%gapsColumns+1,
-				empties[emptyIdx]/gapsColumns+1, empties[emptyIdx]%gapsColumns+1,
-			)
-			moves = append(moves, cardStr)
+			move := state.Move{
+				Source:                *tableau[tableauIdx].Stack,
+				Destination:           *tableau[empties[emptyIdx]].Stack,
+				NumberMoving:          tableau[tableauIdx].Len(),
+				SourceCardTop:         sourceTop,
+				DestinationCardBottom: destinationTop,
+			}
+			// cardStr := fmt.Sprintf("%s %s can be moved from row %d column %d to row %d column %d",
+			// 	sourceTop.Rank.String(), sourceTop.Suit.String(),
+			// 	tableauIdx/gapsColumns+1, tableauIdx%gapsColumns+1,
+			// 	empties[emptyIdx]/gapsColumns+1, empties[emptyIdx]%gapsColumns+1,
+			// )
+			moves = append(moves, move)
 		}
 	}
 

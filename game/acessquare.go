@@ -1,8 +1,6 @@
 package game
 
 import (
-	"fmt"
-
 	"github.com/shanehowearth/solitaire/state"
 )
 
@@ -383,36 +381,44 @@ func (acessquare *AcesSquare) AvailableMoves(
 	_ []state.Foundation,
 	_ []state.Talon,
 	_ []state.Reserve,
-) []string {
-	hints := []string{}
+) []state.Move {
+	moves := []state.Move{}
 
-	for idx := range tableau {
-		for secIdx := range tableau {
-			if secIdx == idx {
+	for destinationIdx := range tableau {
+		for sourceIdx := range tableau {
+			if sourceIdx == destinationIdx {
 				continue
 			}
-			if acessquare.checkMove(tableau[idx].Stack, tableau[secIdx].Stack) {
-				target, err := tableau[idx].Stack.Top()
+			if acessquare.checkMove(tableau[destinationIdx].Stack, tableau[sourceIdx].Stack) {
+				target, err := tableau[destinationIdx].Stack.Top()
 				if err != nil {
 					continue
 				}
-				card, err := tableau[secIdx].Stack.Top()
+				card, err := tableau[sourceIdx].Stack.Top()
 				if err != nil {
 					continue
 				}
 
-				row1, col1 := tableau[idx].Stack.TableauPosition/numAcesSquareCols, tableau[idx].Stack.TableauPosition%numAcesSquareCols
-				row2, col2 := tableau[secIdx].Stack.TableauPosition/numAcesSquareCols, tableau[secIdx].Stack.TableauPosition%numAcesSquareCols
-				hints = append(hints,
-					fmt.Sprintf("%s %s in row %d col %d can go onto %s %s in row %d col %d",
-						target.Rank.String(), target.Suit.String(),
-						row1, col1,
-						card.Rank.String(), card.Suit.String(),
-						row2, col2,
-					),
+				// row1, col1 := tableau[idx].Stack.TableauPosition/numAcesSquareCols, tableau[idx].Stack.TableauPosition%numAcesSquareCols
+				// row2, col2 := tableau[secIdx].Stack.TableauPosition/numAcesSquareCols, tableau[secIdx].Stack.TableauPosition%numAcesSquareCols
+				moves = append(moves,
+					state.Move{
+						Source:                *tableau[sourceIdx].Stack,
+						Destination:           *tableau[destinationIdx].Stack,
+						NumberMoving:          tableau[sourceIdx].Len(),
+						SourceCardTop:         card,
+						DestinationCardBottom: target,
+					},
+					// fmt.Sprintf("%s %s in row %d col %d can go onto %s %s in row %d col %d",
+					// 	target.Rank.String(), target.Suit.String(),
+					// 	row1, col1,
+					// 	card.Rank.String(), card.Suit.String(),
+					// 	row2, col2,
+					// ),
 				)
 			}
 		}
 	}
-	return hints
+
+	return moves
 }

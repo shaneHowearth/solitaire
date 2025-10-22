@@ -1,8 +1,6 @@
 package game
 
 import (
-	"fmt"
-
 	"github.com/shanehowearth/solitaire/state"
 )
 
@@ -212,8 +210,8 @@ func (accordian *Accordian) AvailableMoves(
 	foundations []state.Foundation,
 	talon []state.Talon,
 	reserves []state.Reserve,
-) []string {
-	moves := []string{}
+) []state.Move {
+	moves := []state.Move{}
 	// create a map of all tableau, with a key of their current value.
 	for idx := range tableau {
 		// There are two possible stacks that need to be checked, +1 (the stack
@@ -233,9 +231,13 @@ func (accordian *Accordian) AvailableMoves(
 		if accordian.checkMove(tableau[checkOne].Stack, tableau[idx].Stack) {
 			sourceTop, _ := tableau[checkOne].Top()
 			moves = append(moves,
-				fmt.Sprintf("Stack %d that has %s %s on top can be moved to Stack %d that has %s %s on top",
-					checkOne, sourceTop.Rank.String(), sourceTop.Suit.String(),
-					idx, destinationTop.Rank.String(), destinationTop.Suit.String()))
+				state.Move{
+					Source:                *tableau[checkOne].Stack,
+					Destination:           *tableau[idx].Stack,
+					NumberMoving:          tableau[checkOne].Len(),
+					SourceCardTop:         sourceTop,
+					DestinationCardBottom: destinationTop,
+				})
 		}
 
 		if checkThree >= len(tableau) {
@@ -245,11 +247,14 @@ func (accordian *Accordian) AvailableMoves(
 		if accordian.checkMove(tableau[checkThree].Stack, tableau[idx].Stack) {
 			sourceTop, _ := tableau[checkThree].Top()
 			moves = append(moves,
-				fmt.Sprintf("Stack %d that has %s %s on top can be moved to Stack %d that has %s %s on top",
-					checkThree, sourceTop.Rank.String(), sourceTop.Suit.String(),
-					idx, destinationTop.Rank.String(), destinationTop.Suit.String()))
+				state.Move{
+					Source:                *tableau[checkThree].Stack,
+					Destination:           *tableau[idx].Stack,
+					NumberMoving:          tableau[checkThree].Len(), // The whole source is always moving.
+					SourceCardTop:         sourceTop,
+					DestinationCardBottom: destinationTop,
+				})
 		}
-
 	}
 
 	return moves
