@@ -55,3 +55,11 @@ func (stack *Stack) Clone() *Stack {
 
 	return clone
 }
+
+type Move struct {
+	Source                Stack
+	Destination           Stack
+	NumberMoving          int // How many cards are being moved.
+	SourceCardTop         SuitedCard
+	DestinationCardBottom SuitedCard
+}
