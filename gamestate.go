@@ -34,11 +34,14 @@ func (instance *Instance) setupGameState() {
 	)
 
 	// Copy the game state instantiated model into the current instance.
-	instance.Reserves = gameState.Reserves
-	instance.Foundations = gameState.Foundations
-	instance.Tableau = gameState.Tableau
-	instance.Talon = gameState.Talon
-	instance.Deck = gameState.Deck
+	instance.State.Reserves = gameState.Reserves
+	instance.State.Foundations = gameState.Foundations
+	instance.State.Tableau = gameState.Tableau
+	instance.State.Talon = gameState.Talon
+	instance.State.Deck = gameState.Deck
+
+	// Create a new history for this instance.
+	instance.history = state.History{}
 
 	instance.dealCards()
 }

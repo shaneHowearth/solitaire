@@ -29,44 +29,44 @@ func (instance *Instance) createGamePage() {
 // updateDisplay - update the display with current game state.
 func (instance *Instance) updateDisplay() {
 	// Tell the board what to display in each box.
-	for idx := range instance.Foundations {
+	for idx := range instance.State.Foundations {
 		// Set the foundation title.
 		instance.Display.FoundationTitle(idx,
 			fmt.Sprintf(" %s %s ",
-				instance.Foundations[idx].Base.Rank.String(),
-				instance.Foundations[idx].Base.Suit.String(),
+				instance.State.Foundations[idx].Base.Rank.String(),
+				instance.State.Foundations[idx].Base.Suit.String(),
 			),
 		)
 
 		// Tell the foundation what cards it is holding.
 		instance.Display.FoundationPrint(idx,
-			instance.Foundations[idx].Stack.Cards(),
+			instance.State.Foundations[idx].Stack.Cards(),
 		)
 	}
 
 	// Tell each Tableau what cards it is holding.
-	for idx := range instance.Tableau {
+	for idx := range instance.State.Tableau {
 		instance.Display.TableauPrint(idx,
-			instance.Tableau[idx].Stack.Cards(),
-			instance.Tableau[idx].Stack.ShowCount,
+			instance.State.Tableau[idx].Stack.Cards(),
+			instance.State.Tableau[idx].Stack.ShowCount,
 		)
 	}
 
 	// Tell each Reserve what cards it is holding.
-	for idx := range instance.Reserves {
+	for idx := range instance.State.Reserves {
 		instance.Display.ReservePrint(idx,
-			instance.Reserves[idx].Stack.Cards(),
+			instance.State.Reserves[idx].Stack.Cards(),
 		)
 	}
 
 	// Display the Talon.
-	instance.Display.TalonPrint(instance.Talon.Stock.Cards())
+	instance.Display.TalonPrint(instance.State.Talon.Stock.Cards())
 
 	// Display the Waste.
-	instance.Display.WastePrint(instance.Talon.Waste.Cards())
+	instance.Display.WastePrint(instance.State.Talon.Waste.Cards())
 }
 
 func (instance *Instance) redeal() {
-	instance.Game.Redeal(instance.Talon, instance.Tableau)
+	instance.Game.Redeal(instance.State.Talon, instance.State.Tableau)
 	instance.updateDisplay()
 }
