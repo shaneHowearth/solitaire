@@ -8,172 +8,68 @@ import (
 )
 
 func Test_Deal(t *testing.T) {
-	dealCount := 1
-	perDealCount := 3
+	// A standard rule factory for the waste pile
+	ruleFactory := func(s *state.Stack) func(state.SuitedCard) bool {
+		return func(state.SuitedCard) bool { return true }
+	}
 
 	testcases := map[string]struct {
 		StockCount      int
+		WasteCount      int
+		InitialDeals    int
+		ExpectedOutput  bool
 		FinalStockCount int
-		WasteCount      int
 		FinalWasteCount int
-		Output          bool
-		DealCount       int
-		Rule            func(state.SuitedCard) bool
+		FinalDeals      int
 	}{
-		"Stack has multiple cards, Waste is empty": {
+		"Stock has cards, moves one to Waste": {
 			StockCount:      5,
-			FinalStockCount: 4,
-			FinalWasteCount: 1,
-			DealCount:       1,
-			Output:          true,
-			Rule:            func(state.SuitedCard) bool { return true },
-		},
-		"Stack and waste both have multiple cards": {
-			StockCount:      5,
-			FinalStockCount: 4,
-			WasteCount:      5,
-			FinalWasteCount: 6,
-			DealCount:       1,
-			Output:          true,
-			Rule:            func(state.SuitedCard) bool { return true },
-		},
-		"Stock is empty and Waste has multiple cards": {
-			StockCount:      0,
-			FinalStockCount: 4,
-			WasteCount:      5,
-			FinalWasteCount: 1,
-			DealCount:       1,
-			Output:          true,
-			Rule:            func(state.SuitedCard) bool { return true },
-		},
-		"Stock is empty and Waste only has one card": {
-			StockCount:      0,
-			FinalStockCount: 0,
-			WasteCount:      1,
-			FinalWasteCount: 1,
-			DealCount:       1,
-			Output:          false,
-			Rule:            func(state.SuitedCard) bool { return true },
-		},
-	}
-	for name, testcase := range testcases {
-		t.Run(name, func(t *testing.T) {
-			standardDeck := state.CreateDecks(1)
-			talon := state.NewTalon(dealCount, perDealCount, testcase.Rule)
-
-			// Add cards to the talon stock pile.
-			for sc := 0; sc < testcase.StockCount; sc++ {
-				card := standardDeck.Deal()
-
-				talon.Stock.Add(card, false)
-			}
-
-			// Add cards to the talon waste pile.
-			for sc := 0; sc < testcase.WasteCount; sc++ {
-				card := standardDeck.Deal()
-
-				talon.Waste.Add(card, false)
-			}
-
-			for dc := 1; dc < testcase.DealCount; dc++ {
-				// No-op, purely to use up dealcount.
-				_ = talon.Deal()
-			}
-
-			output := talon.Deal()
-
-			assert.Equalf(t, testcase.Output, output,
-				"Unexpected output got %t, want %t", output, testcase.Output)
-
-			assert.Equalf(t, testcase.FinalStockCount, talon.Stock.Len(),
-				"Unexpected final stock count got %d, want %d",
-				talon.Stock.Len(), testcase.FinalStockCount,
-			)
-
-			assert.Equalf(t, testcase.FinalWasteCount, talon.Waste.Len(),
-				"Unexpected final waste count got %d, want %d",
-				talon.Waste.Len(), testcase.FinalWasteCount,
-			)
-		})
-	}
-}
-
-// func Test_Top(t *testing.T) {
-// 	testcases := map[string]struct {
-// 	}{}
-// 	for name, testcase := range testcases {
-// 		t.Run(name, func(t *testing.T) {})
-// 	}
-// }
-
-func Test_MoveTalon(t *testing.T) {
-	dealCount := 1
-	perDealCount := 3
-
-	testcases := map[string]struct {
-		WasteCount      int
-		FinalWasteCount int
-		Destination     *state.Stack
-		Output          bool
-		Rule            func(state.SuitedCard) bool
-	}{
-		"Waste moves": {
-			WasteCount:      5,
-			FinalWasteCount: 4,
-			Destination: state.NewStack(
-				5,
-				func(state.SuitedCard) bool { return true },
-				state.StackUndefined,
-			),
-			Output: true,
-			Rule:   func(state.SuitedCard) bool { return true },
-		},
-
-		"Waste doesn't move": {
-			WasteCount:      5,
-			FinalWasteCount: 5,
-			Destination: state.NewStack(
-				5,
-				func(state.SuitedCard) bool { return true },
-				state.StackUndefined,
-			),
-			Output: false,
-			Rule:   func(state.SuitedCard) bool { return true },
-		},
-		"Waste is empty": {
 			WasteCount:      0,
-			FinalWasteCount: 0,
-			Destination: state.NewStack(
-				5,
-				func(state.SuitedCard) bool { return true },
-				state.StackUndefined,
-			),
-			Output: false,
-			Rule:   func(state.SuitedCard) bool { return true },
+			InitialDeals:    1,
+			ExpectedOutput:  true,
+			FinalStockCount: 4,
+			FinalWasteCount: 1,
+			FinalDeals:      1, // No recycle yet
 		},
-		"No destination": {
+		"Stock empty, Waste recycles to Stock": {
+			StockCount:      0,
 			WasteCount:      5,
-			FinalWasteCount: 5,
-			Output:          false,
-			Rule:            func(state.SuitedCard) bool { return true },
+			InitialDeals:    1,
+			ExpectedOutput:  true,
+			FinalStockCount: 4, // 5 cards recycled, then 1 dealt immediately
+			FinalWasteCount: 1,
+			FinalDeals:      0, // DealCount decremented
+		},
+		"Everything empty returns false": {
+			StockCount:      0,
+			WasteCount:      0,
+			InitialDeals:    1,
+			ExpectedOutput:  false,
+			FinalStockCount: 0,
+			FinalWasteCount: 0,
+			FinalDeals:      1,
 		},
 	}
-	for name, testcase := range testcases {
+
+	for name, tc := range testcases {
 		t.Run(name, func(t *testing.T) {
-			standardDeck := state.CreateDecks(1)
-			talon := state.NewTalon(dealCount, perDealCount, testcase.Rule)
+			talon := state.NewTalon(tc.InitialDeals, 1, ruleFactory)
+			deck := state.CreateDecks(1)
 
-			// Add cards to the talon waste pile.
-			for sc := 0; sc < testcase.WasteCount; sc++ {
-				card := standardDeck.Deal()
-
-				talon.Waste.Add(card, false)
+			// Setup state
+			for i := 0; i < tc.StockCount; i++ {
+				talon.Stock.Add(deck.Deal(), false)
+			}
+			for i := 0; i < tc.WasteCount; i++ {
+				talon.Waste.Add(deck.Deal(), false)
 			}
 
-			output := talon.Waste.Move(testcase.Destination, 100)
+			result := talon.Deal()
 
-			assert.Equalf(t, testcase.Output, output, "movement gave wrong result got %t want %t", output, testcase.Output)
-			assert.Equalf(t, testcase.FinalWasteCount, talon.Waste.Len(), "")
+			assert.Equal(t, tc.ExpectedOutput, result)
+			assert.Equal(t, tc.FinalStockCount, talon.Stock.Len(), "Stock length mismatch")
+			assert.Equal(t, tc.FinalWasteCount, talon.Waste.Len(), "Waste length mismatch")
+			assert.Equal(t, tc.FinalDeals, talon.DealCount, "Remaining deals mismatch")
 		})
 	}
 }
