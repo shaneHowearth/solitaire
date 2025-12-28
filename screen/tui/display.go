@@ -22,6 +22,7 @@ type Display struct {
 	gameHint                  func()
 	gameSelectedCallback      func(game.Variant)
 	gameRedealCallback        func()
+	gameUndoCallback          func()
 	componentSelectedCallback func(state.StackType, int, state.StackType, int)
 
 	selectedComponentType state.StackType
@@ -93,6 +94,10 @@ func (display *Display) SetGameSelectedCallback(callback func(game.Variant)) {
 
 func (display *Display) SetGameRedealCallback(callback func()) {
 	display.gameRedealCallback = callback
+}
+
+func (display *Display) SetGameUndoCallback(callback func()) {
+	display.gameUndoCallback = callback
 }
 
 func (display *Display) SetHintsCallback(callback func()) {

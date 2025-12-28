@@ -19,6 +19,9 @@ type Display interface {
 	// Game Redeal callback.
 	SetGameRedealCallback(callback func())
 
+	// Game Undo callback.
+	SetGameUndoCallback(callback func())
+
 	// Board creation.
 	CreateBoard(
 		name string,
