@@ -22,14 +22,12 @@ type Instance struct {
 	// View.
 	Display screen.Display
 	// State of the current game.
-	State state.State
+	State   state.State
+	History state.History
 
 	// Track first selection for move operations.
 	firstSelection bool
 	firstIndex     int
-
-	// History of this instance.
-	history state.History
 }
 
 // New - create a new instance.
@@ -69,6 +67,9 @@ func (instance *Instance) onGameSelected(selectedGame game.Variant) {
 
 	// Set the redeal callback for this game.
 	instance.Display.SetGameRedealCallback(instance.redeal)
+
+	// Set the undo callback for this game.
+	instance.Display.SetGameUndoCallback(instance.undo)
 
 	// Switch to the game page.
 	instance.Display.Show(instance.Game.Name())
@@ -120,11 +121,13 @@ func (instance *Instance) onComponentSelected(
 		panic(fmt.Sprintf("Got impossible 'toComponentType' %d", toComponentType))
 	}
 
-	instance.Game.Move(fromStack, toStack, instance.State.Tableau)
+	change := instance.Game.Move(fromStack, toStack, instance.State.Tableau)
 
 	instance.Game.Compact(instance.State.Talon.Stock, instance.State.Talon.Waste, instance.State.Tableau)
 
-	instance.history.Update()
+	if change {
+		instance.History.Update(instance.State)
+	}
 
 	instance.updateDisplay()
 
@@ -133,6 +136,26 @@ func (instance *Instance) onComponentSelected(
 		const score = 100
 		instance.Display.ShowWinnerModal(instance.Game.Name(), score)
 	}
+}
+
+func (instance *Instance) undo() {
+	log.Println("Calling undo")
+	for i := range instance.State.Foundations {
+		log.Printf("Foundation[%d] %#v", i, instance.State.Foundations[i].Stack.Cards())
+	}
+	for i := range instance.State.Tableau {
+		log.Printf("Tableau[%d] %#v", i, instance.State.Tableau[i].Stack.Cards())
+	}
+	instance.History.Undo(&instance.State)
+	log.Println("AFTER")
+	for i := range instance.State.Foundations {
+		log.Printf("Foundation[%d] %#v", i, instance.State.Foundations[i].Stack.Cards())
+	}
+	for i := range instance.State.Tableau {
+		log.Printf("Tableau[%d] %#v", i, instance.State.Tableau[i].Stack.Cards())
+	}
+
+	instance.updateDisplay()
 }
 
 // dealCards - deal cards to tableau.
@@ -239,6 +262,9 @@ func (instance *Instance) dealCards() {
 		card := instance.State.Deck.Deal()
 		instance.State.Talon.Stock.Add(card, false)
 	}
+
+	// Create the first history
+	instance.History.Update(instance.State)
 }
 
 func (instance *Instance) onHints() {
