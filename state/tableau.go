@@ -57,3 +57,10 @@ func (tableau *Tableau) Len() int {
 func (tableau *Tableau) Top() (SuitedCard, error) {
 	return tableau.Stack.Top()
 }
+
+func (tableau *Tableau) Clone() *Tableau {
+	return &Tableau{
+		Stack: tableau.Stack.Clone(),
+		Base:  tableau.Base,
+	}
+}

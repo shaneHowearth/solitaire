@@ -16,6 +16,11 @@ type Foundation struct {
 
 // CreateFoundations - Create the foundations that will host the cards.
 func CreateFoundations(foundationSpec []StackSpec) []*Foundation {
+	// Check for zero
+	if len(foundationSpec) == 0 {
+		panic("Cannot have zero foundations")
+	}
+
 	if len(foundationSpec)%SuitCount != 0 {
 		panic("Number of foundations must be a multiple of the number of suits in a deck")
 	}
@@ -57,4 +62,11 @@ func (foundation Foundation) Len() int {
 // Top - the top most card on the stack inside the foundation.
 func (foundation Foundation) Top() (SuitedCard, error) {
 	return foundation.Stack.Top()
+}
+
+func (foundation Foundation) Clone() *Foundation {
+	return &Foundation{
+		Stack: foundation.Stack.Clone(),
+		Base:  foundation.Base,
+	}
 }

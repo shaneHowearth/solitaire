@@ -48,3 +48,9 @@ func (reserve *Reserve) Len() int {
 func (reserve *Reserve) Top() (SuitedCard, error) {
 	return reserve.Stack.Top()
 }
+
+func (reserve *Reserve) Clone() *Reserve {
+	return &Reserve{
+		Stack: reserve.Stack.Clone(),
+	}
+}

@@ -101,3 +101,16 @@ func (talon *Talon) Deal() bool {
 func (talon *Talon) Top() (SuitedCard, error) {
 	return talon.Waste.Top()
 }
+
+func (talon *Talon) Clone() *Talon {
+	if talon == nil {
+		return nil
+	}
+
+	return &Talon{
+		Stock:        talon.Stock.Clone(),
+		Waste:        talon.Waste.Clone(),
+		DealCount:    talon.DealCount,
+		PerDealCount: talon.PerDealCount,
+	}
+}

@@ -70,3 +70,22 @@ func (usedDeck *Deck) Deal() SuitedCard {
 func (usedDeck *Deck) Top() SuitedCard {
 	return (*usedDeck)[usedDeck.Len()-1]
 }
+
+func (usedDeck *Deck) Clone() *Deck {
+	if usedDeck == nil {
+		return nil
+	}
+
+	// 1. Create a new slice (Deck) of the same length.
+	// This automatically allocates a new underlying array.
+	newDeck := make([]SuitedCard, len(*usedDeck))
+
+	// 2. Use the built-in copy function to copy the elements (SuitedCard structs).
+	// Since SuitedCard is a value type (struct, not pointer), this is a deep copy
+	// of the contents, ensuring the cloned deck is independent.
+	copy(newDeck, *usedDeck)
+
+	clonedDeck := Deck(newDeck)
+	// 3. Return the address of the newly created, independent Deck.
+	return &clonedDeck
+}
