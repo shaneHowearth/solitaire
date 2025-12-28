@@ -4,11 +4,11 @@ import (
 	"fmt"
 )
 
-// Talon -
-// The remaining stack of cards, typically squared and face-down, that is left
-// after the layout has been populated. These cards can be turned over into the
-// waste, usually one-by-one, but sometimes in groups of two or three (depending
-// on rules), whenever the player wishes. Also stock. Sometimes equated,
+// Talon -.
+// The remaining stack of cards, typically squared and face-down, that is left.
+// after the layout has been populated. These cards can be turned over into the.
+// waste, usually one-by-one, but sometimes in groups of two or three (depending.
+// on rules), whenever the player wishes. Also stock. Sometimes equated,.
 // confusingly, to waste pile.
 type Talon struct {
 	Stock        *Stack
@@ -22,13 +22,13 @@ func NewTalon(
 	dealCount, perDealCount int,
 	ruleFactory func(*Stack) func(SuitedCard) bool,
 ) *Talon {
-	const stackSize = 52
+	const stackSize = RankCount * SuitCount
 
 	stock := NewStack(
 		stackSize,
 		SuitedCard{},
-		func(targetStack *Stack) func(SuitedCard) bool {
-			return func(card SuitedCard) bool {
+		func(_ *Stack) func(SuitedCard) bool {
+			return func(_ SuitedCard) bool {
 				// Let anything on.
 				return true
 			}
@@ -55,7 +55,7 @@ func NewTalon(
 
 // Deal - Deal the top card of the Stock to the Waste pile.
 func (talon *Talon) Deal() bool {
-	// If there are cards left on the Stock pile, shift the top one onto the
+	// If there are cards left on the Stock pile, shift the top one onto the.
 	// Waste pile.
 	if talon.Stock.Len() > 0 {
 		card, err := talon.Stock.Deal()
@@ -69,9 +69,9 @@ func (talon *Talon) Deal() bool {
 		return true
 	}
 
-	// If the Count of deals remaining is greater than 1, and there are cards on
+	// If the Count of deals remaining is greater than 1, and there are cards on.
 	// the Waste pile, put them all into the Stock Pile.
-	// Note that if there is only one card on the waste pile that there is no
+	// Note that if there is only one card on the waste pile that there is no.
 	// need to re-deal.
 	if talon.DealCount > 0 && talon.Waste.Len() > 1 {
 		// Move the waste to the stock.

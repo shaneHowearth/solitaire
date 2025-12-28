@@ -49,104 +49,104 @@ func Test_Add(t *testing.T) {
 	}
 }
 
-// func Test_Move(t *testing.T) {
-// 	// Standard rule factory: always allows adding
-// 	allowRule := func(s *state.Stack) func(state.SuitedCard) bool {
-// 		return func(state.SuitedCard) bool { return true }
-// 	}
+// func Test_Move(t *testing.T) {.
+// 	// Standard rule factory: always allows adding.
+// 	allowRule := func(s *state.Stack) func(state.SuitedCard) bool {.
+// 		return func(state.SuitedCard) bool { return true }.
+// 	}.
 
-// 	// Deny rule factory: never allows adding
-// 	denyRule := func(s *state.Stack) func(state.SuitedCard) bool {
-// 		return func(state.SuitedCard) bool { return false }
-// 	}
+// 	// Deny rule factory: never allows adding.
+// 	denyRule := func(s *state.Stack) func(state.SuitedCard) bool {.
+// 		return func(state.SuitedCard) bool { return false }.
+// 	}.
 
-// 	testcases := map[string]struct {
-// 		Number         int
-// 		SourceCount    int
-// 		BuildDest      func() *state.Stack
-// 		ExpectedOutput bool
-// 		ExpectedSource int
-// 		ExpectedDest   int
-// 	}{
-// 		"Should not be able to move a card to the same stack that it came from": {
-// 			Number:         1,
-// 			SourceCount:    5,
-// 			BuildDest:      nil, // Logic: if nil, use source as dest
-// 			ExpectedOutput: false,
-// 			ExpectedSource: 5,
-// 		},
-// 		"Move to an empty stack where the rule allows the move": {
-// 			Number:      1,
-// 			SourceCount: 5,
-// 			BuildDest: func() *state.Stack {
-// 				return state.NewStack(0, state.SuitedCard{}, allowRule, state.StackTableau)
-// 			},
-// 			ExpectedOutput: true,
-// 			ExpectedSource: 4,
-// 			ExpectedDest:   1,
-// 		},
-// 		"Move to an empty stack where the rule denies the move": {
-// 			Number:      1,
-// 			SourceCount: 5,
-// 			BuildDest: func() *state.Stack {
-// 				return state.NewStack(0, state.SuitedCard{}, denyRule, state.StackTableau)
-// 			},
-// 			ExpectedOutput: false,
-// 			ExpectedSource: 5,
-// 			ExpectedDest:   0,
-// 		},
-// 		"Move multiple cards (e.g. Klondike build)": {
-// 			Number:      3,
-// 			SourceCount: 5,
-// 			BuildDest: func() *state.Stack {
-// 				return state.NewStack(0, state.SuitedCard{}, allowRule, state.StackTableau)
-// 			},
-// 			ExpectedOutput: true,
-// 			ExpectedSource: 2,
-// 			ExpectedDest:   3,
-// 		},
-// 	}
+// 	testcases := map[string]struct {.
+// 		Number         int.
+// 		SourceCount    int.
+// 		BuildDest      func() *state.Stack.
+// 		ExpectedOutput bool.
+// 		ExpectedSource int.
+// 		ExpectedDest   int.
+// 	}{.
+// 		"Should not be able to move a card to the same stack that it came from": {.
+// 			Number:         1,.
+// 			SourceCount:    5,.
+// 			BuildDest:      nil, // Logic: if nil, use source as dest.
+// 			ExpectedOutput: false,.
+// 			ExpectedSource: 5,.
+// 		},.
+// 		"Move to an empty stack where the rule allows the move": {.
+// 			Number:      1,.
+// 			SourceCount: 5,.
+// 			BuildDest: func() *state.Stack {.
+// 				return state.NewStack(0, state.SuitedCard{}, allowRule, state.StackTableau).
+// 			},.
+// 			ExpectedOutput: true,.
+// 			ExpectedSource: 4,.
+// 			ExpectedDest:   1,.
+// 		},.
+// 		"Move to an empty stack where the rule denies the move": {.
+// 			Number:      1,.
+// 			SourceCount: 5,.
+// 			BuildDest: func() *state.Stack {.
+// 				return state.NewStack(0, state.SuitedCard{}, denyRule, state.StackTableau).
+// 			},.
+// 			ExpectedOutput: false,.
+// 			ExpectedSource: 5,.
+// 			ExpectedDest:   0,.
+// 		},.
+// 		"Move multiple cards (e.g. Klondike build)": {.
+// 			Number:      3,.
+// 			SourceCount: 5,.
+// 			BuildDest: func() *state.Stack {.
+// 				return state.NewStack(0, state.SuitedCard{}, allowRule, state.StackTableau).
+// 			},.
+// 			ExpectedOutput: true,.
+// 			ExpectedSource: 2,.
+// 			ExpectedDest:   3,.
+// 		},.
+// 	}.
 
-// 	for name, tc := range testcases {
-// 		t.Run(name, func(t *testing.T) {
-// 			deck := state.CreateDecks(1)
-// 			source := state.NewStack(0, state.SuitedCard{}, allowRule, state.StackTableau)
+// 	for name, tc := range testcases {.
+// 		t.Run(name, func(t *testing.T) {.
+// 			deck := state.CreateDecks(1).
+// 			source := state.NewStack(0, state.SuitedCard{}, allowRule, state.StackTableau).
 
-// 			for i := 0; i < tc.SourceCount; i++ {
-// 				source.Add(deck.Deal(), true)
-// 			}
+// 			for i := 0; i < tc.SourceCount; i++ {.
+// 				source.Add(deck.Deal(), true).
+// 			}.
 
-// 			var dest *state.Stack
-// 			if tc.BuildDest == nil {
-// 				dest = source
-// 			} else {
-// 				dest = tc.BuildDest()
-// 			}
+// 			var dest *state.Stack.
+// 			if tc.BuildDest == nil {.
+// 				dest = source.
+// 			} else {.
+// 				dest = tc.BuildDest().
+// 			}.
 
-// 			output := source.Move(dest, tc.Number)
+// 			output := source.Move(dest, tc.Number).
 
-// 			assert.Equal(t, tc.ExpectedOutput, output, "Movement success/failure mismatch")
-// 			assert.Equal(t, tc.ExpectedSource, source.Len(), "Source stack count mismatch")
-// 			if dest != source && dest != nil {
-// 				assert.Equal(t, tc.ExpectedDest, dest.Len(), "Destination stack count mismatch")
-// 			}
-// 		})
-// 	}
-// }
+// 			assert.Equal(t, tc.ExpectedOutput, output, "Movement success/failure mismatch").
+// 			assert.Equal(t, tc.ExpectedSource, source.Len(), "Source stack count mismatch").
+// 			if dest != source && dest != nil {.
+// 				assert.Equal(t, tc.ExpectedDest, dest.Len(), "Destination stack count mismatch").
+// 			}.
+// 		}).
+// 	}.
+// }.
 
-// func Test_Top(t *testing.T) {
-// 	testcases := map[string]struct {
-// 		stackLen int
-// 		card     state.SuitedCard
-// 		err      error
-// 	}{
-// 		"empty stack":          {stackLen: 0, err: state.ErrEmpty},
-// 		"more than 2 in stack": {stackLen: 2},
-// 		"1 in stack":           {stackLen: 1},
-// 	}
-// 	for name, testcase := range testcases {
-// 		t.Run(name, func(t *testing.T) {
-// 			deck := state.CreateDecks(1)
-// 		})
-// 	}
-// }
+// func Test_Top(t *testing.T) {.
+// 	testcases := map[string]struct {.
+// 		stackLen int.
+// 		card     state.SuitedCard.
+// 		err      error.
+// 	}{.
+// 		"empty stack":          {stackLen: 0, err: state.ErrEmpty},.
+// 		"more than 2 in stack": {stackLen: 2},.
+// 		"1 in stack":           {stackLen: 1},.
+// 	}.
+// 	for name, testcase := range testcases {.
+// 		t.Run(name, func(t *testing.T) {.
+// 			deck := state.CreateDecks(1).
+// 		}).
+// 	}.
+// }.

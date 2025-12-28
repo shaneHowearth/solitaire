@@ -66,7 +66,7 @@ func (suit Suit) String() string {
 	}[suit]
 }
 
-// SuitedCard - A type that encapsulates that a hard has a rank/name and a
+// SuitedCard - A type that encapsulates that a hard has a rank/name and a.
 // suit.
 //
 //nolint:unused // The fields are used elsewhere.

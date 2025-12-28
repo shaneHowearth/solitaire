@@ -9,14 +9,14 @@ import (
 	"github.com/shanehowearth/solitaire/state"
 )
 
-// This is the controller, it acts as the intermediary between the view and
+// This is the controller, it acts as the intermediary between the view and.
 // the model.
-// Actions of the user are captured by the view, passed to the controller which
-// then instructs the model on what to do. The change to the model is then
+// Actions of the user are captured by the view, passed to the controller which.
+// then instructs the model on what to do. The change to the model is then.
 // relayed to the view to be displayed to the user.
 
-// Instance - holder of the information required for an instance of the game
-// TODO - give this baby a proper name :)
+// Instance - holder of the information required for an instance of the game.
+// TODO - give this baby a proper name :).
 type Instance struct {
 	Game game.Variant
 	// View.
@@ -40,7 +40,6 @@ func New() *Instance {
 
 // Start - start the game.
 func (instance *Instance) Start() error {
-
 	// Call the onGameSelected function when a game is selected.
 	instance.Display.SetGameSelectedCallback(instance.onGameSelected)
 
@@ -75,7 +74,7 @@ func (instance *Instance) onGameSelected(selectedGame game.Variant) {
 	instance.Display.Show(instance.Game.Name())
 }
 
-// onComponentSelected - handle component selection events
+// onComponentSelected - handle component selection events.
 // Moving cards from one stack to another.
 func (instance *Instance) onComponentSelected(
 	fromComponentType state.StackType, fromIndex int,
@@ -87,6 +86,7 @@ func (instance *Instance) onComponentSelected(
 	}
 
 	var fromStack *state.Stack
+
 	switch fromComponentType {
 	case state.StackFoundation:
 		fromStack = instance.State.Foundations[fromIndex].Stack
@@ -106,6 +106,7 @@ func (instance *Instance) onComponentSelected(
 	}
 
 	var toStack *state.Stack
+
 	switch toComponentType {
 	case state.StackFoundation:
 		toStack = instance.State.Foundations[toIndex].Stack
@@ -140,17 +141,22 @@ func (instance *Instance) onComponentSelected(
 
 func (instance *Instance) undo() {
 	log.Println("Calling undo")
+
 	for i := range instance.State.Foundations {
 		log.Printf("Foundation[%d] %#v", i, instance.State.Foundations[i].Stack.Cards())
 	}
+
 	for i := range instance.State.Tableau {
 		log.Printf("Tableau[%d] %#v", i, instance.State.Tableau[i].Stack.Cards())
 	}
+
 	instance.History.Undo(&instance.State)
 	log.Println("AFTER")
+
 	for i := range instance.State.Foundations {
 		log.Printf("Foundation[%d] %#v", i, instance.State.Foundations[i].Stack.Cards())
 	}
+
 	for i := range instance.State.Tableau {
 		log.Printf("Tableau[%d] %#v", i, instance.State.Tableau[i].Stack.Cards())
 	}
@@ -168,9 +174,9 @@ func (instance *Instance) dealCards() {
 
 	// Deal the cards out onto the tableau.
 	for idx := 0; idx < len(tableauSpec); idx++ {
-		// Grab a copy of the existing rule on the stack and replace it with
+		// Grab a copy of the existing rule on the stack and replace it with.
 		// one that will allow us to deal anything.
-		// FTR the existing rule prevents a deal because the cards being
+		// FTR the existing rule prevents a deal because the cards being.
 		// dealt most definitely do not adhere to it (the rule).
 		rule := instance.State.Tableau[idx].Stack.Rule
 		instance.State.Tableau[idx].Stack.Rule = func(state.SuitedCard) bool { return true }
@@ -200,9 +206,9 @@ func (instance *Instance) dealCards() {
 
 	// Deal cards to any reserves.
 	for idx := 0; idx < len(reserveSpec); idx++ {
-		// Grab a copy of the existing rule on the stack and replace it with
+		// Grab a copy of the existing rule on the stack and replace it with.
 		// one that will allow us to deal anything.
-		// FTR the existing rule prevents a deal because the cards being
+		// FTR the existing rule prevents a deal because the cards being.
 		// dealt most definitely do not adhere to it (the rule).
 		rule := instance.State.Reserves[idx].Stack.Rule
 		instance.State.Reserves[idx].Stack.Rule = func(state.SuitedCard) bool { return true }
@@ -232,6 +238,7 @@ func (instance *Instance) dealCards() {
 	if instance.Game.FoundationBase() {
 		card := instance.State.Deck.Deal()
 		toChange := 99
+
 		switch card.Suit {
 		case state.Hearts:
 			toChange = 0
@@ -241,6 +248,7 @@ func (instance *Instance) dealCards() {
 			toChange = 2
 		case state.Spades:
 			toChange = 3
+		default:
 		}
 
 		backUpRule := instance.State.Foundations[toChange].Stack.Rule
@@ -263,18 +271,19 @@ func (instance *Instance) dealCards() {
 		instance.State.Talon.Stock.Add(card, false)
 	}
 
-	// Create the first history
+	// Create the first history.
 	instance.History.Update(instance.State)
 }
 
 func (instance *Instance) onHints() {
-	//TODO - fix this hack
+	// TODO - fix this hack.
 	hints := instance.Game.AvailableMoves(
 		func() []state.Tableau {
 			values := make([]state.Tableau, len(instance.State.Tableau))
 			for i, p := range instance.State.Tableau {
 				values[i] = *p
 			}
+
 			return values
 		}(),
 		func() []state.Foundation {
@@ -282,6 +291,7 @@ func (instance *Instance) onHints() {
 			for i, p := range instance.State.Foundations {
 				values[i] = *p
 			}
+
 			return values
 		}(),
 		func() []state.Talon {
@@ -292,6 +302,7 @@ func (instance *Instance) onHints() {
 			for i, p := range instance.State.Reserves {
 				values[i] = *p
 			}
+
 			return values
 		}(),
 	)

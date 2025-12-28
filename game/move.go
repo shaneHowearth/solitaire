@@ -23,7 +23,7 @@ func CanMove(source, destination *state.Stack, keepSequence bool) (bool, int) {
 		return false, 0
 	}
 
-	// Clone both stacks to avoid modifying originals
+	// Clone both stacks to avoid modifying originals.
 	sourceClone := source.Clone()
 	destClone := destination.Clone()
 
@@ -48,8 +48,8 @@ func CanMove(source, destination *state.Stack, keepSequence bool) (bool, int) {
 			return false, 0
 		}
 
-		// Stock can only be given cards from the Deck (first deal) or the
-		// Waste. As the Deck isn't typed, we'll exclude the foundation and
+		// Stock can only be given cards from the Deck (first deal) or the.
+		// Waste. As the Deck isn't typed, we'll exclude the foundation and.
 		// tableau from being able to add to the stock.
 		if source.Type == state.StackFoundation || source.Type == state.StackTableau {
 			return false, 0
@@ -106,7 +106,7 @@ func CanMove(source, destination *state.Stack, keepSequence bool) (bool, int) {
 	}
 
 	// Check that all the cards on the temp stack can be moved.
-	// This validates the sequence if keepSequence is true
+	// This validates the sequence if keepSequence is true.
 	temp2 := state.NewStack(
 		sourceClone.Len(),
 		state.SuitedCard{},
@@ -119,11 +119,12 @@ func CanMove(source, destination *state.Stack, keepSequence bool) (bool, int) {
 	)
 
 	if canMove && temp.Len() > 0 {
-		// Clone the destination for testing
+		// Clone the destination for testing.
 		testDest := destClone.Clone()
 
-		// Try placing cards directly on the cloned destination
+		// Try placing cards directly on the cloned destination.
 		sequenceValid := true
+
 		if keepSequence {
 			for i := temp.Len() - 1; i >= 0; i-- {
 				card, _ := temp.Deal()
@@ -134,15 +135,17 @@ func CanMove(source, destination *state.Stack, keepSequence bool) (bool, int) {
 					break
 				}
 
-				testDest.Add(card, true) // Add to test next card
+				testDest.Add(card, true)
+				testDest.Add(card, true) // Add to test next card.
 			}
 		}
 
-		// Save remaining cards from temp if we broke early
+		// Save remaining cards from temp if we broke early.
 		for temp.Len() > 0 {
 			card, _ := temp.Deal()
 			temp2.Add(card, true)
 		}
+
 		canMove = sequenceValid
 	}
 
@@ -155,14 +158,14 @@ func CanMove(source, destination *state.Stack, keepSequence bool) (bool, int) {
 
 // Move - Move card(s) from one stack to another.
 func Move(source, destination *state.Stack, keepSequence bool) bool {
-	// First check if the move is valid
+	// First check if the move is valid.
 	canMove, numCards := CanMove(source, destination, keepSequence)
 
 	if !canMove || numCards == 0 {
 		return false
 	}
 
-	// Temporary stack to collect cards from source
+	// Temporary stack to collect cards from source.
 	temp := state.NewStack(
 		numCards,
 		state.SuitedCard{},
@@ -174,27 +177,29 @@ func Move(source, destination *state.Stack, keepSequence bool) bool {
 		state.StackUndefined,
 	)
 
-	// Collect exactly numCards from the source stack
+	// Collect exactly numCards from the source stack.
 	for i := 0; i < numCards; i++ {
 		card, err := source.Top()
 		if err != nil {
-			// This shouldn't happen since CanMove validated it
+			// This shouldn't happen since CanMove validated it.
 			log.Printf("Error getting card from source: %v", err)
 			break
 		}
+
 		temp.Add(card, true)
+
 		_, err = source.Deal()
 		if err != nil {
 			log.Printf("Error dealing card from source: %v", err)
 		}
 	}
 
-	// Handle reversal for waste->talon moves
+	// Handle reversal for waste->talon moves.
 	if source.Type == state.StackWaste && destination.Type == state.StackTalon {
 		temp.Reverse()
 	}
 
-	// Move all cards from temp to destination
+	// Move all cards from temp to destination.
 	for temp.Len() > 0 {
 		card, err := temp.Top()
 		if err != nil {
@@ -210,15 +215,15 @@ func Move(source, destination *state.Stack, keepSequence bool) bool {
 		_, _ = temp.Deal()
 	}
 
-	// Make the top card visible on source stack if needed
+	// Make the top card visible on source stack if needed.
 	if source.Type == state.StackTableau || source.Type == state.StackReserve {
 		newTop, err := source.Top()
 		if err != nil {
-			// Source is empty, which is fine
+			// Source is empty, which is fine.
 			return true
 		}
 
-		// Remove and re-add to make it visible
+		// Remove and re-add to make it visible.
 		_, _ = source.Deal()
 		source.Add(newTop, true)
 	}

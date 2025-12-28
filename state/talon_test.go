@@ -8,7 +8,7 @@ import (
 )
 
 func Test_Deal(t *testing.T) {
-	// A standard rule factory for the waste pile
+	// A standard rule factory for the waste pile.
 	ruleFactory := func(s *state.Stack) func(state.SuitedCard) bool {
 		return func(state.SuitedCard) bool { return true }
 	}
@@ -29,16 +29,16 @@ func Test_Deal(t *testing.T) {
 			ExpectedOutput:  true,
 			FinalStockCount: 4,
 			FinalWasteCount: 1,
-			FinalDeals:      1, // No recycle yet
+			FinalDeals:      1, // No recycle yet.
 		},
 		"Stock empty, Waste recycles to Stock": {
 			StockCount:      0,
 			WasteCount:      5,
 			InitialDeals:    1,
 			ExpectedOutput:  true,
-			FinalStockCount: 4, // 5 cards recycled, then 1 dealt immediately
+			FinalStockCount: 4, // 5 cards recycled, then 1 dealt immediately.
 			FinalWasteCount: 1,
-			FinalDeals:      0, // DealCount decremented
+			FinalDeals:      0, // DealCount decremented.
 		},
 		"Everything empty returns false": {
 			StockCount:      0,
@@ -51,25 +51,26 @@ func Test_Deal(t *testing.T) {
 		},
 	}
 
-	for name, tc := range testcases {
+	for name, testCase := range testcases {
 		t.Run(name, func(t *testing.T) {
-			talon := state.NewTalon(tc.InitialDeals, 1, ruleFactory)
+			talon := state.NewTalon(testCase.InitialDeals, 1, ruleFactory)
 			deck := state.CreateDecks(1)
 
-			// Setup state
-			for i := 0; i < tc.StockCount; i++ {
+			// Setup state.
+			for i := 0; i < testCase.StockCount; i++ {
 				talon.Stock.Add(deck.Deal(), false)
 			}
-			for i := 0; i < tc.WasteCount; i++ {
+
+			for i := 0; i < testCase.WasteCount; i++ {
 				talon.Waste.Add(deck.Deal(), false)
 			}
 
 			result := talon.Deal()
 
-			assert.Equal(t, tc.ExpectedOutput, result)
-			assert.Equal(t, tc.FinalStockCount, talon.Stock.Len(), "Stock length mismatch")
-			assert.Equal(t, tc.FinalWasteCount, talon.Waste.Len(), "Waste length mismatch")
-			assert.Equal(t, tc.FinalDeals, talon.DealCount, "Remaining deals mismatch")
+			assert.Equal(t, testCase.ExpectedOutput, result)
+			assert.Equal(t, testCase.FinalStockCount, talon.Stock.Len(), "Stock length mismatch")
+			assert.Equal(t, testCase.FinalWasteCount, talon.Waste.Len(), "Waste length mismatch")
+			assert.Equal(t, testCase.FinalDeals, talon.DealCount, "Remaining deals mismatch")
 		})
 	}
 }

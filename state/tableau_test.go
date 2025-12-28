@@ -8,7 +8,7 @@ import (
 )
 
 func Test_CreateTableaus(t *testing.T) {
-	// A dummy rule to use for valid test cases
+	// A dummy rule to use for valid test cases.
 	standardRule := func(t *state.Stack, c state.SuitedCard) bool {
 		return true
 	}
@@ -16,7 +16,7 @@ func Test_CreateTableaus(t *testing.T) {
 	testcases := map[string]struct {
 		WillPanic    bool
 		PanicMessage string
-		// BuildSpecs is a helper to generate the input for the specific case
+		// BuildSpecs is a helper to generate the input for the specific case.
 		BuildSpecs func() []state.StackSpec
 		Expected   int
 	}{
@@ -32,7 +32,7 @@ func Test_CreateTableaus(t *testing.T) {
 			PanicMessage: "Cannot create tableau 0 without a rule.",
 			BuildSpecs: func() []state.StackSpec {
 				return []state.StackSpec{
-					{AddRule: nil}, // One spec, but missing the rule
+					{AddRule: nil}, {AddRule: nil}, // One spec, but missing the rule.
 				}
 			},
 		},
@@ -43,6 +43,7 @@ func Test_CreateTableaus(t *testing.T) {
 				for i := 0; i < 7; i++ {
 					specs[i] = state.StackSpec{AddRule: standardRule}
 				}
+
 				return specs
 			},
 		},
@@ -61,11 +62,11 @@ func Test_CreateTableaus(t *testing.T) {
 			} else {
 				tableaus := state.CreateTableaus(specs)
 
-				// Check length
+				// Check length.
 				assert.Equal(t, testcase.Expected, len(tableaus),
 					"tableau has incorrect number of elements")
 
-				// Optional: Check that the rule was assigned correctly to the underlying stack
+				// Optional: Check that the rule was assigned correctly to the underlying stack.
 				if len(tableaus) > 0 {
 					assert.NotNil(t, tableaus[0].Stack.Rule, "Stack rule should be initialized")
 				}

@@ -4,7 +4,7 @@ import (
 	"github.com/shanehowearth/solitaire/state"
 )
 
-// Yukon - https://en.wikipedia.org/wiki/Yukon_(solitaire)
+// Yukon - https://en.wikipedia.org/wiki/Yukon_(solitaire).
 type Yukon struct{}
 
 // Ensure that Yukon implements game.Variant.
@@ -17,8 +17,10 @@ func (*Yukon) Name() string {
 
 // TableauGridSize - The size of the grid required by klondike.
 func (*Yukon) TableauGridSize() (int, int) {
-	const height = 1
-	const numYukonTableau = 7
+	const (
+		height          = 1
+		numYukonTableau = 7
+	)
 
 	return height, numYukonTableau
 }
@@ -75,7 +77,7 @@ func (*Yukon) Tableau() []state.StackSpec {
 	}
 }
 
-// TableauPosition - Where does each tableau go in the grid, and what angle (relative to
+// TableauPosition - Where does each tableau go in the grid, and what angle (relative to.
 // straight up and down) should the tableau be twisted.
 // Tableau and Grid are 0 indexed.
 func (*Yukon) TableauPosition(tableauNumber int) (int, int, int) {
@@ -139,35 +141,35 @@ func (*Yukon) MaxRedeals() int {
 	return 0
 }
 
-// Move -
+// Move -.
 func (*Yukon) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
 	return Move(source, destination, false)
 }
 
-// Compact
+// Compact.
 func (*Yukon) Compact(_, _ *state.Stack, _ []*state.Tableau) {}
 
-// Talon
+// Talon.
 func (*Yukon) Talon() bool {
 	return false
 }
 
-// Redeal
+// Redeal - .
 func (*Yukon) Redeal(_ *state.Talon, _ []*state.Tableau) {}
 
-// FoundationBase
+// FoundationBase - .
 func (*Yukon) FoundationBase() bool {
 	return false
 }
 
-func (yukon *Yukon) AvailableMoves(tableau []state.Tableau,
+func (*Yukon) AvailableMoves(tableau []state.Tableau,
 	foundations []state.Foundation,
 	_ []state.Talon,
 	_ []state.Reserve,
 ) []state.Move {
 	moves := []state.Move{}
 
-	// Check tableau to foundation moves
+	// Check tableau to foundation moves.
 	for foundationIdx := range foundations {
 		for sourceIdx := range tableau {
 			if move := checkMove(
@@ -181,12 +183,13 @@ func (yukon *Yukon) AvailableMoves(tableau []state.Tableau,
 		}
 	}
 
-	// Check tableau to tableau moves
+	// Check tableau to tableau moves.
 	for destIdx := range tableau {
 		for sourceIdx := range tableau {
 			if destIdx == sourceIdx {
 				continue
 			}
+
 			if move := checkMove(
 				tableau[sourceIdx].Stack,
 				tableau[destIdx].Stack,

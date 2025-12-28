@@ -5,9 +5,9 @@ import "fmt"
 // BaseCard - the card that the Foundation starts at.
 type BaseCard Rank
 
-// Foundation - The final place for cards. Cards are built up in piles from the
+// Foundation - The final place for cards. Cards are built up in piles from the.
 // (nominated) base card.
-// There are at least 4 Foundations per game, sometimes more (there will always
+// There are at least 4 Foundations per game, sometimes more (there will always.
 // be a multiple of 4 foundations though).
 type Foundation struct {
 	Stack *Stack
@@ -16,7 +16,7 @@ type Foundation struct {
 
 // CreateFoundations - Create the foundations that will host the cards.
 func CreateFoundations(foundationSpec []StackSpec) []*Foundation {
-	// Check for zero
+	// Check for zero.
 	if len(foundationSpec) == 0 {
 		panic("Cannot have zero foundations")
 	}
@@ -27,20 +27,20 @@ func CreateFoundations(foundationSpec []StackSpec) []*Foundation {
 
 	foundations := make([]*Foundation, 0, len(foundationSpec))
 
-	for i := 0; i < len(foundationSpec); i++ {
-		if foundationSpec[i].AddRule == nil {
-			panic(fmt.Sprintf("Cannot create foundation %d without a rule.", i))
+	for idx := 0; idx < len(foundationSpec); idx++ {
+		if foundationSpec[idx].AddRule == nil {
+			panic(fmt.Sprintf("Cannot create foundation %d without a rule.", idx))
 		}
 
 		foundation := &Foundation{
-			Base: foundationSpec[i].BaseCard,
+			Base: foundationSpec[idx].BaseCard,
 		}
 
 		stack := NewStack(RankCount,
-			foundationSpec[i].BaseCard,
+			foundationSpec[idx].BaseCard,
 			func(foundationStack *Stack) func(SuitedCard) bool {
 				return func(card SuitedCard) bool {
-					return foundationSpec[i].AddRule(foundationStack, card)
+					return foundationSpec[idx].AddRule(foundationStack, card)
 				}
 			},
 			StackFoundation,

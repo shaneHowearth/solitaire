@@ -4,7 +4,7 @@ import (
 	"github.com/shanehowearth/solitaire/state"
 )
 
-// Acme - https://en.wikipedia.org/wiki/Acme_(card_game)
+// Acme - https://en.wikipedia.org/wiki/Acme_(card_game).
 type Acme struct{}
 
 // Ensure that Acme implements game.Variant.
@@ -17,8 +17,10 @@ func (*Acme) Name() string {
 
 // TableauGridSize - The size of the grid required by acme.
 func (*Acme) TableauGridSize() (int, int) {
-	const height = 1
-	const numAcmeTableau = 4
+	const (
+		height         = 1
+		numAcmeTableau = 4
+	)
 
 	return height, numAcmeTableau
 }
@@ -36,14 +38,13 @@ func (*Acme) Reserves() []state.StackSpec {
 				// Nothing can be added to a reserve.
 				return false
 			},
-			CardCount: [2]int{13, 1},
+			CardCount: [2]int{state.RankCount, 1},
 		},
 	}
 }
 
 // Tableau - how the tableau are defined.
 func (acme *Acme) Tableau() []state.StackSpec {
-
 	return []state.StackSpec{
 		{
 			AddRule:   acme.tableauRule,
@@ -81,7 +82,7 @@ func (*Acme) tableauRule(tableau *state.Stack, card state.SuitedCard) bool {
 		return false
 	}
 
-	// If the card is the same suit, and is one down in rank then it can go onto
+	// If the card is the same suit, and is one down in rank then it can go onto.
 	// the tableau.
 	if (card.Suit == topCard.Suit) && (topCard.Rank-card.Rank) == 1 {
 		return true
@@ -132,23 +133,23 @@ func (*Acme) MaxRedeals() int {
 	return 1
 }
 
-// Move -
+// Move -.
 func (*Acme) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
 	return Move(source, destination, true)
 }
 
-// Compact
+// Compact.
 func (*Acme) Compact(_, _ *state.Stack, _ []*state.Tableau) {}
 
-// Talon
+// Talon.
 func (*Acme) Talon() bool {
 	return true
 }
 
-// Redeal
+// Redeal.
 func (*Acme) Redeal(_ *state.Talon, _ []*state.Tableau) {}
 
-// FoundationBase
+// FoundationBase.
 func (*Acme) FoundationBase() bool {
 	return false
 }
@@ -195,6 +196,7 @@ func (*Acme) AvailableMoves(
 			}
 		}
 	}
+
 	for destinationIdx := range tableau {
 		for sourceIdx := range tableau {
 			if move := checkMove(
@@ -229,5 +231,6 @@ func (*Acme) AvailableMoves(
 			}
 		}
 	}
+
 	return moves
 }

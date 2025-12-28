@@ -60,7 +60,7 @@ func New(games []game.Variant) *Display {
 	return display
 }
 
-// SetComponentSelectedCallback - sets the callback to be used when a component
+// SetComponentSelectedCallback - sets the callback to be used when a component.
 // is selected.
 func (display *Display) SetComponentSelectedCallback(callback func(state.StackType, int, state.StackType, int)) {
 	display.componentSelectedCallback = callback

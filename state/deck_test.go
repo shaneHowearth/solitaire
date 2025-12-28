@@ -40,7 +40,7 @@ func Test_CreateDecks(t *testing.T) {
 				deck = state.CreateDecks(testcase.Number)
 			}
 
-			expected := testcase.Number * 52
+			expected := testcase.Number * state.RankCount * state.SuitCount
 
 			// Deck has the correct number of elements.
 			assert.Equalf(t, expected, deck.Len(),
@@ -48,8 +48,8 @@ func Test_CreateDecks(t *testing.T) {
 
 			// Deck has the right cards in each subdeck.
 			for i := 1; i < testcase.Number; i++ {
-				start := (i - 1) * 52
-				stop := i * 52
+				start := (i - 1) * state.RankCount * state.SuitCount
+				stop := i * state.RankCount * state.SuitCount
 				assert.ElementsMatchf(t, *standardDeck, (*deck)[start:stop],
 					"Deck [%d:%d] has incorrect elements %#v", (*deck)[start:stop])
 			}
@@ -70,7 +70,7 @@ func Test_ShuffleDecks(t *testing.T) {
 			standardDeck := state.CreateDecks(testcase.Number)
 
 			shuffledDeck := state.CreateDecks(testcase.Number)
-			expected := testcase.Number * 52
+			expected := testcase.Number * state.RankCount * state.SuitCount
 
 			shuffledDeck.Shuffle()
 
@@ -79,12 +79,12 @@ func Test_ShuffleDecks(t *testing.T) {
 				"Deck has incorrect number of elements after shuffle, want: %d, got: %d", expected, shuffledDeck.Len())
 
 			// Look for a value out of position.
-			// Only one value needs to be out of position for the deck to be
+			// Only one value needs to be out of position for the deck to be.
 			// considered shuffled for the purposes of the test.
 			// TODO: Is there a stronger test available?
 			shuffled := false
 
-			for i := 0; i < testcase.Number*52; i++ {
+			for i := 0; i < testcase.Number*state.RankCount*state.SuitCount; i++ {
 				if (*shuffledDeck)[i] != (*standardDeck)[i] {
 					shuffled = true
 					break

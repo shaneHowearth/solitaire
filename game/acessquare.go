@@ -4,7 +4,7 @@ import (
 	"github.com/shanehowearth/solitaire/state"
 )
 
-// AcesSquare - https://en.wikipedia.org/wiki/Monte_Carlo_(card_game)
+// AcesSquare - https://en.wikipedia.org/wiki/Monte_Carlo_(card_game).
 type AcesSquare struct{}
 
 // Ensure that AcesSquare implements game.Variant.
@@ -36,178 +36,177 @@ func (*AcesSquare) Reserves() []state.StackSpec {
 
 // Tableau - how the tableau are defined.
 func (*AcesSquare) Tableau() []state.StackSpec {
-
 	return []state.StackSpec{
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
@@ -254,7 +253,7 @@ func (*AcesSquare) MaxRedeals() int {
 	return 0
 }
 
-// Move -
+// Move -.
 func (acessquare *AcesSquare) Move(first, second *state.Stack, _ []*state.Tableau) bool {
 	if acessquare.checkMove(first, second) {
 		_, _ = first.Deal()
@@ -269,7 +268,7 @@ func (*AcesSquare) checkMove(first, second *state.Stack) bool {
 		return false
 	}
 
-	// Are the first and second "touching"
+	// Are the first and second "touching".
 	// first.
 	firstCard, err := first.Top()
 	if err != nil {
@@ -289,7 +288,7 @@ func (*AcesSquare) checkMove(first, second *state.Stack) bool {
 	// First and Second have to be 'next' to each other.
 	// They can be on top of one another, side by side, or on an angle.
 
-	// Convert 1D indices to 2D coordinates
+	// Convert 1D indices to 2D coordinates.
 	row1, col1 := first.TableauPosition/numAcesSquareCols, first.TableauPosition%numAcesSquareCols
 	row2, col2 := second.TableauPosition/numAcesSquareCols, second.TableauPosition%numAcesSquareCols
 
@@ -304,10 +303,9 @@ func (*AcesSquare) checkMove(first, second *state.Stack) bool {
 	}
 
 	if rowDiff <= 1 && colDiff <= 1 {
-
 		return true
-
 	}
+
 	return false
 }
 
@@ -315,6 +313,7 @@ func (AcesSquare) Compact(stock, waste *state.Stack, tableaus []*state.Tableau) 
 	for readIdx := 0; readIdx < numAcesSquareCols*numAcesSquareRows; readIdx++ {
 		if tableaus[readIdx].Len() == 0 {
 			sourceIdx := -1
+
 			for j := readIdx + 1; j < numAcesSquareCols*numAcesSquareRows; j++ {
 				if tableaus[j].Len() > 0 {
 					sourceIdx = j
@@ -322,12 +321,12 @@ func (AcesSquare) Compact(stock, waste *state.Stack, tableaus []*state.Tableau) 
 				}
 			}
 
-			// If no non-empty tableau found after this position, we're done
+			// If no non-empty tableau found after this position, we're done.
 			if sourceIdx == -1 {
 				break
 			}
 
-			// Shift everything from sourceIdx down to readIdx
+			// Shift everything from sourceIdx down to readIdx.
 			for j := sourceIdx; j > readIdx; j-- {
 				if tableaus[j].Len() > 0 {
 					card, err := tableaus[j].Top()
@@ -337,21 +336,24 @@ func (AcesSquare) Compact(stock, waste *state.Stack, tableaus []*state.Tableau) 
 					}
 				}
 			}
+
 			readIdx--
 		}
 	}
 
-	// Take the waste card and put it onto the second to last grid cell
+	// Take the waste card and put it onto the second to last grid cell.
 	wasteCard, err := waste.Deal()
 	if err != nil {
 		return
 	}
+
 	tableaus[numAcesSquareRows*numAcesSquareCols-2].Stack.Add(wasteCard, true)
-	// Take the top stock card and put it onto the last grid cell
+	// Take the top stock card and put it onto the last grid cell.
 	stockCard, err := stock.Deal()
 	if err != nil {
 		return
 	}
+
 	tableaus[numAcesSquareRows*numAcesSquareCols-1].Stack.Add(stockCard, true)
 
 	// Take the next stock card and put it onto the waste.
@@ -359,18 +361,19 @@ func (AcesSquare) Compact(stock, waste *state.Stack, tableaus []*state.Tableau) 
 	if err != nil {
 		return
 	}
+
 	waste.Add(stockCard, true)
 }
 
-// Talon
+// Talon.
 func (*AcesSquare) Talon() bool {
 	return true
 }
 
-// Redeal
+// Redeal.
 func (*AcesSquare) Redeal(_ *state.Talon, _ []*state.Tableau) {}
 
-// FoundationBase
+// FoundationBase.
 func (*AcesSquare) FoundationBase() bool {
 	return false
 }
@@ -389,18 +392,18 @@ func (acessquare *AcesSquare) AvailableMoves(
 			if sourceIdx == destinationIdx {
 				continue
 			}
+
 			if acessquare.checkMove(tableau[destinationIdx].Stack, tableau[sourceIdx].Stack) {
 				target, err := tableau[destinationIdx].Stack.Top()
 				if err != nil {
 					continue
 				}
+
 				card, err := tableau[sourceIdx].Stack.Top()
 				if err != nil {
 					continue
 				}
 
-				// row1, col1 := tableau[idx].Stack.TableauPosition/numAcesSquareCols, tableau[idx].Stack.TableauPosition%numAcesSquareCols
-				// row2, col2 := tableau[secIdx].Stack.TableauPosition/numAcesSquareCols, tableau[secIdx].Stack.TableauPosition%numAcesSquareCols
 				moves = append(moves,
 					state.Move{
 						Source:                *tableau[sourceIdx].Stack,
@@ -409,12 +412,6 @@ func (acessquare *AcesSquare) AvailableMoves(
 						SourceCardTop:         card,
 						DestinationCardBottom: target,
 					},
-					// fmt.Sprintf("%s %s in row %d col %d can go onto %s %s in row %d col %d",
-					// 	target.Rank.String(), target.Suit.String(),
-					// 	row1, col1,
-					// 	card.Rank.String(), card.Suit.String(),
-					// 	row2, col2,
-					// ),
 				)
 			}
 		}

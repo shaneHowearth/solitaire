@@ -14,18 +14,18 @@ func CreateReserves(reserveSpec []StackSpec) []*Reserve {
 
 	reserves := make([]*Reserve, 0, len(reserveSpec))
 
-	for i := 0; i < len(reserveSpec); i++ {
-		if reserveSpec[i].AddRule == nil {
-			panic(fmt.Sprintf("Cannot create reserve %d without a rule.", i))
+	for idx := 0; idx < len(reserveSpec); idx++ {
+		if reserveSpec[idx].AddRule == nil {
+			panic(fmt.Sprintf("Cannot create reserve %d without a rule.", idx))
 		}
 
 		reserve := &Reserve{}
 
 		stack := NewStack(RankCount,
-			reserveSpec[i].BaseCard,
+			reserveSpec[idx].BaseCard,
 			func(targetStack *Stack) func(SuitedCard) bool {
 				return func(card SuitedCard) bool {
-					return reserveSpec[i].AddRule(targetStack, card)
+					return reserveSpec[idx].AddRule(targetStack, card)
 				}
 			},
 			StackReserve,
