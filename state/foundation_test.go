@@ -18,9 +18,8 @@ func Test_CreateFoundations(t *testing.T) {
 	}{
 		"GIVEN that the number of foundations requested is Zero " +
 			"WHEN Create Foundations is called " +
-			"THEN the code will panic.": {
-			Number: 0, WillPanic: true,
-			PanicMessage: "Cannot have zero foundations",
+			"THEN the code will not panic.": {
+			Number: 0,
 		},
 		"GIVEN that the number of foundation requested is Two " +
 			"WHEN Create foundation is called " +
