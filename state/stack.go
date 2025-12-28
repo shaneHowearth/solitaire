@@ -46,7 +46,6 @@ const (
 func NewStack(
 	number int,
 	base SuitedCard,
-	// rule func(SuitedCard) bool,
 	ruleFactory func(*Stack) func(SuitedCard) bool,
 	componentType StackType,
 ) *Stack {

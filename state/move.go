@@ -39,19 +39,24 @@ func (stack *Stack) Reverse() {
 }
 
 func (stack *Stack) Clone() *Stack {
-	clone := NewStack(
-		stack.Len(),
-		stack.Base,
-		stack.ruleFactory,
-		stack.Type,
-	)
+	clone := &Stack{}
+	*clone = *stack
 
-	cards := make([]SuitedCard, stack.Len())
-	for idx := 0; idx < stack.Len(); idx++ {
-		cards[idx] = (*stack.cards)[idx]
+	sourceCards := *stack.cards
+
+	// Allocate a new slice of the same size.
+	newCards := make([]SuitedCard, len(sourceCards))
+
+	// Copy the contents (the SuitedCard values) from the source to the new slice.
+	copy(newCards, sourceCards)
+
+	// 3. Update the clone's internal pointer to reference the new slice.
+	clone.cards = &newCards
+
+	// Re-bind the rules to the NEW stack pointer
+	if stack.ruleFactory != nil {
+		clone.Rule = stack.ruleFactory(clone)
 	}
-
-	clone.cards = &cards
 
 	return clone
 }
