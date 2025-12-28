@@ -5,20 +5,20 @@ import (
 	"github.com/shanehowearth/solitaire/game"
 )
 
-// CreateGameListPage - Lists all variants of games that the application knows about,
+// CreateGameListPage - Lists all variants of games that the application knows about,.
 // allowing the user to select which variant to play.
 func (display *Display) createGameListPage(games []game.Variant) *tview.List {
 	list := tview.NewList()
 	list.SetTitle("Select a Solitaire Game (↑/↓ to navigate, Enter to select)").SetBorder(true)
 
 	for _, g := range games {
-		// Create closure to capture the correct game instance
+		// Create closure to capture the correct game instance.
 		game := g
 
 		list.AddItem(
 			game.Name(),
-			"", // No secondary text needed
-			0,  // No shortcut key
+			"", // No secondary text needed.
+			0,  // No shortcut key.
 			func() {
 				display.onGameSelected(game)
 			},

@@ -38,7 +38,7 @@ func Test_CreateFoundations(t *testing.T) {
 
 	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {
-			// 1. Dynamically build the specs slice based on testcase.Number
+			// 1. Dynamically build the specs slice based on testcase.Number.
 			specs := make([]state.StackSpec, testcase.Number)
 			for i := 0; i < testcase.Number; i++ {
 				specs[i] = state.StackSpec{

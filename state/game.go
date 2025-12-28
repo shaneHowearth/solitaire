@@ -1,6 +1,6 @@
 package state
 
-// State -
+// State -.
 type State struct {
 	Deck        *Deck
 	Tableau     []*Tableau

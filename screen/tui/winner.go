@@ -1,6 +1,6 @@
 // than as named constants.
 //
-//nolint:mnd // Small numeric literals for UI positioning are clearer inline
+//nolint:mnd // Small numeric literals for UI positioning are clearer inline.
 package tui
 
 import (

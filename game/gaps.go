@@ -4,7 +4,7 @@ import (
 	"github.com/shanehowearth/solitaire/state"
 )
 
-// Gaps - https://en.wikipedia.org/wiki/Gaps
+// Gaps - https://en.wikipedia.org/wiki/Gaps.
 type Gaps struct{}
 
 // Ensure that Gaps implements game.Variant.
@@ -37,24 +37,26 @@ func (*Gaps) Reserves() []state.StackSpec {
 // Tableau - how the tableau are defined.
 func (gaps *Gaps) Tableau() []state.StackSpec {
 	// There are 52 tableau, each has one card that is open.
-	tableau := make([]state.StackSpec, 0, 52)
-	for i := 0; i < 52; i++ {
-		t := state.StackSpec{
+	tableau := make([]state.StackSpec, 0, state.RankCount*state.SuitCount)
+
+	for i := 0; i < state.RankCount*state.SuitCount; i++ {
+		stateStackSpec := state.StackSpec{
 			AddRule:   gaps.tableauRule,
 			CardCount: [2]int{1, 1},
 			SkipCards: map[state.SuitedCard]struct{}{
-				state.SuitedCard{Rank: state.Ace, Suit: state.Hearts}:   struct{}{},
-				state.SuitedCard{Rank: state.Ace, Suit: state.Diamonds}: struct{}{},
-				state.SuitedCard{Rank: state.Ace, Suit: state.Clubs}:    struct{}{},
-				state.SuitedCard{Rank: state.Ace, Suit: state.Spades}:   struct{}{},
+				{Rank: state.Ace, Suit: state.Hearts}:   {},
+				{Rank: state.Ace, Suit: state.Diamonds}: {},
+				{Rank: state.Ace, Suit: state.Clubs}:    {},
+				{Rank: state.Ace, Suit: state.Spades}:   {},
 			},
 		}
-		tableau = append(tableau, t)
+		tableau = append(tableau, stateStackSpec)
 	}
+
 	return tableau
 }
 
-func (*Gaps) tableauRule(tableau *state.Stack, card state.SuitedCard) bool {
+func (*Gaps) tableauRule(tableau *state.Stack, _ state.SuitedCard) bool {
 	// Handle when the tableau is empty.
 	if tableau.Len() == 0 {
 		// Anything can be put onto an empty tableau.
@@ -96,7 +98,7 @@ func (*Gaps) MaxRedeals() int {
 	return 1
 }
 
-// Move -
+// Move -.
 func (gaps *Gaps) Move(source, destination *state.Stack, tableau []*state.Tableau) bool {
 	// Nothing to move.
 	if source.Len() == 0 {
@@ -121,6 +123,7 @@ func (gaps *Gaps) Move(source, destination *state.Stack, tableau []*state.Tablea
 	if gaps.checkMove(destination, sourceTop, tableau) {
 		// Move the card.
 		destination.Add(sourceTop, true)
+
 		_, _ = source.Deal()
 
 		return true
@@ -134,7 +137,6 @@ func (*Gaps) checkMove(
 	sourceTop state.SuitedCard,
 	tableau []*state.Tableau,
 ) bool {
-
 	if destination.TableauPosition%gapsColumns != 0 {
 		neighbourTop, err := tableau[destination.TableauPosition-1].Top()
 		if err != nil {
@@ -146,7 +148,7 @@ func (*Gaps) checkMove(
 			return false
 		}
 
-		// Can only place a card of the same suit as the the card to the left of
+		// Can only place a card of the same suit as the the card to the left of.
 		// the gap.
 		if sourceTop.Suit != neighbourTop.Suit {
 			return false
@@ -160,7 +162,7 @@ func (*Gaps) checkMove(
 		return true
 	}
 
-	// destination is at the front of the row, which can only take a two (any
+	// Destination is at the front of the row, which can only take a two (any.
 	// two).
 	if sourceTop.Rank == state.Two {
 		return true
@@ -169,16 +171,16 @@ func (*Gaps) checkMove(
 	return false
 }
 
-// Compact
+// Compact - .
 func (*Gaps) Compact(_, _ *state.Stack, _ []*state.Tableau) {}
 
-// Talon
+// Talon - .
 func (*Gaps) Talon() bool {
 	return false
 }
 
-// Redeal
-func (gaps *Gaps) Redeal(talon *state.Talon, tableau []*state.Tableau) {
+// Redeal - .
+func (*Gaps) Redeal(talon *state.Talon, tableau []*state.Tableau) {
 	if talon.Stock.CanReceiveMore() {
 		GapsRedeal(tableau, gapsRows, gapsColumns)
 	}
@@ -186,22 +188,23 @@ func (gaps *Gaps) Redeal(talon *state.Talon, tableau []*state.Tableau) {
 
 // HasWon - How to tell if the game has been won.
 func (*Gaps) HasWon(tableau []*state.Tableau, _ []*state.Foundation) bool {
-
 	for row := 0; row < 4; row++ {
 		rowStart := row * gapsColumns
-		// Get the suit from the first non-empty card in the row
-		// (since the last position should be empty)
+		// Get the suit from the first non-empty card in the row.
+		// (since the last position should be empty).
 		rowSuit := state.Undefined
 
-		// Find the suit for this row from any non-empty card
+		// Find the suit for this row from any non-empty card.
 		for col := 0; col < gapsColumns-1; col++ { // Skip last position (should be empty)
 			stackIndex := rowStart + col
+
 			card, err := tableau[stackIndex].Top()
 			if err != nil {
 				continue
 			}
 
 			rowSuit = card.Suit
+
 			break
 		}
 
@@ -210,27 +213,28 @@ func (*Gaps) HasWon(tableau []*state.Tableau, _ []*state.Foundation) bool {
 			return false
 		}
 
-		// Check each position in the row
+		// Check each position in the row.
 		for col := 0; col < gapsColumns; col++ {
 			stackIndex := rowStart + col
+
 			card, err := tableau[stackIndex].Top()
 			if err != nil {
 				// An empty stack should only be at the 13th position.
-				if (col+1)%13 != 0 {
+				if (col+1)%gapsColumns != 0 {
 					return false
 				}
 
 				continue
 			}
 
-			expectedRank := state.Rank((col + 1) % 13)
+			expectedRank := state.Rank((col + 1) % gapsColumns)
 
-			// Check rank matches
+			// Check rank matches.
 			if card.Rank != expectedRank {
 				return false
 			}
 
-			// Check suit matches (except for empty cards)
+			// Check suit matches (except for empty cards).
 			if card.Suit != rowSuit {
 				return false
 			}
@@ -240,7 +244,7 @@ func (*Gaps) HasWon(tableau []*state.Tableau, _ []*state.Foundation) bool {
 	return true
 }
 
-// FoundationBase
+// FoundationBase.
 func (*Gaps) FoundationBase() bool {
 	return false
 }
@@ -248,26 +252,29 @@ func (*Gaps) FoundationBase() bool {
 // AvailableMoves - return a list of the available moves.
 func (gaps *Gaps) AvailableMoves(
 	tableau []state.Tableau,
-	foundations []state.Foundation,
-	talon []state.Talon,
-	reserves []state.Reserve,
+	_ []state.Foundation,
+	_ []state.Talon,
+	_ []state.Reserve,
 ) []state.Move {
 	moves := []state.Move{}
 
 	// create a map of all tableau, with a key of their current value.
 	tableauCards := map[state.SuitedCard]state.Tableau{}
 	empties := make([]int, 0, 4)
+
 	for idx := range tableau {
 		card, err := tableau[idx].Top()
 		if err != nil {
 			empties = append(empties, idx)
 			continue
 		}
+
 		tableauCards[card] = tableau[idx]
 	}
 
 	for emptyIdx := range empties {
 		card := state.SuitedCard{}
+
 		var err error
 
 		if emptyIdx > 0 {
@@ -276,15 +283,16 @@ func (gaps *Gaps) AvailableMoves(
 				// second empty?
 				continue
 			}
+
 			if card.Rank == state.King {
 				// nothing to add.
 				continue
 			}
 		}
 
-		// If the tableau is in the far left position for that row, then any of the
+		// If the tableau is in the far left position for that row, then any of the.
 		// 2s not in the 0th position of any row can be moved.
-		// collect the moves
+		// collect the moves.
 		// TODO fix the pointer to tableau problem.
 		hackedTableau := make([]*state.Tableau, 0, len(tableau))
 		for tableauIdx := range tableau {
@@ -296,9 +304,11 @@ func (gaps *Gaps) AvailableMoves(
 			if err != nil {
 				continue
 			}
+
 			if !gaps.checkMove(tableau[empties[emptyIdx]].Stack, sourceTop, hackedTableau) {
 				continue
 			}
+
 			destinationTop, err := tableau[empties[emptyIdx]].Top()
 			if err != nil {
 				continue
@@ -311,11 +321,11 @@ func (gaps *Gaps) AvailableMoves(
 				SourceCardTop:         sourceTop,
 				DestinationCardBottom: destinationTop,
 			}
-			// cardStr := fmt.Sprintf("%s %s can be moved from row %d column %d to row %d column %d",
-			// 	sourceTop.Rank.String(), sourceTop.Suit.String(),
-			// 	tableauIdx/gapsColumns+1, tableauIdx%gapsColumns+1,
-			// 	empties[emptyIdx]/gapsColumns+1, empties[emptyIdx]%gapsColumns+1,
-			// )
+			// cardStr := fmt.Sprintf("%s %s can be moved from row %d column %d to row %d column %d",.
+			// 	sourceTop.Rank.String(), sourceTop.Suit.String(),.
+			// 	tableauIdx/gapsColumns+1, tableauIdx%gapsColumns+1,.
+			// 	empties[emptyIdx]/gapsColumns+1, empties[emptyIdx]%gapsColumns+1,.
+			// ).
 			moves = append(moves, move)
 		}
 	}

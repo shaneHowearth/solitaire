@@ -1,4 +1,4 @@
-//nolint:mnd // Small numeric literals for UI positioning are clearer inline
+//nolint:mnd // Small numeric literals for UI positioning are clearer inline.
 package tui
 
 import (
@@ -8,6 +8,12 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/shanehowearth/solitaire/state"
+)
+
+const (
+	colourNormal = "[-]"
+	colourRed    = "[red]"
+	formatStr    = "%s%s%s"
 )
 
 // CreateBoard - Create the board that the game will use.
@@ -36,9 +42,9 @@ func (display *Display) createGamePage(
 
 	foundationsRow := tview.NewFlex().SetDirection(tview.FlexColumn)
 
-	// #########
-	// # TALON #
-	// #########
+	// #########.
+	// # TALON #.
+	// #########.
 	display.stack = make([]*tview.TextView, 1)
 	talonIndex := 0 // There's typically only one talon.
 	talon := tview.NewTextView().SetDynamicColors(true)
@@ -60,9 +66,9 @@ func (display *Display) createGamePage(
 		talon, 0, 1, true,
 	)
 
-	// #########
-	// # WASTE #
-	// #########
+	// #########.
+	// # WASTE #.
+	// #########.
 	display.waste = make([]*tview.TextView, 1)
 	waste := tview.NewTextView().SetDynamicColors(true)
 
@@ -85,9 +91,9 @@ func (display *Display) createGamePage(
 	foundationsRow.AddItem(waste, 0, 1, true)
 
 	// Add a box for each foundation.
-	// ###############
-	// # FOUNDATIONS #
-	// ###############
+	// ###############.
+	// # FOUNDATIONS #.
+	// ###############.
 	display.foundations = make([]*tview.TextView, foundationCount)
 
 	for idx := 0; idx < foundationCount; idx++ {
@@ -120,21 +126,20 @@ func (display *Display) createGamePage(
 
 	tableauArea := tview.NewFlex().SetDirection(tview.FlexRow)
 
-	// ############
-	// # TABLEAUS #
-	// ############
+	// ############.
+	// # TABLEAUS #.
+	// ############.
 	display.tableau = make([]*tview.TextView, tableauHeight*tableauWidth)
 
 	for idx := 0; idx < tableauHeight; idx++ {
 		// Create a row holding flex.
 		tableauRow := tview.NewFlex().SetDirection(tview.FlexColumn)
 
-		// Only do this in the first tableauRow
+		// Only do this in the first tableauRow.
 		if idx == 0 {
-			// ############
-			// # RESERVES #
-			// ############
-
+			// ############.
+			// # RESERVES #.
+			// ############.
 			display.reserves = make([]*tview.TextView, reserveCount)
 			for reserveIdx := 0; reserveIdx < reserveCount; reserveIdx++ {
 				reserve := tview.NewTextView().SetDynamicColors(true)
@@ -183,7 +188,6 @@ func (display *Display) createGamePage(
 					return action, event
 				})
 			tableauRow.AddItem(tableau, 0, 1, true)
-
 		}
 
 		// Add the row to the tableau.
@@ -192,7 +196,9 @@ func (display *Display) createGamePage(
 
 	// Controls/Help.
 	controls := tview.NewTextView().
-		SetText("Press 'n' to start a n\u0332ew game, 'm' to return to game m\u0332enu, Ctrl+C or 'q' to q\u0332uit\n'r' will r\u0332edeal in some games.").
+		SetText("Press 'n' to start a n\u0332ew game, " +
+			"'m' to return to game m\u0332enu, " +
+			"Ctrl+C or 'q' to q\u0332uit\n'r' will r\u0332edeal in some games.").
 		SetTextAlign(tview.AlignCenter)
 	controls.SetBorder(true).SetTitle("Controls")
 
@@ -236,7 +242,7 @@ func (display *Display) createGamePage(
 	return mainRows
 }
 
-// TalonPrint -
+// TalonPrint -.
 func (display *Display) TalonPrint(value []string) {
 	if len(value) > 0 {
 		display.stack[0].SetText(
@@ -249,15 +255,16 @@ func (display *Display) TalonPrint(value []string) {
 	}
 }
 
-// WastePrint -
+// WastePrint -.
 func (display *Display) WastePrint(value []string) {
 	if len(value) > 0 {
 		textColor := "[-]"
 		if strings.Contains(value[len(value)-1], state.Hearts.String()) ||
 			strings.Contains(value[len(value)-1], state.Diamonds.String()) {
-			textColor = "[red]"
+			textColor = colourRed
 		}
-		value[len(value)-1] = fmt.Sprintf("%s%s%s", textColor, value[len(value)-1], "[-]")
+
+		value[len(value)-1] = fmt.Sprintf(formatStr, textColor, value[len(value)-1], "[-]")
 
 		display.waste[0].SetText(
 			value[len(value)-1],
@@ -269,22 +276,22 @@ func (display *Display) WastePrint(value []string) {
 	}
 }
 
-// FoundationTitle -
+// FoundationTitle -.
 func (display *Display) FoundationTitle(num int, value string) {
 	display.foundations[num].SetTitle(value)
 }
 
-// FoundationPrint -
+// FoundationPrint -.
 func (display *Display) FoundationPrint(num int, value []string) {
 	if len(value) > 0 {
 		// Only print the top card.
 		textColor := "[-]"
 		if strings.Contains(value[len(value)-1], state.Hearts.String()) ||
 			strings.Contains(value[len(value)-1], state.Diamonds.String()) {
-			textColor = "[red]"
+			textColor = colourRed
 		}
 
-		value[len(value)-1] = fmt.Sprintf("%s%s%s", textColor, value[len(value)-1], "[-]")
+		value[len(value)-1] = fmt.Sprintf(formatStr, textColor, value[len(value)-1], colourNormal)
 
 		display.foundations[num].SetText(
 			value[len(value)-1],
@@ -297,16 +304,17 @@ func (display *Display) FoundationPrint(num int, value []string) {
 
 const emptyStack = ""
 
-// ReservePrint -
+// ReservePrint -.
 func (display *Display) ReservePrint(idx int, value []string) {
 	if len(value) > 0 {
-		for i := range value {
-			textColor := "[-]"
-			if strings.Contains(value[i], state.Hearts.String()) ||
-				strings.Contains(value[i], state.Diamonds.String()) {
-				textColor = "[red]"
+		for idx := range value {
+			textColor := colourNormal
+			if strings.Contains(value[idx], state.Hearts.String()) ||
+				strings.Contains(value[idx], state.Diamonds.String()) {
+				textColor = colourRed
 			}
-			value[i] = fmt.Sprintf("%s%s%s", textColor, value[i], "[-]")
+
+			value[idx] = fmt.Sprintf(formatStr, textColor, value[idx], colourNormal)
 		}
 
 		display.reserves[idx].SetText(
@@ -319,16 +327,17 @@ func (display *Display) ReservePrint(idx int, value []string) {
 	}
 }
 
-// TableauPrint -
+// TableauPrint -.
 func (display *Display) TableauPrint(idx int, value []string, showCount int) {
 	if len(value) > 0 {
 		for valIdx := range value {
-			textColor := "[-]"
+			textColor := colourNormal
 			if strings.Contains(value[valIdx], state.Hearts.String()) ||
 				strings.Contains(value[valIdx], state.Diamonds.String()) {
-				textColor = "[red]"
+				textColor = colourRed
 			}
-			value[valIdx] = fmt.Sprintf("%s%s%s", textColor, value[valIdx], "[-]")
+
+			value[valIdx] = fmt.Sprintf(formatStr, textColor, value[valIdx], colourNormal)
 		}
 
 		// Only show the number of cards that the game is configured to show.
@@ -352,7 +361,7 @@ func (display *Display) TableauPrint(idx int, value []string, showCount int) {
 	)
 }
 
-// Update the selectComponent method to use the callback:
+// Update the selectComponent method to use the callback:.
 func (display *Display) selectComponent(componentType state.StackType, index int) {
 	if display.processingClick {
 		return

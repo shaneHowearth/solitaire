@@ -5,8 +5,8 @@ import (
 	"math/rand/v2"
 )
 
-// Stack - A stack of cards one on top of the other and squared such that only
-// the topmost card, whether face up or face down is visible.[5]
+// Stack - A stack of cards one on top of the other and squared such that only.
+// the topmost card, whether face up or face down is visible.[5].
 type Stack struct {
 	cards           *[]SuitedCard
 	Base            SuitedCard
@@ -38,10 +38,10 @@ const (
 	StackReserve
 )
 
-// There are two types of stack, the one that holds the reserve of cards that
+// There are two types of stack, the one that holds the reserve of cards that.
 // are yet to be played, and the ones that are on the tableau.
 
-// NewStack - Create a new stack with an empty slice of SuitedCards that has a
+// NewStack - Create a new stack with an empty slice of SuitedCards that has a.
 // capacity of n.
 func NewStack(
 	number int,
@@ -58,7 +58,7 @@ func NewStack(
 		Type:        componentType,
 	}
 
-	// Create the actual rule using the factory
+	// Create the actual rule using the factory.
 	if ruleFactory != nil {
 		stack.Rule = ruleFactory(stack)
 	}
@@ -80,7 +80,7 @@ func (stack *Stack) Top() (SuitedCard, error) {
 	return (*stack.cards)[stack.Len()-1], nil
 }
 
-// RebindRule -
+// RebindRule -.
 func (stack *Stack) RebindRule(targetStack *Stack) {
 	if stack.ruleFactory != nil {
 		targetStack.Rule = stack.ruleFactory(targetStack)
@@ -111,8 +111,8 @@ func (stack *Stack) Cards() []string {
 	return cardPile
 }
 
-// CanReceiveMore - returns whether the stack is allowed to receive another
-// bunch. Used to check if there has been more redeals than the game specifies
+// CanReceiveMore - returns whether the stack is allowed to receive another.
+// bunch. Used to check if there has been more redeals than the game specifies.
 // are allowed.
 func (stack *Stack) CanReceiveMore() bool {
 	if stack.Received < stack.MaxRedeals || stack.MaxRedeals == -1 {

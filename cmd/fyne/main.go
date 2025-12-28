@@ -8,16 +8,25 @@ import (
 	"fyne.io/fyne/v2/canvas"
 )
 
+const (
+	greenR       = 46
+	greenG       = 125
+	greenB       = 50
+	greenA       = 255
+	windowWidth  = 1200
+	windowHeight = 600
+)
+
 func main() {
 	myApp := app.New()
 
-	w := myApp.NewWindow("Irate Sol")
+	window := myApp.NewWindow("Irate Sol")
 
 	// Green Rectangle.
-	rect := canvas.NewRectangle(color.RGBA{R: 46, G: 125, B: 50, A: 255})
-	w.SetContent(rect)
+	rect := canvas.NewRectangle(color.RGBA{R: greenR, G: greenG, B: greenB, A: greenA})
+	window.SetContent(rect)
 
-	width, height := float32(1200), float32(600)
-	w.Resize(fyne.NewSize(width, height))
-	w.ShowAndRun()
+	width, height := float32(windowWidth), float32(windowHeight)
+	window.Resize(fyne.NewSize(width, height))
+	window.ShowAndRun()
 }

@@ -2,7 +2,7 @@ package game
 
 import "github.com/shanehowearth/solitaire/state"
 
-// KlondikeVegas - https://en.wikipedia.org/wiki/Klondike2_(solitaire)
+// KlondikeVegas - https://en.wikipedia.org/wiki/Klondike2_(solitaire).
 type KlondikeVegas struct{}
 
 // Ensure that KlondikeVegas implements game.Variant.
@@ -35,7 +35,7 @@ const numKlondikeVegasTableau = 7
 
 // Tableau - how the tableau are defined.
 func (*KlondikeVegas) Tableau() []state.StackSpec {
-	// return numKlondikeTableau, state.King, MinusOneRule
+	// return numKlondikeTableau, state.King, MinusOneRule.
 	return []state.StackSpec{
 		{
 			AddRule:   MinusOneRule,
@@ -75,7 +75,7 @@ func (*KlondikeVegas) Tableau() []state.StackSpec {
 	}
 }
 
-// TableauPosition - Where does each tableau go in the grid, and what angle (relative to
+// TableauPosition - Where does each tableau go in the grid, and what angle (relative to.
 // straight up and down) should the tableau be twisted.
 // Tableau and Grid are 0 indexed.
 func (*KlondikeVegas) TableauPosition(tableauNumber int) (int, int, int) {
@@ -135,30 +135,30 @@ func (*KlondikeVegas) HasWon(_ []*state.Tableau, foundations []*state.Foundation
 	return true
 }
 
-// MaxRedeals - This is the maximum number of times that the stock can be
+// MaxRedeals - This is the maximum number of times that the stock can be.
 // refreshed from the waste.
 func (*KlondikeVegas) MaxRedeals() int {
 	// Never allowed to redeal.
 	return 0
 }
 
-// Move -
+// Move -.
 func (*KlondikeVegas) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
 	return Move(source, destination, true)
 }
 
-// Compact
+// Compact.
 func (*KlondikeVegas) Compact(_, _ *state.Stack, _ []*state.Tableau) {}
 
-// Talon
+// Talon.
 func (*KlondikeVegas) Talon() bool {
 	return true
 }
 
-// Redeal
+// Redeal.
 func (*KlondikeVegas) Redeal(_ *state.Talon, _ []*state.Tableau) {}
 
-// FoundationBase
+// FoundationBase.
 func (*KlondikeVegas) FoundationBase() bool {
 	return false
 }

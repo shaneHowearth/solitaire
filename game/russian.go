@@ -4,7 +4,7 @@ import (
 	"github.com/shanehowearth/solitaire/state"
 )
 
-// Russian - https://en.wikipedia.org/wiki/Russian_(solitaire)
+// Russian - https://en.wikipedia.org/wiki/Russian_(solitaire).
 type Russian struct{}
 
 // Ensure that Russian implements game.Variant.
@@ -17,8 +17,10 @@ func (*Russian) Name() string {
 
 // TableauGridSize - The size of the grid required by klondike.
 func (*Russian) TableauGridSize() (int, int) {
-	const height = 1
-	const numRussianTableau = 7
+	const (
+		height            = 1
+		numRussianTableau = 7
+	)
 
 	return height, numRussianTableau
 }
@@ -50,7 +52,7 @@ func (*Russian) Tableau() []state.StackSpec {
 			return false
 		}
 
-		// If the card is the opposite colour, and is one down in rank
+		// If the card is the opposite colour, and is one down in rank.
 		// then it can go onto the tableau.
 		if (card.Suit == topCard.Suit) && (topCard.Rank-card.Rank) == 1 {
 			return true
@@ -99,7 +101,7 @@ func (*Russian) Tableau() []state.StackSpec {
 	}
 }
 
-// TableauPosition - Where does each tableau go in the grid, and what angle (relative to
+// TableauPosition - Where does each tableau go in the grid, and what angle (relative to.
 // straight up and down) should the tableau be twisted.
 // Tableau and Grid are 0 indexed.
 func (*Russian) TableauPosition(tableauNumber int) (int, int, int) {
@@ -163,23 +165,23 @@ func (*Russian) MaxRedeals() int {
 	return 0
 }
 
-// Move -
+// Move -.
 func (*Russian) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
 	return Move(source, destination, false)
 }
 
-// Compact
+// Compact.
 func (*Russian) Compact(_, _ *state.Stack, _ []*state.Tableau) {}
 
-// Talon
+// Talon.
 func (*Russian) Talon() bool {
 	return false
 }
 
-// Redeal
+// Redeal.
 func (*Russian) Redeal(_ *state.Talon, _ []*state.Tableau) {}
 
-// FoundationBase
+// FoundationBase.
 func (*Russian) FoundationBase() bool {
 	return false
 }
@@ -188,12 +190,12 @@ func (*Russian) FoundationBase() bool {
 func (*Russian) AvailableMoves(
 	tableau []state.Tableau,
 	foundations []state.Foundation,
-	talon []state.Talon,
-	reserves []state.Reserve,
+	_ []state.Talon,
+	_ []state.Reserve,
 ) []state.Move {
 	moves := []state.Move{}
 
-	// Check tableau to foundation moves
+	// Check tableau to foundation moves.
 	for foundationIdx := range foundations {
 		for sourceIdx := range tableau {
 			if move := checkMove(
@@ -207,12 +209,13 @@ func (*Russian) AvailableMoves(
 		}
 	}
 
-	// Check tableau to tableau moves
+	// Check tableau to tableau moves.
 	for destIdx := range tableau {
 		for sourceIdx := range tableau {
 			if destIdx == sourceIdx {
 				continue
 			}
+
 			if move := checkMove(
 				tableau[sourceIdx].Stack,
 				tableau[destIdx].Stack,

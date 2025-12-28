@@ -4,7 +4,7 @@ import (
 	"github.com/shanehowearth/solitaire/state"
 )
 
-// Klondike - https://en.wikipedia.org/wiki/Klondike_(solitaire)
+// Klondike - https://en.wikipedia.org/wiki/Klondike_(solitaire).
 type Klondike struct{}
 
 // Ensure that Klondike implements game.Variant.
@@ -17,8 +17,10 @@ func (*Klondike) Name() string {
 
 // TableauGridSize - The size of the grid required by klondike.
 func (*Klondike) TableauGridSize() (int, int) {
-	const height = 1
-	const numKlondikeTableau = 7
+	const (
+		height             = 1
+		numKlondikeTableau = 7
+	)
 
 	return height, numKlondikeTableau
 }
@@ -75,7 +77,7 @@ func (*Klondike) Tableau() []state.StackSpec {
 	}
 }
 
-// TableauPosition - Where does each tableau go in the grid, and what angle (relative to
+// TableauPosition - Where does each tableau go in the grid, and what angle (relative to.
 // straight up and down) should the tableau be twisted.
 // Tableau and Grid are 0 indexed.
 func (*Klondike) TableauPosition(tableauNumber int) (int, int, int) {
@@ -140,23 +142,23 @@ func (*Klondike) MaxRedeals() int {
 	return -1
 }
 
-// Move -
+// Move -.
 func (*Klondike) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
 	return Move(source, destination, true)
 }
 
-// Compact
+// Compact.
 func (*Klondike) Compact(_, _ *state.Stack, _ []*state.Tableau) {}
 
-// Talon
+// Talon.
 func (*Klondike) Talon() bool {
 	return true
 }
 
-// Redeal
+// Redeal.
 func (*Klondike) Redeal(_ *state.Talon, _ []*state.Tableau) {}
 
-// FoundationBase
+// FoundationBase.
 func (*Klondike) FoundationBase() bool {
 	return false
 }
@@ -170,7 +172,7 @@ func (*Klondike) AvailableMoves(
 ) []state.Move {
 	moves := []state.Move{}
 
-	// Check tableau to foundation moves
+	// Check tableau to foundation moves.
 	for foundationIdx := range foundations {
 		for sourceIdx := range tableau {
 			if move := checkMove(
@@ -194,12 +196,13 @@ func (*Klondike) AvailableMoves(
 		}
 	}
 
-	// Check tableau to tableau moves
+	// Check tableau to tableau moves.
 	for destIdx := range tableau {
 		for sourceIdx := range tableau {
 			if destIdx == sourceIdx {
 				continue
 			}
+
 			if move := checkMove(
 				tableau[sourceIdx].Stack,
 				tableau[destIdx].Stack,

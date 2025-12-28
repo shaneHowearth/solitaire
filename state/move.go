@@ -53,7 +53,7 @@ func (stack *Stack) Clone() *Stack {
 	// 3. Update the clone's internal pointer to reference the new slice.
 	clone.cards = &newCards
 
-	// Re-bind the rules to the NEW stack pointer
+	// Re-bind the rules to the NEW stack pointer.
 	if stack.ruleFactory != nil {
 		clone.Rule = stack.ruleFactory(clone)
 	}

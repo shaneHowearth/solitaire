@@ -4,7 +4,7 @@ import (
 	"github.com/shanehowearth/solitaire/state"
 )
 
-// AcesAndKings - https://en.wikipedia.org/wiki/Aces_and_Kings
+// AcesAndKings - https://en.wikipedia.org/wiki/Aces_and_Kings.
 type AcesAndKings struct{}
 
 // Ensure that AcesAndKings implements game.Variant.
@@ -17,8 +17,10 @@ func (*AcesAndKings) Name() string {
 
 // TableauGridSize - The size of the grid required by Aces and Kings.
 func (*AcesAndKings) TableauGridSize() (int, int) {
-	const height = 1
-	const numAcesAndKingsTableau = 4
+	const (
+		height                 = 1
+		numAcesAndKingsTableau = 4
+	)
 
 	return height, numAcesAndKingsTableau
 }
@@ -37,45 +39,44 @@ func (*AcesAndKings) Reserves() []state.StackSpec {
 				// Nothing can be added to a reserve.
 				return false
 			},
-			CardCount: [2]int{13, 13},
+			CardCount: [2]int{state.RankCount, state.RankCount},
 		},
 		{
 			AddRule: func(*state.Stack, state.SuitedCard) bool {
 				// Nothing can be added to a reserve.
 				return false
 			},
-			CardCount: [2]int{13, 13},
+			CardCount: [2]int{state.RankCount, state.RankCount},
 		},
 	}
 }
 
 // Tableau - how the tableau are defined.
 func (*AcesAndKings) Tableau() []state.StackSpec {
-
 	return []state.StackSpec{
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
 			CardCount: [2]int{1, 1},
 		},
 		{
-			AddRule: func(stack *state.Stack, card state.SuitedCard) bool {
+			AddRule: func(stack *state.Stack, _ state.SuitedCard) bool {
 				// Cards can only be added if the tableau is empty.
 				return stack.Len() < 1
 			},
@@ -87,12 +88,14 @@ func (*AcesAndKings) Tableau() []state.StackSpec {
 // Foundations - how the foundations are defined.
 func (*AcesAndKings) Foundations() []state.StackSpec {
 	const foundationCount = 8
-	foundations := make([]state.StackSpec, 0, foundationCount)
-	// Count, state.Ace, PlusOneRule
-	for idx := 0; idx < foundationCount; idx++ {
-		// Aces and Kings has eight foundations in total. Four foundations start with an Ace and build up regardless of suit, e.g. A♥, 2♠, 3♦, 4♦.
 
-		// The other four start with a King and build down regardless of suit, e.g. K♣, Q♥, J♠, 10♣
+	foundations := make([]state.StackSpec, 0, foundationCount)
+	// Count, state.Ace, PlusOneRule.
+	for idx := 0; idx < foundationCount; idx++ {
+		// Aces and Kings has eight foundations in total. Four foundations start.
+		// with an Ace and build up regardless of suit, e.g. A♥, 2♠, 3♦, 4♦.
+
+		// The other four start with a King and build down regardless of suit, e.g. K♣, Q♥, J♠, 10♣.
 		foundationSpec := state.StackSpec{}
 		if idx < 4 {
 			foundationSpec.BaseCard = state.SuitedCard{Rank: state.Ace, Suit: state.Undefined}
@@ -100,12 +103,12 @@ func (*AcesAndKings) Foundations() []state.StackSpec {
 				if stack.Len() == 0 && card.Rank == state.Ace {
 					return true
 				}
-				// Once a stack has ace through King or King through Ace, it's
+				// Once a stack has ace through King or King through Ace, it's.
 				// full.
-				if stack.Len() == 13 {
+				if stack.Len() == state.RankCount {
 					return false
 				}
-				// Any suit can be added to a foundation, as long as the card is
+				// Any suit can be added to a foundation, as long as the card is.
 				// one higher than what's already there.
 				topcard, err := stack.Top()
 				if err != nil {
@@ -126,7 +129,7 @@ func (*AcesAndKings) Foundations() []state.StackSpec {
 				if stack.Len() == 0 && card.Rank == state.King {
 					return true
 				}
-				// Any suit can be added to a foundation, as long as the card is
+				// Any suit can be added to a foundation, as long as the card is.
 				// one higher than what's already there.
 				topcard, err := stack.Top()
 				if err != nil {
@@ -184,23 +187,23 @@ func (*AcesAndKings) MaxRedeals() int {
 	return 0
 }
 
-// Move -
+// Move -.
 func (*AcesAndKings) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
 	return Move(source, destination, true)
 }
 
-// Compact
+// Compact.
 func (*AcesAndKings) Compact(_, _ *state.Stack, _ []*state.Tableau) {}
 
-// Talon
+// Talon.
 func (*AcesAndKings) Talon() bool {
 	return true
 }
 
-// Redeal
+// Redeal.
 func (*AcesAndKings) Redeal(_ *state.Talon, _ []*state.Tableau) {}
 
-// FoundationBase
+// FoundationBase.
 func (*AcesAndKings) FoundationBase() bool {
 	return false
 }
@@ -214,7 +217,7 @@ func (*AcesAndKings) AvailableMoves(
 ) []state.Move {
 	moves := []state.Move{}
 
-	// Check tableau to foundation moves
+	// Check tableau to foundation moves.
 	// and reserves to foundation moves.
 	for foundationIdx := range foundations {
 		for sourceIdx := range tableau {
@@ -227,6 +230,7 @@ func (*AcesAndKings) AvailableMoves(
 				moves = append(moves, move)
 			}
 		}
+
 		for sourceIdx := range reserves {
 			if move := checkMove(
 				reserves[sourceIdx].Stack,
@@ -237,6 +241,7 @@ func (*AcesAndKings) AvailableMoves(
 				moves = append(moves, move)
 			}
 		}
+
 		for sourceIdx := range talons {
 			if move := checkMove(
 				talons[sourceIdx].Waste,
@@ -247,7 +252,6 @@ func (*AcesAndKings) AvailableMoves(
 				moves = append(moves, move)
 			}
 		}
-
 	}
 
 	return moves
