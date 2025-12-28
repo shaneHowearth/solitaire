@@ -8,65 +8,67 @@ import (
 )
 
 func Test_CreateTableaus(t *testing.T) {
+	// A dummy rule to use for valid test cases
+	standardRule := func(t *state.Stack, c state.SuitedCard) bool {
+		return true
+	}
+
 	testcases := map[string]struct {
 		WillPanic    bool
 		PanicMessage string
-		Number       int
-		Rank         state.Rank
-		Rule         func(*state.Tableau, state.SuitedCard) bool
+		// BuildSpecs is a helper to generate the input for the specific case
+		BuildSpecs func() []state.StackSpec
+		Expected   int
 	}{
 		"Zero tableaus": {
 			WillPanic:    true,
 			PanicMessage: "Cannot have zero tableaus",
-			Number:       0,
-			Rule: func(
-				*state.Tableau,
-				state.SuitedCard,
-			) bool {
-				// Allow everything to be added.
-				return true
+			BuildSpecs: func() []state.StackSpec {
+				return []state.StackSpec{}
 			},
 		},
 		"No rule": {
 			WillPanic:    true,
-			PanicMessage: "Cannot create tableaus without a rule.",
-			Number:       1,
+			PanicMessage: "Cannot create tableau 0 without a rule.",
+			BuildSpecs: func() []state.StackSpec {
+				return []state.StackSpec{
+					{AddRule: nil}, // One spec, but missing the rule
+				}
+			},
 		},
 		"Seven tableaus (klondike)": {
-			Number: 7,
-			Rule: func(
-				*state.Tableau,
-				state.SuitedCard,
-			) bool {
-				// Allow everything to be added.
-				return true
+			Expected: 7,
+			BuildSpecs: func() []state.StackSpec {
+				specs := make([]state.StackSpec, 7)
+				for i := 0; i < 7; i++ {
+					specs[i] = state.StackSpec{AddRule: standardRule}
+				}
+				return specs
 			},
 		},
 	}
+
 	for name, testcase := range testcases {
 		t.Run(name, func(t *testing.T) {
+			specs := testcase.BuildSpecs()
+
 			if testcase.WillPanic {
 				assert.PanicsWithValue(t, testcase.PanicMessage,
 					func() {
-						state.CreateTableaus(
-							testcase.Number,
-							testcase.Rank,
-							testcase.Rule,
-						)
+						state.CreateTableaus(specs)
 					},
 				)
-			}
+			} else {
+				tableaus := state.CreateTableaus(specs)
 
-			if !testcase.WillPanic {
-				tableau := state.CreateTableaus(
-					testcase.Number,
-					testcase.Rank,
-					testcase.Rule,
-				)
+				// Check length
+				assert.Equal(t, testcase.Expected, len(tableaus),
+					"tableau has incorrect number of elements")
 
-				// tableau has the correct number of elements.
-				assert.Equalf(t, testcase.Number, len(tableau),
-					"tableau has incorrect number of elements, want: %d, got: %d", testcase.Number, len(tableau))
+				// Optional: Check that the rule was assigned correctly to the underlying stack
+				if len(tableaus) > 0 {
+					assert.NotNil(t, tableaus[0].Stack.Rule, "Stack rule should be initialized")
+				}
 			}
 		})
 	}
