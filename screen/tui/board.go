@@ -223,6 +223,9 @@ func (display *Display) createGamePage(
 		case 'r', 'R':
 			display.gameRedealCallback()
 			return nil
+		case 'u', 'U':
+			display.gameUndoCallback()
+			return nil
 		}
 
 		return event
@@ -280,11 +283,15 @@ func (display *Display) FoundationPrint(num int, value []string) {
 			strings.Contains(value[len(value)-1], state.Diamonds.String()) {
 			textColor = "[red]"
 		}
+
 		value[len(value)-1] = fmt.Sprintf("%s%s%s", textColor, value[len(value)-1], "[-]")
 
 		display.foundations[num].SetText(
 			value[len(value)-1],
 		)
+	} else {
+		// Empty Foundation.
+		display.foundations[num].SetText(emptyStack)
 	}
 }
 
