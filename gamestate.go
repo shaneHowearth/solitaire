@@ -41,7 +41,7 @@ func (instance *Instance) setupGameState() {
 	instance.State.Deck = gameState.Deck
 
 	// Create a new history for this instance.
-	instance.history = state.History{}
+	instance.History = state.History{}
 
 	instance.dealCards()
 }
