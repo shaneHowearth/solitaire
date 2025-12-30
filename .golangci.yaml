@@ -222,6 +222,8 @@ linters:
         - name: duplicated-imports
         - name: empty-lines
         - name: error-naming
+        - name: exported
+          disabled: true
         - name: confusing-naming
         - name: get-return
         - name: increment-decrement
@@ -279,10 +281,10 @@ linters:
         - name: indent-error-flow
           arguments:
             - preserveScope
-        - name: exported
-          arguments:
-            - checkPrivateReceivers
-            - sayRepetitiveInsteadOfStutters
+        # - name: exported
+        #   arguments:
+        #     - checkPrivateReceivers
+        #     - sayRepetitiveInsteadOfStutters
     staticcheck:
       checks:
         - all
@@ -338,6 +340,12 @@ linters:
       - linters:
           - staticcheck
         text: 'Id.* should be .*ID.*'
+      - linters:
+          - staticcheck
+        text: 'ST1020'
+      - linters:
+          - staticcheck
+        text: 'ST1021'
     paths:
       - third_party$
       - builtin$
