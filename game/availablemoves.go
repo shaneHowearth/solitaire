@@ -3,6 +3,8 @@ package game
 // Helpers for checking if a move is available, or not.
 
 import (
+	"errors"
+
 	"github.com/shanehowearth/solitaire/state"
 )
 
@@ -25,7 +27,13 @@ func checkMove(
 
 	destinationTop, err := destination.Top()
 	if err != nil {
-		return state.Move{}
+		if !errors.Is(err, state.ErrEmpty) { //nolint:staticcheck // This no-op is here for documentation purposes.
+			// No-op
+			// If the destination is not allowed to be empty that's handled
+			// above.
+		} else {
+			return state.Move{}
+		}
 	}
 
 	sourceBottomCard, err := getBottomMovingCard(source, numCards)
