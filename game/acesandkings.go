@@ -254,5 +254,30 @@ func (*AcesAndKings) AvailableMoves(
 		}
 	}
 
+	// Check to tableau moves.
+	for tableauIdx := range tableau {
+		for sourceIdx := range reserves {
+			if move := checkMove(
+				reserves[sourceIdx].Stack,
+				tableau[tableauIdx].Stack,
+				true,
+				false,
+			); move.NumberMoving > 0 {
+				moves = append(moves, move)
+			}
+		}
+
+		for sourceIdx := range talons {
+			if move := checkMove(
+				talons[sourceIdx].Waste,
+				tableau[tableauIdx].Stack,
+				true,
+				false,
+			); move.NumberMoving > 0 {
+				moves = append(moves, move)
+			}
+		}
+	}
+
 	return moves
 }
