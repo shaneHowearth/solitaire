@@ -41,6 +41,7 @@ func CreateFoundations(foundationSpec []StackSpec) []*Foundation {
 			StackFoundation,
 		)
 
+		stack.FoundationPosition = idx
 		foundation.Stack = stack
 
 		foundations = append(foundations, foundation)
