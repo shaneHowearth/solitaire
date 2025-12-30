@@ -215,7 +215,11 @@ func (display *Display) createGamePage(
 	mainRows.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		switch event.Rune() {
 		case 'h', 'H':
-			display.gameHint()
+			moves := display.gameHint()
+			if moves != nil {
+				display.ShowHintModal(moves)
+			}
+
 			return nil
 		case 'm', 'M':
 			display.Show("Games")
@@ -258,7 +262,7 @@ func (display *Display) TalonPrint(value []string) {
 // WastePrint -.
 func (display *Display) WastePrint(value []string) {
 	if len(value) > 0 {
-		textColor := "[-]"
+		textColor := colourNormal
 		if strings.Contains(value[len(value)-1], state.Hearts.String()) ||
 			strings.Contains(value[len(value)-1], state.Diamonds.String()) {
 			textColor = colourRed
