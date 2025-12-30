@@ -75,3 +75,7 @@ type SuitedCard struct {
 	Suit    Suit
 	Visible bool
 }
+
+func (suitedCard *SuitedCard) String() string {
+	return suitedCard.Rank.String() + suitedCard.Suit.String()
+}
