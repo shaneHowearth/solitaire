@@ -309,23 +309,15 @@ func (gaps *Gaps) AvailableMoves(
 				continue
 			}
 
-			destinationTop, err := tableau[empties[emptyIdx]].Top()
-			if err != nil {
-				continue
+			move := state.Move{
+				Source:        *tableau[tableauIdx].Stack,
+				Destination:   *tableau[empties[emptyIdx]].Stack,
+				NumberMoving:  tableau[tableauIdx].Len(),
+				SourceCardTop: sourceTop,
+				// DestinationCardBottom will always be empty, the game won't
+				// allow a move to any thing other than an empty Destination.
 			}
 
-			move := state.Move{
-				Source:                *tableau[tableauIdx].Stack,
-				Destination:           *tableau[empties[emptyIdx]].Stack,
-				NumberMoving:          tableau[tableauIdx].Len(),
-				SourceCardTop:         sourceTop,
-				DestinationCardBottom: destinationTop,
-			}
-			// cardStr := fmt.Sprintf("%s %s can be moved from row %d column %d to row %d column %d",.
-			// 	sourceTop.Rank.String(), sourceTop.Suit.String(),.
-			// 	tableauIdx/gapsColumns+1, tableauIdx%gapsColumns+1,.
-			// 	empties[emptyIdx]/gapsColumns+1, empties[emptyIdx]%gapsColumns+1,.
-			// ).
 			moves = append(moves, move)
 		}
 	}
