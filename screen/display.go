@@ -43,7 +43,7 @@ type Display interface {
 	HasSelection() bool
 
 	// Game Hint.
-	SetHintsCallback(callback func())
+	SetHintsCallback(callback func() []state.Move)
 
 	// Winner modal.
 	ShowWinnerModal(string, int)

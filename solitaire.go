@@ -237,6 +237,7 @@ func (instance *Instance) dealCards() {
 
 	if instance.Game.FoundationBase() {
 		card := instance.State.Deck.Deal()
+
 		toChange := 99
 
 		switch card.Suit {
@@ -275,7 +276,7 @@ func (instance *Instance) dealCards() {
 	instance.History.Update(instance.State)
 }
 
-func (instance *Instance) onHints() {
+func (instance *Instance) onHints() []state.Move {
 	// TODO - fix this hack.
 	hints := instance.Game.AvailableMoves(
 		func() []state.Tableau {
@@ -307,5 +308,5 @@ func (instance *Instance) onHints() {
 		}(),
 	)
 
-	log.Printf("HINTS %#v", hints)
+	return hints
 }
