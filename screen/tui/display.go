@@ -19,7 +19,7 @@ type Display struct {
 	Selected                  game.Variant
 	games                     []game.Variant
 	screens                   map[string]tview.Primitive
-	gameHint                  func()
+	gameHint                  func() []state.Move
 	gameSelectedCallback      func(game.Variant)
 	gameRedealCallback        func()
 	gameUndoCallback          func()
@@ -100,6 +100,6 @@ func (display *Display) SetGameUndoCallback(callback func()) {
 	display.gameUndoCallback = callback
 }
 
-func (display *Display) SetHintsCallback(callback func()) {
+func (display *Display) SetHintsCallback(callback func() []state.Move) {
 	display.gameHint = callback
 }
