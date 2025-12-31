@@ -203,7 +203,7 @@ func (*Acme) AvailableMoves(
 				tableau[sourceIdx].Stack,
 				tableau[destinationIdx].Stack,
 				true,
-				false,
+				true, // don't allow a meaningless tableau to tableau move.
 			); move.NumberMoving > 0 {
 				moves = append(moves, move)
 			}
