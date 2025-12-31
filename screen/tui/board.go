@@ -197,7 +197,8 @@ func (display *Display) createGamePage(
 	// Controls/Help.
 	controls := tview.NewTextView().
 		SetText("Press 'n' to start a n\u0332ew game, " +
-			"'m' to return to game m\u0332enu, " +
+			"'m' to return to game m\u0332enu,\n" +
+			"'u' to u\u0332ndo move(s), 'h' for h\u0332ints, " +
 			"Ctrl+C or 'q' to q\u0332uit\n'r' will r\u0332edeal in some games.").
 		SetTextAlign(tview.AlignCenter)
 	controls.SetBorder(true).SetTitle("Controls")
