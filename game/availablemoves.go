@@ -19,19 +19,16 @@ func checkMove(
 		return state.Move{}
 	}
 
-	// Ignore moving piles to an empty stack, and leaving an empty stack.
-	// eg. King... to an empty stack.
-	if noKings && destination.Len() == 0 && numCards == source.Len() {
+	// Prevent moving everything to an empty tableau from another tableau if
+	// that would leave the source tableau empty - the move has no effect on the
+	// game.
+	if noKings && source.Type == state.StackTableau && destination.Type == state.StackTableau && destination.Len() == 0 && numCards == source.Len() {
 		return state.Move{}
 	}
 
 	destinationTop, err := destination.Top()
 	if err != nil {
-		if !errors.Is(err, state.ErrEmpty) { //nolint:staticcheck // This no-op is here for documentation purposes.
-			// No-op
-			// If the destination is not allowed to be empty that's handled
-			// above.
-		} else {
+		if !errors.Is(err, state.ErrEmpty) {
 			return state.Move{}
 		}
 	}
