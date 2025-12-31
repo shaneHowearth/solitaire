@@ -2,7 +2,6 @@ package solitaire
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/shanehowearth/solitaire/game"
 	"github.com/shanehowearth/solitaire/screen"
@@ -140,26 +139,23 @@ func (instance *Instance) onComponentSelected(
 }
 
 func (instance *Instance) undo() {
-	log.Println("Calling undo")
+	// for i := range instance.State.Foundations {
+	// 	log.Printf("Foundation[%d] %#v", i, instance.State.Foundations[i].Stack.Cards())
+	// }
 
-	for i := range instance.State.Foundations {
-		log.Printf("Foundation[%d] %#v", i, instance.State.Foundations[i].Stack.Cards())
-	}
-
-	for i := range instance.State.Tableau {
-		log.Printf("Tableau[%d] %#v", i, instance.State.Tableau[i].Stack.Cards())
-	}
+	// for i := range instance.State.Tableau {
+	// 	log.Printf("Tableau[%d] %#v", i, instance.State.Tableau[i].Stack.Cards())
+	// }
 
 	instance.History.Undo(&instance.State)
-	log.Println("AFTER")
 
-	for i := range instance.State.Foundations {
-		log.Printf("Foundation[%d] %#v", i, instance.State.Foundations[i].Stack.Cards())
-	}
+	// for i := range instance.State.Foundations {
+	// 	log.Printf("Foundation[%d] %#v", i, instance.State.Foundations[i].Stack.Cards())
+	// }
 
-	for i := range instance.State.Tableau {
-		log.Printf("Tableau[%d] %#v", i, instance.State.Tableau[i].Stack.Cards())
-	}
+	// for i := range instance.State.Tableau {
+	// 	log.Printf("Tableau[%d] %#v", i, instance.State.Tableau[i].Stack.Cards())
+	// }
 
 	instance.updateDisplay()
 }

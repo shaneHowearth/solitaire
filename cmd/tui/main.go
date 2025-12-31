@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"log/slog"
 	"os"
 
 	"github.com/shanehowearth/solitaire"
@@ -16,6 +17,11 @@ func main() {
 		logFile.Close() // Explicitly close before exiting.
 		log.Fatalf("Failed to open log file: %v", err)
 	}
+
+	var programLevel = new(slog.LevelVar) // Info by default
+	h := slog.NewJSONHandler(logFile, &slog.HandlerOptions{Level: programLevel})
+	slog.SetDefault(slog.New(h))
+	programLevel.Set(slog.LevelDebug)
 
 	// --- Step 2: Redirect the standard 'log' package's output to this file ---.
 	log.SetOutput(logFile)
@@ -32,6 +38,7 @@ func main() {
 	variants = append(variants, &game.Accordian{})
 	variants = append(variants, &game.AcesAndKings{})
 	variants = append(variants, &game.AcesSquare{})
+	variants = append(variants, &game.AcesUp{})
 	variants = append(variants, &game.Acme{})
 	variants = append(variants, &game.Agnes{})
 	variants = append(variants, &game.Gaps{})
