@@ -32,13 +32,91 @@ func (display *Display) createGamePage(
 	tableauHeight, tableauWidth, reserveCount, foundationCount int,
 	howTo []string,
 ) tview.Primitive {
+	// handleAction processes a command, whether it came from a Key or a Button.
+	handleAction := func(r rune) {
+		// 1. Check if the hint modal is currently showing
+		hintShowing := display.pages.HasPage("hints")
+
+		// 2. Clear the hint modal for ANY button click
+		display.pages.RemovePage("hints")
+
+		// 3. Process the logic
+		switch r {
+		case 'h', 'H':
+			// If the hint WAS showing, we just removed it (a toggle).
+			// Only show it if it WASN'T already up.
+			if !hintShowing {
+				moves := display.gameHint()
+				if moves != nil {
+					display.ShowHintModal(moves)
+				}
+			}
+		case 'm', 'M':
+			display.Show("Games")
+		case 'n', 'N':
+			display.onGameSelected(display.Selected)
+		case 'q', 'Q':
+			display.App.Stop()
+		case 'u', 'U':
+			display.gameUndoCallback()
+		}
+
+		// 4. Return focus to the game board
+		display.App.SetFocus(display.screens[display.Selected.Name()])
+	}
+
 	mainRows := tview.NewFlex().SetDirection(tview.FlexRow)
 
-	title := tview.NewTextView().
-		SetText(strings.Join(append([]string{fmt.Sprintf("Playing: %s\n", name)}, howTo...), "\n")).
+	// --- BOX 1: The Game Name (Left Side) ---
+	nameBox := tview.NewTextView().
+		SetText(fmt.Sprintf(" Playing: %s", name)).
+		SetTextColor(tcell.ColorYellow) // Make it stand out
+
+	// --- BOX 2: The Buttons (Right Side) ---
+	btnBar := tview.NewFlex().SetDirection(tview.FlexColumn)
+
+	makeHeaderBtn := func(label string, action func()) *tview.Button {
+		btn := tview.NewButton(label).SetSelectedFunc(action)
+		btn.SetBorder(true)
+		btn.SetBackgroundColor(tcell.ColorBlue)
+		btn.SetLabelColor(tcell.ColorWhite)
+		btn.SetBorderColor(tcell.ColorGray)
+		return btn
+	}
+
+	btnBar.
+		AddItem(tview.NewBox(), 0, 1, false). // Push buttons to the right
+		AddItem(makeHeaderBtn("New", func() { handleAction('n') }), 7, 0, false).
+		AddItem(tview.NewBox(), 1, 0, false). // Push buttons to the right
+		AddItem(makeHeaderBtn("Menu", func() { handleAction('m') }), 7, 0, false).
+		AddItem(tview.NewBox(), 1, 0, false). // Push buttons to the right
+		AddItem(makeHeaderBtn("Undo", func() { handleAction('u') }), 7, 0, false).
+		AddItem(tview.NewBox(), 1, 0, false). // Push buttons to the right
+		AddItem(makeHeaderBtn("Hint", func() { handleAction('h') }), 7, 0, false).
+		AddItem(tview.NewBox(), 1, 0, false). // Push buttons to the right
+		AddItem(makeHeaderBtn("Quit", func() { handleAction('q') }), 7, 0, false).
+		AddItem(tview.NewBox(), 1, 0, false) // Padding from edge
+
+	// Combine Name and Buttons into the TOP ROW
+	topRow := tview.NewFlex().
+		SetDirection(tview.FlexColumn).
+		AddItem(nameBox, 0, 1, false). // Name takes left space
+		AddItem(btnBar, 45, 0, true)   // Buttons take fixed right space (5 buttons * 5 width)
+
+	// --- BOX 3: The Instructions (Bottom) ---
+	instructionBox := tview.NewTextView().
+		SetText(strings.Join(howTo, "\n")).
 		SetWordWrap(true).
 		SetTextColor(tview.Styles.PrimaryTextColor)
-	title.SetBorder(true)
+
+	// --- THE MASTER CONTAINER ---
+	headerContainer := tview.NewFlex().
+		SetDirection(tview.FlexRow)
+	headerContainer.SetBorder(true)
+
+	headerContainer.
+		AddItem(topRow, 3, 0, true).         // 3 line for Name/Buttons
+		AddItem(instructionBox, 0, 1, false) // The rest for text
 
 	foundationsRow := tview.NewFlex().SetDirection(tview.FlexColumn)
 
@@ -207,36 +285,20 @@ func (display *Display) createGamePage(
 
 	// Add the rows to the main rows container.
 	mainRows.
-		AddItem(title, 6, 0, false).         // Set the "how to" area to be 6 characters high.
-		AddItem(foundationsRow, 4, 0, true). // Set the foundations row to be 4 characters high.
-		AddItem(tableauArea, 0, 1, true).    // The tableau row is purely dynamic in height.
-		AddItem(controls, 4, 0, false)       // Set the controls row to be 4 characters high.
+		AddItem(headerContainer, 6, 0, false). // Set the "how to" area to be 6 characters high.
+		AddItem(foundationsRow, 4, 0, true).   // Set the foundations row to be 4 characters high.
+		AddItem(tableauArea, 0, 1, true).      // The tableau row is purely dynamic in height.
+		AddItem(controls, 4, 0, false)         // Set the controls row to be 4 characters high.
 
 	// Add the main rows to the window container.
 	mainRows.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		switch event.Rune() {
-		case 'h', 'H':
-			moves := display.gameHint()
-			if moves != nil {
-				display.ShowHintModal(moves)
-			}
+		r := event.Rune()
 
-			return nil
-		case 'm', 'M':
-			display.Show("Games")
-			return nil
-		case 'n', 'N':
-			display.onGameSelected(display.Selected)
-			return nil
-		case 'q', 'Q':
-			display.App.Stop()
-			return nil
-		case 'r', 'R':
-			display.gameRedealCallback()
-			return nil
-		case 'u', 'U':
-			display.gameUndoCallback()
-			return nil
+		// Check if it's one of our handled keys
+		switch r {
+		case 'h', 'H', 'm', 'M', 'n', 'N', 'q', 'Q', 'r', 'R', 'u', 'U':
+			handleAction(r)
+			return nil // Event handled
 		}
 
 		return event
