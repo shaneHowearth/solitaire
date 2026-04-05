@@ -33,7 +33,28 @@ func (d *Display) CreateBoard(
 		d.tableauBox.Add(d.buildPile(nil, state.StackTableau, i, 0))
 	}
 
-	nameLabel := widget.NewLabelWithStyle("Playing: "+name, fyne.TextAlignLeading, fyne.TextStyle{Bold: true})
+	// --- NEW: Dropdown Menu Setup ---
+	var gameNames []string
+	for _, g := range d.games {
+		gameNames = append(gameNames, g.Name())
+	}
+
+	gameSelector := widget.NewSelect(gameNames, func(selected string) {
+		// Only trigger if the selection actually changes
+		if selected == name {
+			return
+		}
+		// Find the matching variant and call the engine's callback
+		for _, g := range d.games {
+			if g.Name() == selected {
+				d.gameSelectedCallback(g)
+				return
+			}
+		}
+	})
+	gameSelector.SetSelected(name) // Ensure the dropdown shows the current game name
+	// --- END Dropdown Setup ---
+
 	btnBar := container.NewHBox(
 		layout.NewSpacer(),
 		widget.NewButton("New", func() { d.gameRedealCallback() }),
@@ -44,7 +65,11 @@ func (d *Display) CreateBoard(
 	instructionBox := widget.NewLabel(strings.Join(howTo, "\n"))
 	instructionBox.Wrapping = fyne.TextWrapWord
 
-	header := container.NewVBox(container.NewBorder(nil, nil, nameLabel, btnBar), instructionBox)
+	// Replace the old nameLabel with gameSelector in the header border
+	header := container.NewVBox(
+		container.NewBorder(nil, nil, gameSelector, btnBar),
+		instructionBox,
+	)
 
 	// Layout: Talon/Waste Left, Foundations Right
 	topArea := container.NewBorder(nil, nil, container.NewHBox(d.talonBox, d.wasteBox), nil, d.foundationBox)
