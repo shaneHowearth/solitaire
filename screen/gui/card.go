@@ -35,22 +35,20 @@ func (c *CardWidget) Tapped(_ *fyne.PointEvent) {
 }
 
 func (c *CardWidget) CreateRenderer() fyne.WidgetRenderer {
-	// Base layer: A dark rectangle so the card always has a "body"
+	// Base background
 	bg := canvas.NewRectangle(color.RGBA{0, 0, 0, 180})
-	bg.StrokeColor = color.RGBA{255, 255, 255, 50}
-	bg.StrokeWidth = 1
+
+	// Selection Overlay (Initially transparent)
+	overlay := canvas.NewRectangle(color.Transparent)
 
 	filename := c.Display.getCardFilename(c.Face)
-
 	var mainContent fyne.CanvasObject
 
-	// Check if file exists
 	if _, err := os.Stat(filename); err == nil {
 		img := canvas.NewImageFromFile(filename)
-		img.FillMode = canvas.ImageFillStretch // Force it to fill the card dimensions
+		img.FillMode = canvas.ImageFillStretch
 		mainContent = img
 	} else {
-		// If file is missing, show a clear white text label on red
 		bg.FillColor = color.RGBA{150, 0, 0, 255}
 		txt := canvas.NewText(c.Face, color.White)
 		txt.TextSize = 10
@@ -58,19 +56,24 @@ func (c *CardWidget) CreateRenderer() fyne.WidgetRenderer {
 		mainContent = txt
 	}
 
-	// Combine them
-	stack := container.NewStack(bg, mainContent)
+	// Layer order: Background -> Card Image -> Selection Tint
+	stack := container.NewStack(bg, mainContent, overlay)
 
-	return &cardRenderer{
+	r := &cardRenderer{
+		overlay: overlay,
 		stack:   stack,
 		objects: []fyne.CanvasObject{stack},
+		card:    c,
 	}
+	r.Refresh()
+	return r
 }
 
-// Custom renderer to ensure Resize is handled correctly
 type cardRenderer struct {
+	overlay *canvas.Rectangle
 	stack   *fyne.Container
 	objects []fyne.CanvasObject
+	card    *CardWidget
 }
 
 func (r *cardRenderer) Layout(size fyne.Size) {
@@ -82,7 +85,18 @@ func (r *cardRenderer) MinSize() fyne.Size {
 }
 
 func (r *cardRenderer) Refresh() {
-	canvas.Refresh(r.stack)
+	selType, selIdx := r.card.Display.GetSelectedComponent()
+
+	if r.card.Display.HasSelection() && r.card.Stack == selType && r.card.Index == selIdx {
+		// Apply a semi-transparent blue tint to "shade" the card
+		r.overlay.FillColor = color.RGBA{R: 0, G: 120, B: 215, A: 100}
+	} else {
+		// Return to transparent
+		r.overlay.FillColor = color.Transparent
+	}
+
+	r.overlay.Refresh()
+	canvas.Refresh(r.card)
 }
 
 func (r *cardRenderer) Objects() []fyne.CanvasObject {

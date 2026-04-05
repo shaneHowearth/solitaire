@@ -106,13 +106,21 @@ func (d *Display) selectComponent(sType state.StackType, index int) {
 	defer func() { d.processingClick = false }()
 
 	if d.selectedIndex != -1 {
+		// Second click: handle move
 		d.componentSelectedCallback(d.selectedComponentType, d.selectedIndex, sType, index)
 		d.selectedIndex = -1
 		d.selectedComponentType = -1
 	} else {
+		// First click: select
 		d.selectedIndex = index
 		d.selectedComponentType = sType
 	}
+
+	// Force the specific boxes to refresh their children (the cards)
+	d.talonBox.Refresh()
+	d.wasteBox.Refresh()
+	d.foundationBox.Refresh()
+	d.tableauBox.Refresh()
 }
 
 func (d *Display) getCardFilename(card string) string {
