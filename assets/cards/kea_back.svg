@@ -1,0 +1,93 @@
+<svg width="120" height="168" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 168">
+ <!-- Card Background -->
+ <rect width="120" height="168" rx="8" fill="#4a6fa5" stroke="#2c4870" stroke-width="2"/>
+ 
+ <!-- Mountain Background Gradient -->
+ <defs>
+   <radialGradient id="mountainGrad" cx="50%" cy="30%" r="70%">
+     <stop offset="0%" style="stop-color:#87ceeb;stop-opacity:0.3"/>
+     <stop offset="50%" style="stop-color:#4682b4;stop-opacity:0.5"/>
+     <stop offset="100%" style="stop-color:#2c4870;stop-opacity:0.8"/>
+   </radialGradient>
+   
+   <linearGradient id="wingGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+     <stop offset="0%" style="stop-color:#8B4513"/>
+     <stop offset="30%" style="stop-color:#D2691E"/>
+     <stop offset="60%" style="stop-color:#FF6347"/>
+     <stop offset="100%" style="stop-color:#FFD700"/>
+   </linearGradient>
+   
+   <linearGradient id="wingGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+     <stop offset="0%" style="stop-color:#556B2F"/>
+     <stop offset="50%" style="stop-color:#9ACD32"/>
+     <stop offset="100%" style="stop-color:#FFD700"/>
+   </linearGradient>
+   
+   <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+     <feDropShadow dx="2" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.3)"/>
+   </filter>
+ </defs>
+ 
+ <!-- Background Mountains -->
+ <rect x="6" y="6" width="108" height="156" rx="6" fill="url(#mountainGrad)"/>
+ 
+ <!-- Stylized Mountain Shapes -->
+ <polygon points="20,40 40,20 60,35 80,15 100,30 120,25 120,60 0,60" fill="#6495ed" opacity="0.4"/>
+ <polygon points="0,50 30,25 50,40 70,20 90,35 120,30 120,80 0,80" fill="#4682b4" opacity="0.5"/>
+ 
+ <!-- Bird Body -->
+ <ellipse cx="60" cy="90" rx="18" ry="25" fill="#8B7355" filter="url(#shadow)"/>
+ 
+ <!-- Bird Head -->
+ <ellipse cx="60" cy="75" rx="12" ry="15" fill="#A0826D"/>
+ 
+ <!-- Beak -->
+ <polygon points="60,68 58,72 62,72" fill="#DAA520"/>
+ 
+ <!-- Eye -->
+ <circle cx="58" cy="72" r="2" fill="#000"/>
+ <circle cx="57.5" cy="71.5" r="0.5" fill="#fff"/>
+ 
+ <!-- Left Wing (spread) -->
+ <path d="M 42 85 Q 25 75 20 65 Q 22 68 25 72 Q 30 78 35 82 Q 40 85 42 88 Z" 
+       fill="url(#wingGrad1)" filter="url(#shadow)"/>
+ 
+ <!-- Left Wing Feather Details -->
+ <path d="M 25 72 Q 20 70 18 68 Q 20 69 22 71 Q 24 73 25 75 Z" fill="#FF4500" opacity="0.8"/>
+ <path d="M 30 78 Q 25 76 23 74 Q 25 75 27 77 Q 29 79 30 81 Z" fill="#FFD700" opacity="0.8"/>
+ <path d="M 35 82 Q 30 80 28 78 Q 30 79 32 81 Q 34 83 35 85 Z" fill="#FF6347" opacity="0.8"/>
+ 
+ <!-- Right Wing (spread) -->
+ <path d="M 78 85 Q 95 75 100 65 Q 98 68 95 72 Q 90 78 85 82 Q 80 85 78 88 Z" 
+       fill="url(#wingGrad2)" filter="url(#shadow)"/>
+ 
+ <!-- Right Wing Feather Details -->
+ <path d="M 95 72 Q 100 70 102 68 Q 100 69 98 71 Q 96 73 95 75 Z" fill="#32CD32" opacity="0.8"/>
+ <path d="M 90 78 Q 95 76 97 74 Q 95 75 93 77 Q 91 79 90 81 Z" fill="#FFD700" opacity="0.8"/>
+ <path d="M 85 82 Q 90 80 92 78 Q 90 79 88 81 Q 86 83 85 85 Z" fill="#9ACD32" opacity="0.8"/>
+ 
+ <!-- Tail Feathers -->
+ <ellipse cx="60" cy="110" rx="8" ry="20" fill="url(#wingGrad1)" opacity="0.9"/>
+ <ellipse cx="55" cy="112" rx="3" ry="15" fill="#FF4500" opacity="0.7"/>
+ <ellipse cx="65" cy="112" rx="3" ry="15" fill="#FFD700" opacity="0.7"/>
+ 
+ <!-- Feet -->
+ <ellipse cx="55" cy="115" rx="3" ry="2" fill="#DAA520"/>
+ <ellipse cx="65" cy="115" rx="3" ry="2" fill="#DAA520"/>
+ 
+ <!-- Wing Pattern Overlay -->
+ <circle cx="45" cy="80" r="2" fill="#8B4513" opacity="0.6"/>
+ <circle cx="48" cy="85" r="1.5" fill="#D2691E" opacity="0.6"/>
+ <circle cx="75" cy="80" r="2" fill="#556B2F" opacity="0.6"/>
+ <circle cx="72" cy="85" r="1.5" fill="#9ACD32" opacity="0.6"/>
+ 
+ <!-- Decorative Border -->
+ <rect x="3" y="3" width="114" height="162" rx="8" fill="none" stroke="#FFD700" stroke-width="1" opacity="0.7"/>
+ <rect x="6" y="6" width="108" height="156" rx="6" fill="none" stroke="#fff" stroke-width="0.5" opacity="0.5"/>
+ 
+ <!-- Corner Flourishes -->
+ <circle cx="15" cy="15" r="3" fill="none" stroke="#FFD700" stroke-width="1" opacity="0.6"/>
+ <circle cx="105" cy="15" r="3" fill="none" stroke="#FFD700" stroke-width="1" opacity="0.6"/>
+ <circle cx="15" cy="153" r="3" fill="none" stroke="#FFD700" stroke-width="1" opacity="0.6"/>
+ <circle cx="105" cy="153" r="3" fill="none" stroke="#FFD700" stroke-width="1" opacity="0.6"/>
+</svg>
