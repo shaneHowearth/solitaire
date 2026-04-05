@@ -70,12 +70,14 @@ func (d *Display) CreateBoard(
 	// Layout: Talon/Waste Left, Foundations Right
 	topArea := container.NewBorder(nil, nil, container.NewHBox(d.talonBox, d.wasteBox), nil, d.foundationBox)
 
-	// --- LAYOUT CHANGE: Remove NewSpacer() ---
-	// Using a simple VBox without a spacer pulls the tableau up right under the topArea.
-	// We wrap the tableau in a Padded container if you want just a tiny bit of breathing room.
+	// The tableauContainer allows horizontal scrolling if the board is wide.
+	tableauContainer := container.NewHScroll(d.tableauBox)
+
+	// Tabletop VBox with a Spacer at the end to pin everything to the top.
 	d.Tabletop = container.NewVBox(
 		topArea,
-		container.NewPadded(container.NewHScroll(d.tableauBox)),
+		container.NewPadded(tableauContainer),
+		layout.NewSpacer(),
 	)
 
 	bg := canvas.NewRectangle(d.defaultBgColor)
@@ -85,12 +87,15 @@ func (d *Display) CreateBoard(
 }
 
 func (d *Display) buildPile(cards []string, sType state.StackType, idx int, showCount int) fyne.CanvasObject {
+	// 1. Handle the Empty State
 	if len(cards) == 0 {
 		c := NewCardWidget("", sType, idx, d)
-		c.Resize(fyne.NewSize(cardWidth, cardHeight))
-		return c
+		// Wrapping in a VBox with a Spacer ensures the empty card slot
+		// stays at its MinSize height and doesn't stretch down.
+		return container.NewVBox(c, layout.NewSpacer())
 	}
 
+	// 2. Handle the populated state
 	cardContainer := container.NewWithoutLayout()
 	currentHeight := float32(cardHeight)
 
@@ -102,7 +107,7 @@ func (d *Display) buildPile(cards []string, sType state.StackType, idx int, show
 		}
 
 		cWidget := NewCardWidget(cardFace, sType, idx, d)
-		cWidget.Resize(fyne.NewSize(cardWidth, cardHeight))
+		cWidget.Resize(fyne.NewSize(float32(cardWidth), float32(cardHeight)))
 
 		yPos := float32(0)
 		if sType == state.StackTableau {
@@ -110,17 +115,23 @@ func (d *Display) buildPile(cards []string, sType state.StackType, idx int, show
 		}
 		cWidget.Move(fyne.NewPos(0, yPos))
 
-		if yPos+cardHeight > currentHeight {
-			currentHeight = yPos + cardHeight
+		if yPos+float32(cardHeight) > currentHeight {
+			currentHeight = yPos + float32(cardHeight)
 		}
 		cardContainer.Add(cWidget)
 	}
 
-	// Use a rectangle with a slight border for the pile area to debug
+	// Create a transparent rectangle to define the exact hit-box/size of the stack
 	spacer := canvas.NewRectangle(color.Transparent)
-	spacer.SetMinSize(fyne.NewSize(cardWidth, currentHeight))
+	spacer.SetMinSize(fyne.NewSize(float32(cardWidth), currentHeight))
 
-	return container.NewStack(spacer, cardContainer)
+	// Stack the transparent base with the card container
+	pileStack := container.NewStack(spacer, cardContainer)
+
+	// 3. Final Wrap: NewVBox with a Spacer
+	// This is the critical change: it forces the stack to be only as tall
+	// as 'currentHeight', pushing all remaining window space below it.
+	return container.NewVBox(pileStack, layout.NewSpacer())
 }
 
 func (d *Display) TableauPrint(idx int, value []string, showCount int) {
