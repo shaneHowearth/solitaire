@@ -1,57 +1,54 @@
 package main
 
 import (
-	"image/color"
+	"log"
+	"log/slog"
+	"os"
 
-	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/canvas"
-	"fyne.io/fyne/v2/container"
-)
-
-const (
-	greenR       = 46
-	greenG       = 125
-	greenB       = 50
-	greenA       = 255
-	windowWidth  = 1200
-	windowHeight = 600
-	cardWidth    = 100
-	cardHeight   = 145
+	"github.com/shanehowearth/solitaire"
+	"github.com/shanehowearth/solitaire/game"
+	"github.com/shanehowearth/solitaire/screen/gui"
+	"github.com/shanehowearth/solitaire/state"
 )
 
 func main() {
-	myApp := app.New()
+	logFile, err := os.OpenFile("gui_app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, state.DefaultLogPerms)
+	if err != nil {
+		log.Fatalf("Failed to open log file: %v", err)
+	}
+	defer logFile.Close()
 
-	window := myApp.NewWindow("Irate Sol")
+	var programLevel = new(slog.LevelVar)
+	h := slog.NewJSONHandler(logFile, &slog.HandlerOptions{Level: programLevel})
+	slog.SetDefault(slog.New(h))
+	programLevel.Set(slog.LevelDebug)
 
-	// Green Rectangle.
-	tabletop := canvas.NewRectangle(color.RGBA{R: greenR, G: greenG, B: greenB, A: greenA})
+	log.SetOutput(logFile)
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 
-	// Card
-	cardBase := canvas.NewRectangle(color.White)
-	cardBase.StrokeColor = color.Black
-	cardBase.StrokeWidth = 2
-	cardBase.Resize(fyne.NewSize(cardWidth, cardHeight))
+	// --- Instance Initialization ---
+	instance := solitaire.New()
 
-	// 3. Add a Label for the Card Value
-	cardText := canvas.NewText("A ♠", color.Black)
-	cardText.TextSize = 20
-	cardText.Alignment = fyne.TextAlignCenter
+	// Available games.
+	variants := []game.Variant{
+		&game.Klondike{},
+		&game.KlondikeVegas{},
+		&game.Accordian{},
+		&game.AcesAndKings{},
+		&game.AcesSquare{},
+		&game.AcesUp{},
+		&game.Acme{},
+		&game.Agnes{},
+		&game.Gaps{},
+		&game.Russian{},
+		&game.Yukon{},
+	}
 
-	// 4. Group them in a Container
-	// We use container.NewMax so the text sits on top of the rectangle
-	card := container.NewMax(cardBase, cardText)
+	// This satisfies the Display interface requirement of the solitaire.Instance
+	instance.Display = gui.New(variants)
 
-	// Position the card manually for now
-	card.Move(fyne.NewPos(50, 50))
-
-	// 5. The Table (Using a Stacked Container)
-	// container.NewStack puts the first item at the bottom (the green felt)
-	// and subsequent items on top (the cards)
-	content := container.NewStack(tabletop, container.NewWithoutLayout(card))
-
-	window.SetContent(content)
-	window.Resize(fyne.NewSize(windowWidth, windowHeight))
-	window.ShowAndRun()
+	// Start the game engine
+	if err := instance.Start(); err != nil {
+		log.Fatalf("Error running application: %v", err)
+	}
 }
