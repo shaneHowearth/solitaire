@@ -33,18 +33,16 @@ func (d *Display) CreateBoard(
 		d.tableauBox.Add(d.buildPile(nil, state.StackTableau, i, 0))
 	}
 
-	// --- NEW: Dropdown Menu Setup ---
+	// Dropdown Menu Setup
 	var gameNames []string
 	for _, g := range d.games {
 		gameNames = append(gameNames, g.Name())
 	}
 
 	gameSelector := widget.NewSelect(gameNames, func(selected string) {
-		// Only trigger if the selection actually changes
 		if selected == name {
 			return
 		}
-		// Find the matching variant and call the engine's callback
 		for _, g := range d.games {
 			if g.Name() == selected {
 				d.gameSelectedCallback(g)
@@ -52,8 +50,7 @@ func (d *Display) CreateBoard(
 			}
 		}
 	})
-	gameSelector.SetSelected(name) // Ensure the dropdown shows the current game name
-	// --- END Dropdown Setup ---
+	gameSelector.SetSelected(name)
 
 	btnBar := container.NewHBox(
 		layout.NewSpacer(),
@@ -65,7 +62,6 @@ func (d *Display) CreateBoard(
 	instructionBox := widget.NewLabel(strings.Join(howTo, "\n"))
 	instructionBox.Wrapping = fyne.TextWrapWord
 
-	// Replace the old nameLabel with gameSelector in the header border
 	header := container.NewVBox(
 		container.NewBorder(nil, nil, gameSelector, btnBar),
 		instructionBox,
@@ -74,10 +70,12 @@ func (d *Display) CreateBoard(
 	// Layout: Talon/Waste Left, Foundations Right
 	topArea := container.NewBorder(nil, nil, container.NewHBox(d.talonBox, d.wasteBox), nil, d.foundationBox)
 
+	// --- LAYOUT CHANGE: Remove NewSpacer() ---
+	// Using a simple VBox without a spacer pulls the tableau up right under the topArea.
+	// We wrap the tableau in a Padded container if you want just a tiny bit of breathing room.
 	d.Tabletop = container.NewVBox(
 		topArea,
-		layout.NewSpacer(),
-		container.NewHScroll(d.tableauBox),
+		container.NewPadded(container.NewHScroll(d.tableauBox)),
 	)
 
 	bg := canvas.NewRectangle(d.defaultBgColor)
