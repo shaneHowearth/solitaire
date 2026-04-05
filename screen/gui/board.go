@@ -54,7 +54,20 @@ func (d *Display) CreateBoard(
 
 	btnBar := container.NewHBox(
 		layout.NewSpacer(),
-		widget.NewButton("New", func() { d.gameRedealCallback() }),
+		widget.NewButton("New", func() {
+			d.gameRedealCallback()
+			d.ClearBoard()
+			if d.gameSelectedCallback != nil {
+				// Search for the current game in your list to
+				// re-trigger the engine's setup/draw cycle.
+				for _, g := range d.games {
+					if g.Name() == name {
+						d.gameSelectedCallback(g)
+						break
+					}
+				}
+			}
+		}),
 		widget.NewButton("Undo", func() { d.gameUndoCallback() }),
 		widget.NewButton("Quit", func() { d.App.Quit() }),
 	)
@@ -135,33 +148,58 @@ func (d *Display) buildPile(cards []string, sType state.StackType, idx int, show
 }
 
 func (d *Display) TableauPrint(idx int, value []string, showCount int) {
+	newPile := d.buildPile(value, state.StackTableau, idx, showCount)
+	// If the pile at this index exists, replace it.
+	// If not (which happens on a 'New' game), Add it.
 	if idx < len(d.tableauBox.Objects) {
-		d.tableauBox.Objects[idx] = d.buildPile(value, state.StackTableau, idx, showCount)
-		d.tableauBox.Refresh()
+		d.tableauBox.Objects[idx] = newPile
+	} else {
+		d.tableauBox.Add(newPile)
 	}
+	d.tableauBox.Refresh()
 }
 
 func (d *Display) FoundationPrint(num int, value []string) {
+	newPile := d.buildPile(value, state.StackFoundation, num, 1)
 	if num < len(d.foundationBox.Objects) {
-		d.foundationBox.Objects[num] = d.buildPile(value, state.StackFoundation, num, 1)
-		d.foundationBox.Refresh()
+		d.foundationBox.Objects[num] = newPile
+	} else {
+		d.foundationBox.Add(newPile)
 	}
+	d.foundationBox.Refresh()
 }
 
 func (d *Display) TalonPrint(value []string) {
+	newPile := d.buildPile(value, state.StackTalon, 0, 1)
 	if len(d.talonBox.Objects) > 0 {
-		d.talonBox.Objects[0] = d.buildPile(value, state.StackTalon, 0, 1)
-		d.talonBox.Refresh()
+		d.talonBox.Objects[0] = newPile
+	} else {
+		d.talonBox.Add(newPile)
 	}
+	d.talonBox.Refresh()
 }
 
 func (d *Display) WastePrint(value []string) {
+	newPile := d.buildPile(value, state.StackWaste, 0, 1)
 	if len(d.wasteBox.Objects) > 0 {
-		d.wasteBox.Objects[0] = d.buildPile(value, state.StackWaste, 0, 1)
-		d.wasteBox.Refresh()
+		d.wasteBox.Objects[0] = newPile
+	} else {
+		d.wasteBox.Add(newPile)
 	}
+	d.wasteBox.Refresh()
 }
 
-func (d *Display) ClearBoard()                           {}
+func (d *Display) ClearBoard() {
+	d.talonBox.Objects = nil
+	d.wasteBox.Objects = nil
+	d.foundationBox.Objects = nil
+	d.tableauBox.Objects = nil
+
+	d.talonBox.Refresh()
+	d.wasteBox.Refresh()
+	d.foundationBox.Refresh()
+	d.tableauBox.Refresh()
+}
+
 func (d *Display) ReservePrint(idx int, value []string)  {}
 func (d *Display) FoundationTitle(num int, value string) {}
