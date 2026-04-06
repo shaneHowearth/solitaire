@@ -37,7 +37,7 @@ func (c *CardWidget) Tapped(event *fyne.PointEvent) {
 }
 
 func (c *CardWidget) CreateRenderer() fyne.WidgetRenderer {
-	bg := canvas.NewRectangle(color.RGBA{R: 20, G: 20, B: 20, A: 255}) // Slightly darker for contrast
+	bg := canvas.NewRectangle(color.RGBA{R: 20, G: 20, B: 20, A: 255})
 	bg.StrokeColor = color.RGBA{R: 255, G: 255, B: 255, A: 40}
 	bg.StrokeWidth = 1
 
@@ -50,18 +50,34 @@ func (c *CardWidget) CreateRenderer() fyne.WidgetRenderer {
 		placeholder.StrokeWidth = 2
 
 		if c.Face != "" {
-			// Determine color based on suit
-			textColor := color.RGBA{R: 220, G: 220, B: 220, A: 180} // Off-white for Spades/Clubs
+			// Determine color based on suit (Hearts/Diamonds are red)
+			textColor := color.RGBA{R: 220, G: 220, B: 220, A: 180}
 			if strings.Contains(c.Face, "♥") || strings.Contains(c.Face, "♦") {
-				textColor = color.RGBA{R: 230, G: 50, B: 50, A: 180} // Muted Red
+				textColor = color.RGBA{R: 230, G: 50, B: 50, A: 180}
 			}
 
-			txt := canvas.NewText(c.Face, textColor)
-			txt.TextSize = 36 // Larger for better visibility
-			txt.Alignment = fyne.TextAlignCenter
-			txt.TextStyle.Bold = true
+			// Split the face (e.g., "A♠") into "A" and "♠"
+			// We assume the first character is the Rank (A, K, Q, J, 1, 9...)
+			// and the rest is the Suit symbol.
+			rankPart := string(c.Face[0])
+			suitPart := ""
+			if len(c.Face) > 1 {
+				suitPart = c.Face[1:]
+			}
 
-			mainContent = container.NewStack(placeholder, container.NewCenter(txt))
+			rankText := canvas.NewText(rankPart, textColor)
+			rankText.TextSize = 24
+			rankText.Alignment = fyne.TextAlignCenter
+			rankText.TextStyle.Bold = true
+
+			suitText := canvas.NewText(suitPart, textColor)
+			suitText.TextSize = 32 // Make the suit symbol larger
+			suitText.Alignment = fyne.TextAlignCenter
+			suitText.TextStyle.Bold = true
+
+			// Stack them vertically and center the whole group
+			textStack := container.NewVBox(rankText, suitText)
+			mainContent = container.NewStack(placeholder, container.NewCenter(textStack))
 		} else {
 			mainContent = placeholder
 		}

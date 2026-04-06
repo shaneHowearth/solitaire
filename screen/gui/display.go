@@ -59,6 +59,8 @@ type Display struct {
 	defaultBgColor  color.Color
 	selectedBgColor color.Color
 	processingClick bool
+
+	foundationHints map[int]string
 }
 
 func New(variants []game.Variant) *Display {

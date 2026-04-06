@@ -102,7 +102,7 @@ func (d *Display) CreateBoard(
 		instructionBox,
 	)
 
-	// --- THE FIX STARTS HERE ---
+	d.foundationHints = make(map[int]string)
 
 	// Layout the Top Area (Talon, Waste, Foundations)
 	topArea := container.NewBorder(nil, nil, container.NewHBox(d.talonBox, d.wasteBox), nil, d.foundationBox)
@@ -184,11 +184,10 @@ func (d *Display) TableauPrint(idx int, value []string, showCount int) {
 
 // FoundationPrint - Handles the foundations in the top-right
 func (d *Display) FoundationPrint(num int, value []string) {
-	// Map the foundation index to a suit for the hint (Matches your card.go logic)
-	suits := []string{"♠", "♥", "♣", "♦"}
+	// Use the hint from the engine if available, otherwise default to "A"
 	target := "A"
-	if num < len(suits) {
-		target = "A" + suits[num]
+	if hint, ok := d.foundationHints[num]; ok {
+		target = "A" + hint
 	}
 
 	newPile := d.buildPile(value, state.StackFoundation, num, 1, target)
@@ -246,4 +245,12 @@ func (d *Display) ReservePrint(idx int, value []string) {
 	}
 }
 
-func (d *Display) FoundationTitle(num int, value string) {}
+func (d *Display) FoundationTitle(num int, value string) {
+	if d.foundationHints == nil {
+		d.foundationHints = make(map[int]string)
+	}
+	d.foundationHints[num] = value
+
+	// Re-print the foundation to show the new hint immediately
+	d.FoundationPrint(num, nil)
+}
