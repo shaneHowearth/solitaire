@@ -17,24 +17,49 @@ func (d *Display) CreateBoard(
 	tableauHeight, tableauWidth, reserveCount, foundationCount int,
 	howTo []string,
 ) {
+	// Store dimensions for TableauPrint calculations
+	d.tableauWidth = tableauWidth
+	d.tableauHeight = tableauHeight
+
 	d.talonBox = container.NewHBox()
 	d.wasteBox = container.NewHBox()
 	d.foundationBox = container.NewHBox()
-	d.tableauBox = container.NewHBox()
+	d.reserveBox = container.NewHBox()
 
-	// Updated calls to buildPile with the 5th argument (empty string for placeholders)
+	// Use a VBox to hold multiple rows of tableaus
+	d.tableauBox = container.NewVBox()
+
+	// 1. Initialize Talon and Waste
 	d.talonBox.Add(d.buildPile(nil, state.StackTalon, 0, 0, ""))
 	d.wasteBox.Add(d.buildPile(nil, state.StackWaste, 0, 0, ""))
 
+	// 2. Initialize Foundations
 	for i := 0; i < foundationCount; i++ {
-		// Foundations usually start expecting an Ace
 		d.foundationBox.Add(d.buildPile(nil, state.StackFoundation, i, 0, "A"))
 	}
-	for i := 0; i < tableauWidth; i++ {
-		d.tableauBox.Add(d.buildPile(nil, state.StackTableau, i, 0, ""))
+
+	// 3. Initialize Reserves
+	for i := 0; i < reserveCount; i++ {
+		d.reserveBox.Add(d.buildPile(nil, state.StackReserve, i, 0, ""))
 	}
 
-	// Dropdown Menu Setup
+	// 4. Build Tableau Rows
+	for h := 0; h < tableauHeight; h++ {
+		row := container.NewHBox()
+
+		// Per TUI logic: Only add Reserves to the first row
+		if h == 0 && reserveCount > 0 {
+			row.Add(d.reserveBox)
+		}
+
+		for w := 0; w < tableauWidth; w++ {
+			tableauIdx := h*tableauWidth + w
+			row.Add(d.buildPile(nil, state.StackTableau, tableauIdx, 0, ""))
+		}
+		d.tableauBox.Add(row)
+	}
+
+	// UI Component Setup (Select, Buttons, Header)
 	var gameNames []string
 	for _, g := range d.games {
 		gameNames = append(gameNames, g.Name())
@@ -58,7 +83,6 @@ func (d *Display) CreateBoard(
 		widget.NewButton("New", func() {
 			d.gameRedealCallback()
 			d.ClearBoard()
-			// Re-trigger the game selection to force a fresh draw
 			for _, g := range d.games {
 				if g.Name() == name {
 					d.gameSelectedCallback(g)
@@ -78,14 +102,18 @@ func (d *Display) CreateBoard(
 		instructionBox,
 	)
 
-	topArea := container.NewBorder(nil, nil, container.NewHBox(d.talonBox, d.wasteBox), nil, d.foundationBox)
-	tableauContainer := container.NewHScroll(d.tableauBox)
+	// --- THE FIX STARTS HERE ---
 
-	d.Tabletop = container.NewVBox(
-		topArea,
-		container.NewPadded(tableauContainer),
-		layout.NewSpacer(),
-	)
+	// Layout the Top Area (Talon, Waste, Foundations)
+	topArea := container.NewBorder(nil, nil, container.NewHBox(d.talonBox, d.wasteBox), nil, d.foundationBox)
+
+	// Create a single scrollable area for the tableau.
+	// We use container.NewScroll which handles both directions more gracefully.
+	tableauScroll := container.NewScroll(d.tableauBox)
+
+	// Use NewBorder instead of NewVBox for the Tabletop.
+	// This forces the 'center' object (the scroll area) to expand and fill the window.
+	d.Tabletop = container.NewBorder(topArea, nil, nil, nil, tableauScroll)
 
 	bg := canvas.NewRectangle(d.defaultBgColor)
 	d.CardLayer = container.NewStack(bg, d.Tabletop)
@@ -133,16 +161,30 @@ func (d *Display) buildPile(cards []string, sType state.StackType, idx int, show
 
 func (d *Display) TableauPrint(idx int, value []string, showCount int) {
 	newPile := d.buildPile(value, state.StackTableau, idx, showCount, "")
-	if idx < len(d.tableauBox.Objects) {
-		d.tableauBox.Objects[idx] = newPile
-	} else {
-		d.tableauBox.Add(newPile)
+
+	// Map the flat index to row/column
+	rowIdx := idx / d.tableauWidth
+	colInRowIdx := idx % d.tableauWidth
+
+	// Adjust for Reserve presence in the first row's layout
+	if rowIdx == 0 && len(d.reserveBox.Objects) > 0 {
+		// In row 0, index 0 is the reserveBox, so tableau columns start at index 1
+		colInRowIdx++
 	}
-	d.tableauBox.Refresh()
+
+	if rowIdx < len(d.tableauBox.Objects) {
+		if row, ok := d.tableauBox.Objects[rowIdx].(*fyne.Container); ok {
+			if colInRowIdx < len(row.Objects) {
+				row.Objects[colInRowIdx] = newPile
+				row.Refresh()
+			}
+		}
+	}
 }
 
+// FoundationPrint - Handles the foundations in the top-right
 func (d *Display) FoundationPrint(num int, value []string) {
-	// Map the foundation index to a suit for the hint
+	// Map the foundation index to a suit for the hint (Matches your card.go logic)
 	suits := []string{"♠", "♥", "♣", "♦"}
 	target := "A"
 	if num < len(suits) {
@@ -150,12 +192,13 @@ func (d *Display) FoundationPrint(num int, value []string) {
 	}
 
 	newPile := d.buildPile(value, state.StackFoundation, num, 1, target)
+
 	if num < len(d.foundationBox.Objects) {
 		d.foundationBox.Objects[num] = newPile
+		d.foundationBox.Refresh()
 	} else {
 		d.foundationBox.Add(newPile)
 	}
-	d.foundationBox.Refresh()
 }
 
 func (d *Display) TalonPrint(value []string) {
@@ -190,5 +233,17 @@ func (d *Display) ClearBoard() {
 	d.tableauBox.Refresh()
 }
 
-func (d *Display) ReservePrint(idx int, value []string)  {}
+// ReservePrint - New function to handle the Reserve stacks you added to the layout
+func (d *Display) ReservePrint(idx int, value []string) {
+	// Reserves usually show all cards or just the top one depending on the game
+	newPile := d.buildPile(value, state.StackReserve, idx, 0, "")
+
+	if idx < len(d.reserveBox.Objects) {
+		d.reserveBox.Objects[idx] = newPile
+		d.reserveBox.Refresh()
+	} else {
+		d.reserveBox.Add(newPile)
+	}
+}
+
 func (d *Display) FoundationTitle(num int, value string) {}

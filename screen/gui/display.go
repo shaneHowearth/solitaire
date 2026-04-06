@@ -29,7 +29,7 @@ const (
 type Display struct {
 	App       fyne.App
 	Window    fyne.Window
-	Tabletop  *fyne.Container // Defined here to fix the board.go error
+	Tabletop  *fyne.Container
 	CardLayer *fyne.Container
 
 	// Containers for specific game areas
@@ -37,10 +37,15 @@ type Display struct {
 	wasteBox      *fyne.Container
 	foundationBox *fyne.Container
 	tableauBox    *fyne.Container
+	reserveBox    *fyne.Container // Added for Reserve support
 
 	Selected game.Variant
 	games    []game.Variant
 	screens  map[string]fyne.CanvasObject
+
+	// Store dimensions for index mapping
+	tableauWidth  int
+	tableauHeight int
 
 	gameHint                  func() []state.Move
 	gameSelectedCallback      func(game.Variant)
