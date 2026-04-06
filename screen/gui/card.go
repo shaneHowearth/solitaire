@@ -3,6 +3,7 @@ package gui
 import (
 	"image/color"
 	"os"
+	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -13,10 +14,11 @@ import (
 
 type CardWidget struct {
 	widget.BaseWidget
-	Face    string
-	Stack   state.StackType
-	Index   int
-	Display *Display
+	Face          string
+	Stack         state.StackType
+	Index         int
+	Display       *Display
+	IsPlaceholder bool
 }
 
 func NewCardWidget(face string, sType state.StackType, idx int, d *Display) *CardWidget {
@@ -30,39 +32,58 @@ func NewCardWidget(face string, sType state.StackType, idx int, d *Display) *Car
 	return c
 }
 
-func (c *CardWidget) Tapped(_ *fyne.PointEvent) {
+func (c *CardWidget) Tapped(event *fyne.PointEvent) {
 	c.Display.selectComponent(c.Stack, c.Index)
 }
 
 func (c *CardWidget) CreateRenderer() fyne.WidgetRenderer {
-	// Base background
-	bg := canvas.NewRectangle(color.RGBA{0, 0, 0, 180})
+	bg := canvas.NewRectangle(color.RGBA{R: 20, G: 20, B: 20, A: 255}) // Slightly darker for contrast
+	bg.StrokeColor = color.RGBA{R: 255, G: 255, B: 255, A: 40}
+	bg.StrokeWidth = 1
 
-	// Selection Overlay (Initially transparent)
 	overlay := canvas.NewRectangle(color.Transparent)
-
-	filename := c.Display.getCardFilename(c.Face)
 	var mainContent fyne.CanvasObject
 
-	if _, err := os.Stat(filename); err == nil {
-		img := canvas.NewImageFromFile(filename)
-		img.FillMode = canvas.ImageFillStretch
-		mainContent = img
+	if c.IsPlaceholder {
+		placeholder := canvas.NewRectangle(color.RGBA{R: 100, G: 100, B: 100, A: 40})
+		placeholder.StrokeColor = color.RGBA{R: 255, G: 255, B: 255, A: 60}
+		placeholder.StrokeWidth = 2
+
+		if c.Face != "" {
+			// Determine color based on suit
+			textColor := color.RGBA{R: 220, G: 220, B: 220, A: 180} // Off-white for Spades/Clubs
+			if strings.Contains(c.Face, "♥") || strings.Contains(c.Face, "♦") {
+				textColor = color.RGBA{R: 230, G: 50, B: 50, A: 180} // Muted Red
+			}
+
+			txt := canvas.NewText(c.Face, textColor)
+			txt.TextSize = 36 // Larger for better visibility
+			txt.Alignment = fyne.TextAlignCenter
+			txt.TextStyle.Bold = true
+
+			mainContent = container.NewStack(placeholder, container.NewCenter(txt))
+		} else {
+			mainContent = placeholder
+		}
 	} else {
-		bg.FillColor = color.RGBA{150, 0, 0, 255}
-		txt := canvas.NewText(c.Face, color.White)
-		txt.TextSize = 10
-		txt.Alignment = fyne.TextAlignCenter
-		mainContent = txt
+		filename := c.Display.getCardFilename(c.Face)
+		if _, err := os.Stat(filename); err == nil {
+			img := canvas.NewImageFromFile(filename)
+			img.FillMode = canvas.ImageFillStretch
+			mainContent = img
+		} else {
+			txt := canvas.NewText(c.Face, color.White)
+			txt.Alignment = fyne.TextAlignCenter
+			mainContent = txt
+		}
 	}
 
-	// Layer order: Background -> Card Image -> Selection Tint
-	stack := container.NewStack(bg, mainContent, overlay)
+	content := container.NewStack(bg, mainContent, overlay)
 
 	r := &cardRenderer{
 		overlay: overlay,
-		stack:   stack,
-		objects: []fyne.CanvasObject{stack},
+		stack:   content,
+		objects: []fyne.CanvasObject{content},
 		card:    c,
 	}
 	r.Refresh()
@@ -85,22 +106,17 @@ func (r *cardRenderer) MinSize() fyne.Size {
 }
 
 func (r *cardRenderer) Refresh() {
-	selType, selIdx := r.card.Display.GetSelectedComponent()
-
-	if r.card.Display.HasSelection() && r.card.Stack == selType && r.card.Index == selIdx {
-		// Apply a semi-transparent blue tint to "shade" the card
-		r.overlay.FillColor = color.RGBA{R: 0, G: 120, B: 215, A: 100}
+	if r.card.Display.selectedComponentType == r.card.Stack && r.card.Display.selectedIndex == r.card.Index {
+		r.overlay.FillColor = color.RGBA{R: 0, G: 0, B: 0, A: 90}
 	} else {
-		// Return to transparent
 		r.overlay.FillColor = color.Transparent
 	}
-
 	r.overlay.Refresh()
 	canvas.Refresh(r.card)
 }
 
+func (r *cardRenderer) Destroy() {}
+
 func (r *cardRenderer) Objects() []fyne.CanvasObject {
 	return r.objects
 }
-
-func (r *cardRenderer) Destroy() {}

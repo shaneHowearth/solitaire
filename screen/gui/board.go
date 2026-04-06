@@ -22,15 +22,16 @@ func (d *Display) CreateBoard(
 	d.foundationBox = container.NewHBox()
 	d.tableauBox = container.NewHBox()
 
-	// Initial empty state
-	d.talonBox.Add(d.buildPile(nil, state.StackTalon, 0, 0))
-	d.wasteBox.Add(d.buildPile(nil, state.StackWaste, 0, 0))
+	// Updated calls to buildPile with the 5th argument (empty string for placeholders)
+	d.talonBox.Add(d.buildPile(nil, state.StackTalon, 0, 0, ""))
+	d.wasteBox.Add(d.buildPile(nil, state.StackWaste, 0, 0, ""))
 
 	for i := 0; i < foundationCount; i++ {
-		d.foundationBox.Add(d.buildPile(nil, state.StackFoundation, i, 0))
+		// Foundations usually start expecting an Ace
+		d.foundationBox.Add(d.buildPile(nil, state.StackFoundation, i, 0, "A"))
 	}
 	for i := 0; i < tableauWidth; i++ {
-		d.tableauBox.Add(d.buildPile(nil, state.StackTableau, i, 0))
+		d.tableauBox.Add(d.buildPile(nil, state.StackTableau, i, 0, ""))
 	}
 
 	// Dropdown Menu Setup
@@ -57,14 +58,11 @@ func (d *Display) CreateBoard(
 		widget.NewButton("New", func() {
 			d.gameRedealCallback()
 			d.ClearBoard()
-			if d.gameSelectedCallback != nil {
-				// Search for the current game in your list to
-				// re-trigger the engine's setup/draw cycle.
-				for _, g := range d.games {
-					if g.Name() == name {
-						d.gameSelectedCallback(g)
-						break
-					}
+			// Re-trigger the game selection to force a fresh draw
+			for _, g := range d.games {
+				if g.Name() == name {
+					d.gameSelectedCallback(g)
+					break
 				}
 			}
 		}),
@@ -80,13 +78,9 @@ func (d *Display) CreateBoard(
 		instructionBox,
 	)
 
-	// Layout: Talon/Waste Left, Foundations Right
 	topArea := container.NewBorder(nil, nil, container.NewHBox(d.talonBox, d.wasteBox), nil, d.foundationBox)
-
-	// The tableauContainer allows horizontal scrolling if the board is wide.
 	tableauContainer := container.NewHScroll(d.tableauBox)
 
-	// Tabletop VBox with a Spacer at the end to pin everything to the top.
 	d.Tabletop = container.NewVBox(
 		topArea,
 		container.NewPadded(tableauContainer),
@@ -99,22 +93,18 @@ func (d *Display) CreateBoard(
 	d.Window.SetContent(container.NewBorder(header, nil, nil, nil, d.CardLayer))
 }
 
-func (d *Display) buildPile(cards []string, sType state.StackType, idx int, showCount int) fyne.CanvasObject {
-	// 1. Handle the Empty State
+func (d *Display) buildPile(cards []string, sType state.StackType, idx int, showCount int, baseCard string) fyne.CanvasObject {
 	if len(cards) == 0 {
-		c := NewCardWidget("", sType, idx, d)
-		// Wrapping in a VBox with a Spacer ensures the empty card slot
-		// stays at its MinSize height and doesn't stretch down.
+		c := NewCardWidget(baseCard, sType, idx, d)
+		c.IsPlaceholder = true // Now valid because we updated the struct
 		return container.NewVBox(c, layout.NewSpacer())
 	}
 
-	// 2. Handle the populated state
 	cardContainer := container.NewWithoutLayout()
 	currentHeight := float32(cardHeight)
 
 	for i, face := range cards {
 		cardFace := "--"
-		// Logic check: ensure showCount is respected
 		if showCount == 0 || i >= len(cards)-showCount {
 			cardFace = face
 		}
@@ -134,23 +124,15 @@ func (d *Display) buildPile(cards []string, sType state.StackType, idx int, show
 		cardContainer.Add(cWidget)
 	}
 
-	// Create a transparent rectangle to define the exact hit-box/size of the stack
 	spacer := canvas.NewRectangle(color.Transparent)
 	spacer.SetMinSize(fyne.NewSize(float32(cardWidth), currentHeight))
 
-	// Stack the transparent base with the card container
 	pileStack := container.NewStack(spacer, cardContainer)
-
-	// 3. Final Wrap: NewVBox with a Spacer
-	// This is the critical change: it forces the stack to be only as tall
-	// as 'currentHeight', pushing all remaining window space below it.
 	return container.NewVBox(pileStack, layout.NewSpacer())
 }
 
 func (d *Display) TableauPrint(idx int, value []string, showCount int) {
-	newPile := d.buildPile(value, state.StackTableau, idx, showCount)
-	// If the pile at this index exists, replace it.
-	// If not (which happens on a 'New' game), Add it.
+	newPile := d.buildPile(value, state.StackTableau, idx, showCount, "")
 	if idx < len(d.tableauBox.Objects) {
 		d.tableauBox.Objects[idx] = newPile
 	} else {
@@ -160,7 +142,14 @@ func (d *Display) TableauPrint(idx int, value []string, showCount int) {
 }
 
 func (d *Display) FoundationPrint(num int, value []string) {
-	newPile := d.buildPile(value, state.StackFoundation, num, 1)
+	// Map the foundation index to a suit for the hint
+	suits := []string{"♠", "♥", "♣", "♦"}
+	target := "A"
+	if num < len(suits) {
+		target = "A" + suits[num]
+	}
+
+	newPile := d.buildPile(value, state.StackFoundation, num, 1, target)
 	if num < len(d.foundationBox.Objects) {
 		d.foundationBox.Objects[num] = newPile
 	} else {
@@ -170,7 +159,7 @@ func (d *Display) FoundationPrint(num int, value []string) {
 }
 
 func (d *Display) TalonPrint(value []string) {
-	newPile := d.buildPile(value, state.StackTalon, 0, 1)
+	newPile := d.buildPile(value, state.StackTalon, 0, 1, "")
 	if len(d.talonBox.Objects) > 0 {
 		d.talonBox.Objects[0] = newPile
 	} else {
@@ -180,7 +169,7 @@ func (d *Display) TalonPrint(value []string) {
 }
 
 func (d *Display) WastePrint(value []string) {
-	newPile := d.buildPile(value, state.StackWaste, 0, 1)
+	newPile := d.buildPile(value, state.StackWaste, 0, 1, "")
 	if len(d.wasteBox.Objects) > 0 {
 		d.wasteBox.Objects[0] = newPile
 	} else {
