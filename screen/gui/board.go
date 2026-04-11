@@ -80,6 +80,9 @@ func (d *Display) CreateBoard(
 
 	btnBar := container.NewHBox(
 		layout.NewSpacer(),
+		widget.NewButton("Hint", func() {
+			d.showHintModal() // Call the new detailed modal
+		}),
 		widget.NewButton("New", func() {
 			d.gameRedealCallback()
 			d.ClearBoard()

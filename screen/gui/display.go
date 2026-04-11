@@ -9,6 +9,7 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
 	"github.com/shanehowearth/solitaire/game"
 	"github.com/shanehowearth/solitaire/state"
@@ -193,4 +194,66 @@ func (d *Display) GetSelectedComponent() (state.StackType, int) {
 
 func (d *Display) ShowWinnerModal(gameName string, score int) {
 	fmt.Printf("Winner: %s Score: %d\n", gameName, score)
+}
+
+func (d *Display) showHintModal() {
+	if d.gameHint == nil {
+		return
+	}
+
+	moves := d.gameHint()
+	if len(moves) == 0 {
+		dialog.ShowInformation("Hints", "No moves available! Try drawing from the Stock.", d.Window)
+		return
+	}
+
+	// Create a container to hold our hint rows
+	hintList := container.NewVBox()
+
+	for i, m := range moves {
+		// Create a descriptive string for the move
+		// e.g., "1) A♠ from Waste → Foundation 1"
+		src := d.formatLocation(m.Source)
+		dst := d.formatLocation(m.Destination)
+
+		cardStr := m.SourceCardTop.String()
+		if m.NumberMoving > 1 {
+			cardStr = fmt.Sprintf("%s (+%d cards)", cardStr, m.NumberMoving-1)
+		}
+
+		hintLabel := widget.NewLabel(fmt.Sprintf("%d) %s: %s → %s", i+1, cardStr, src, dst))
+		hintList.Add(hintLabel)
+	}
+
+	// Wrap in a scroll container in case there are many hints
+	scroll := container.NewVScroll(hintList)
+	scroll.SetMinSize(fyne.NewSize(400, 300))
+
+	// Show the custom dialog
+	hintDialog := dialog.NewCustom("Available Hints", "Close", scroll, d.Window)
+	hintDialog.Show()
+}
+
+func (d *Display) formatLocation(stack state.Stack) string {
+	switch stack.Type {
+	case state.StackTableau:
+		// Map flat index back to Row/Col for the user
+		row := (stack.TableauPosition / d.tableauWidth) + 1
+		col := (stack.TableauPosition % d.tableauWidth) + 1
+		rowStr := ""
+		if d.tableauHeight > 1 {
+			rowStr = fmt.Sprintf("Row %d, Col ", row)
+		}
+		return fmt.Sprintf("Tableau %s%d", rowStr, col)
+	case state.StackFoundation:
+		return fmt.Sprintf("Foundation %d", stack.FoundationPosition+1)
+	case state.StackReserve:
+		return fmt.Sprintf("Reserve")
+	case state.StackWaste:
+		return "Waste"
+	default:
+		return "Stock"
+	}
+
+	return ""
 }
