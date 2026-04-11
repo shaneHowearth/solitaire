@@ -80,6 +80,10 @@ func New(variants []game.Variant) *Display {
 		selectedIndex:   -1,
 	}
 
+	if len(variants) > 0 {
+		d.Selected = variants[0]
+	}
+
 	bg := canvas.NewRectangle(d.defaultBgColor)
 	label := widget.NewLabel("Initializing...")
 	initContent := container.NewStack(bg, container.NewCenter(label))
@@ -110,25 +114,55 @@ func (d *Display) selectComponent(sType state.StackType, index int) {
 	if d.processingClick {
 		return
 	}
+
 	d.processingClick = true
 	defer func() { d.processingClick = false }()
 
+	defer d.RefreshAll()
+
+	if d.Selected == nil {
+		return
+	}
+
+	if sType == state.StackTalon {
+		// If Talon() is false (Agnes), we trigger Redeal.
+		if !d.Selected.Talon() {
+			if d.gameRedealCallback != nil {
+				d.gameRedealCallback()
+			}
+			d.ClearSelection()
+			return // EXIT HERE so it doesn't try to "select" the talon
+		}
+	}
+
 	if d.selectedIndex != -1 {
-		// Second click: handle move
-		d.componentSelectedCallback(d.selectedComponentType, d.selectedIndex, sType, index)
+		if d.componentSelectedCallback != nil {
+			d.componentSelectedCallback(d.selectedComponentType, d.selectedIndex, sType, index)
+		}
 		d.selectedIndex = -1
 		d.selectedComponentType = -1
 	} else {
-		// First click: select
 		d.selectedIndex = index
 		d.selectedComponentType = sType
 	}
+}
 
-	// Force the specific boxes to refresh their children (the cards)
-	d.talonBox.Refresh()
-	d.wasteBox.Refresh()
-	d.foundationBox.Refresh()
-	d.tableauBox.Refresh()
+func (d *Display) RefreshAll() {
+	if d.talonBox != nil {
+		d.talonBox.Refresh()
+	}
+	if d.wasteBox != nil {
+		d.wasteBox.Refresh()
+	}
+	if d.foundationBox != nil {
+		d.foundationBox.Refresh()
+	}
+	if d.tableauBox != nil {
+		d.tableauBox.Refresh()
+	}
+	if d.reserveBox != nil {
+		d.reserveBox.Refresh()
+	}
 }
 
 func (d *Display) getCardFilename(card string) string {

@@ -70,6 +70,7 @@ func (d *Display) CreateBoard(
 		}
 		for _, g := range d.games {
 			if g.Name() == selected {
+				d.Selected = g
 				d.gameSelectedCallback(g)
 				return
 			}
