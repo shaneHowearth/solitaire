@@ -225,13 +225,9 @@ func (d *Display) showHintModal() {
 		hintList.Add(hintLabel)
 	}
 
-	// Wrap in a scroll container in case there are many hints
-	scroll := container.NewVScroll(hintList)
-	scroll.SetMinSize(fyne.NewSize(400, 300))
+	styledContent := d.styledModalContent(hintList, 500, 350)
 
-	// Show the custom dialog
-	hintDialog := dialog.NewCustom("Available Hints", "Close", scroll, d.Window)
-	hintDialog.Show()
+	dialog.ShowCustom("Available Hints", "Close", styledContent, d.Window)
 }
 
 func (d *Display) formatLocation(stack state.Stack) string {
@@ -259,15 +255,32 @@ func (d *Display) formatLocation(stack state.Stack) string {
 }
 
 func (d *Display) showHowToModal(gameName string, howTo []string) {
+	fullText := strings.Join(howTo, "\n\n")
 	// Create a text label with the instructions
-	content := widget.NewLabel(strings.Join(howTo, "\n\n"))
+	content := widget.NewLabel(fullText)
+	// content := widget.NewRichTextFromMarkdown(strings.Join(howTo, "\n\n"))
 	content.Wrapping = fyne.TextWrapWord
 
-	// Wrap it in a scroll container so it works on smaller windows
-	scroll := container.NewVScroll(content)
-	scroll.SetMinSize(fyne.NewSize(500, 400)) // Give it a comfortable size
+	styledContent := d.styledModalContent(content, 600, 450)
 
 	// Show it as a modal dialog
 	title := fmt.Sprintf("How to Play: %s", gameName)
-	dialog.ShowCustom(title, "Back to Game", scroll, d.Window)
+	dialog.ShowCustom(title, "Back to Game", styledContent, d.Window)
+}
+
+func (d *Display) styledModalContent(content fyne.CanvasObject, width, height float32) fyne.CanvasObject {
+	// 1. Consistent Background: Deep Grey
+	bg := canvas.NewRectangle(color.RGBA{R: 30, G: 30, B: 30, A: 255})
+
+	// 2. Consistent Border: Gold
+	bg.StrokeColor = color.RGBA{R: 255, G: 215, B: 0, A: 255}
+	bg.StrokeWidth = 2
+	bg.CornerRadius = 4
+
+	// 3. Wrap content in Scroll + Padding
+	scroll := container.NewVScroll(container.NewPadded(content))
+	scroll.SetMinSize(fyne.NewSize(width, height))
+
+	// 4. Stack them
+	return container.NewStack(bg, scroll)
 }
