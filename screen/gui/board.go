@@ -2,7 +2,6 @@ package gui
 
 import (
 	"image/color"
-	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -78,11 +77,13 @@ func (d *Display) CreateBoard(
 	})
 	gameSelector.SetSelected(name)
 
+	// Button bar.
 	btnBar := container.NewHBox(
 		layout.NewSpacer(),
-		widget.NewButton("Hint", func() {
-			d.showHintModal() // Call the new detailed modal
+		widget.NewButton("How to Play", func() {
+			d.showHowToModal(name, howTo) // Trigger the new modal
 		}),
+		widget.NewButton("Hint", func() { d.showHintModal() }),
 		widget.NewButton("New", func() {
 			d.gameRedealCallback()
 			d.ClearBoard()
@@ -97,12 +98,8 @@ func (d *Display) CreateBoard(
 		widget.NewButton("Quit", func() { d.App.Quit() }),
 	)
 
-	instructionBox := widget.NewLabel(strings.Join(howTo, "\n"))
-	instructionBox.Wrapping = fyne.TextWrapWord
-
 	header := container.NewVBox(
 		container.NewBorder(nil, nil, gameSelector, btnBar),
-		instructionBox,
 	)
 
 	d.foundationHints = make(map[int]string)

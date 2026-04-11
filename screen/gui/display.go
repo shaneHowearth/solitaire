@@ -257,3 +257,17 @@ func (d *Display) formatLocation(stack state.Stack) string {
 
 	return ""
 }
+
+func (d *Display) showHowToModal(gameName string, howTo []string) {
+	// Create a text label with the instructions
+	content := widget.NewLabel(strings.Join(howTo, "\n\n"))
+	content.Wrapping = fyne.TextWrapWord
+
+	// Wrap it in a scroll container so it works on smaller windows
+	scroll := container.NewVScroll(content)
+	scroll.SetMinSize(fyne.NewSize(500, 400)) // Give it a comfortable size
+
+	// Show it as a modal dialog
+	title := fmt.Sprintf("How to Play: %s", gameName)
+	dialog.ShowCustom(title, "Back to Game", scroll, d.Window)
+}
