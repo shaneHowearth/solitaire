@@ -3,7 +3,10 @@ package gui
 import (
 	"fmt"
 	"image/color"
+	"math"
+	"math/rand/v2"
 	"strings"
+	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -227,7 +230,107 @@ func (d *Display) GetSelectedComponent() (state.StackType, int) {
 }
 
 func (d *Display) ShowWinnerModal(gameName string, score int) {
-	fmt.Printf("Winner: %s Score: %d\n", gameName, score)
+	d.LaunchFireworks()
+}
+
+type particle struct {
+	shape *canvas.Circle
+	velX  float32
+	velY  float32
+	clr   color.RGBA
+}
+
+func (d *Display) LaunchFireworks() {
+	// Particle tracker to manage movement and color per spark
+	type particle struct {
+		shape *canvas.Circle
+		velX  float32
+		velY  float32
+		clr   color.RGBA
+	}
+
+	// Create a dedicated overlay layer for fireworks so they don't interfere with card widgets
+	fireworkLayer := container.NewWithoutLayout()
+	d.CardLayer.Add(fireworkLayer)
+
+	// Launch multiple bursts at staggered intervals for a better show
+	for i := 0; i < 6; i++ {
+		go func(burstIdx int) {
+			// Delay each burst slightly
+			time.Sleep(time.Duration(burstIdx) * 500 * time.Millisecond)
+
+			// Randomize the origin point within the window bounds (with padding)
+			size := d.Window.Canvas().Size()
+			origin := fyne.NewPos(
+				150+rand.Float32()*(size.Width-300),
+				150+rand.Float32()*(size.Height-300),
+			)
+
+			count := 45 // Number of sparks per burst
+			burst := make([]particle, count)
+
+			for j := 0; j < count; j++ {
+				// Generate a bright, high-saturation random color
+				sparkColor := color.RGBA{
+					R: uint8(rand.IntN(155) + 100),
+					G: uint8(rand.IntN(155) + 100),
+					B: uint8(rand.IntN(155) + 100),
+					A: 255,
+				}
+
+				p := canvas.NewCircle(sparkColor)
+				p.Resize(fyne.NewSize(4, 4))
+				p.Move(origin)
+
+				// Physics: Random angle and initial speed
+				angle := rand.Float64() * 2 * math.Pi
+				speed := 2.0 + rand.Float64()*5.0
+
+				burst[j] = particle{
+					shape: p,
+					velX:  float32(math.Cos(angle) * speed),
+					velY:  float32(math.Sin(angle) * speed),
+					clr:   sparkColor,
+				}
+				fireworkLayer.Add(p)
+			}
+
+			// Define the 2-second animation sequence
+			anim := fyne.NewAnimation(time.Second*2, func(v float32) {
+				for j := range burst {
+					p := &burst[j]
+
+					// 1. Update Position based on velocity
+					p.shape.Move(p.shape.Position().Add(fyne.NewPos(p.velX, p.velY)))
+
+					// 2. Apply Gravity (pulls velY downward over time)
+					p.velY += 0.12
+
+					// 3. Apply Air Friction (optional, slows them down slightly)
+					p.velX *= 0.99
+					p.velY *= 0.99
+
+					// 4. Fade Alpha based on animation progress (v goes from 0.0 to 1.0)
+					newAlpha := uint8(255 * (1.0 - v))
+					fadeColor := p.clr
+					fadeColor.A = newAlpha
+
+					p.shape.FillColor = fadeColor
+					p.shape.Refresh()
+				}
+
+				// 5. Cleanup: Remove objects from the canvas tree once animation completes
+				if v == 1.0 {
+					for _, p := range burst {
+						fireworkLayer.Remove(p.shape)
+					}
+					// Optional: if all bursts are done, you could remove fireworkLayer itself
+				}
+			})
+
+			anim.Start()
+		}(i)
+	}
 }
 
 func (d *Display) showHintModal() {
