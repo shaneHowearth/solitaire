@@ -96,7 +96,7 @@ func (tableau solitaire.Tableau, card solitaire.SuitedCard) bool {
 - [x] [Aces Square](https://en.wikipedia.org/wiki/Aces_Square_(solitaire))
 - [ ] [Aces Up](https://en.wikipedia.org/wiki/Aces_Up)
 - [x] [Acme](https://en.wikipedia.org/wiki/Acme_(solitaire))
-- [ ] [Addiction](https://en.wikipedia.org/wiki/Addiction_(solitaire))
+- [x] [Addiction](https://en.wikipedia.org/wiki/Addiction_(solitaire))
 - [x] [Agnes](https://en.wikipedia.org/wiki/Agnes_(card_game))
 - [ ] [Alaska](https://en.wikipedia.org/wiki/Alaska_(solitaire))
 - [ ] [Algerian](https://en.wikipedia.org/wiki/Algerian_(solitaire))

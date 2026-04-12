@@ -36,6 +36,7 @@ func main() {
 		&game.Klondike{},
 		&game.KlondikeVegas{},
 		&game.Accordian{},
+		&game.Addiction{},
 		&game.AcesAndKings{},
 		&game.AcesSquare{},
 		&game.AcesUp{},
