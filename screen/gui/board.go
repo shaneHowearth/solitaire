@@ -123,12 +123,29 @@ func (d *Display) CreateBoard(
 }
 
 func (d *Display) buildPile(cards []string, sType state.StackType, idx int, showCount int, baseCard string) fyne.CanvasObject {
+	// 1. Handle Empty Piles (Placeholders)
 	if len(cards) == 0 {
 		c := NewCardWidget(baseCard, sType, idx, d)
-		c.IsPlaceholder = true // Now valid because we updated the struct
+		c.IsPlaceholder = true
 		return container.NewVBox(c, layout.NewSpacer())
 	}
 
+	// 2. Handle Multi-Row Tableau (Foundation-style: Single card, no fan)
+	if d.tableauHeight > 1 && sType == state.StackTableau {
+		topFace := "--"
+		// If showCount allows it, show the actual face of the last card
+		if showCount == 0 || len(cards) > 0 {
+			topFace = cards[len(cards)-1]
+		}
+
+		cWidget := NewCardWidget(topFace, sType, idx, d)
+		cWidget.Resize(fyne.NewSize(float32(cardWidth), float32(cardHeight)))
+		// No Move() call needed, it defaults to (0,0)
+
+		return container.NewVBox(cWidget, layout.NewSpacer())
+	}
+
+	// 3. Handle Standard Fanned Tableau (Klondike-style) or other stacks (Waste/Talon)
 	cardContainer := container.NewWithoutLayout()
 	currentHeight := float32(cardHeight)
 
@@ -155,9 +172,7 @@ func (d *Display) buildPile(cards []string, sType state.StackType, idx int, show
 
 	spacer := canvas.NewRectangle(color.Transparent)
 	spacer.SetMinSize(fyne.NewSize(float32(cardWidth), currentHeight))
-
-	pileStack := container.NewStack(spacer, cardContainer)
-	return container.NewVBox(pileStack, layout.NewSpacer())
+	return container.NewVBox(container.NewStack(spacer, cardContainer), layout.NewSpacer())
 }
 
 func (d *Display) TableauPrint(idx int, value []string, showCount int) {
