@@ -78,6 +78,15 @@ func (d *Display) CreateBoard(
 	})
 	gameSelector.SetSelected(name)
 
+	// Redeal button - outside so that we can set it to default greyed out.
+	d.redealBtn = widget.NewButton("Redeal", func() {
+		if d.gameRedealCallback != nil {
+			d.gameRedealCallback()
+			d.RefreshAll() // Refresh immediately to catch state changes
+		}
+	})
+	d.redealBtn.Disable()
+
 	// Button bar.
 	btnBar := container.NewHBox(
 		layout.NewSpacer(),
@@ -95,6 +104,7 @@ func (d *Display) CreateBoard(
 				}
 			}
 		}),
+		d.redealBtn,
 		widget.NewButton("Undo", func() { d.gameUndoCallback() }),
 		widget.NewButton("Quit", func() { d.App.Quit() }),
 	)
@@ -224,6 +234,18 @@ func (d *Display) TalonPrint(value []string) {
 		d.talonBox.Add(newPile)
 	}
 	d.talonBox.Refresh()
+}
+
+// SetRedealStatus allows the controller to toggle the button state
+func (d *Display) SetRedealStatus(available bool) {
+	if d.redealBtn == nil {
+		return
+	}
+	if available {
+		d.redealBtn.Enable()
+	} else {
+		d.redealBtn.Disable()
+	}
 }
 
 func (d *Display) WastePrint(value []string) {

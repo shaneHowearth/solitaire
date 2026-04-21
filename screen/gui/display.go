@@ -65,6 +65,8 @@ type Display struct {
 	processingClick bool
 
 	foundationHints map[int]string
+
+	redealBtn *widget.Button
 }
 
 func New(variants []game.Variant) *Display {
