@@ -62,6 +62,8 @@ func (instance *Instance) updateDisplay() {
 	// Display the Talon.
 	instance.Display.TalonPrint(instance.State.Talon.Stock.Cards())
 
+	canRedeal := instance.State.Talon.Stock.HasRedealsRemaining()
+	instance.Display.SetRedealStatus(canRedeal)
 	// Display the Waste.
 	instance.Display.WastePrint(instance.State.Talon.Waste.Cards())
 }

@@ -116,13 +116,17 @@ func (stack *Stack) Cards() []string {
 // bunch. Used to check if there has been more redeals than the game specifies.
 // are allowed.
 func (stack *Stack) CanReceiveMore() bool {
-	if stack.Received < stack.MaxRedeals || stack.MaxRedeals == -1 {
+	if stack.HasRedealsRemaining() {
 		stack.Received++
 
 		return true
 	}
 
 	return false
+}
+
+func (stack *Stack) HasRedealsRemaining() bool {
+	return stack.Received < stack.MaxRedeals || stack.MaxRedeals == -1
 }
 
 func (stack *Stack) Shuffle() {

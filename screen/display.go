@@ -18,6 +18,7 @@ type Display interface {
 
 	// Game Redeal callback.
 	SetGameRedealCallback(callback func())
+	SetRedealStatus(available bool)
 
 	// Game Undo callback.
 	SetGameUndoCallback(callback func())
