@@ -5,45 +5,45 @@ import (
 )
 
 // Accordion - https://en.wikipedia.org/wiki/Accordion_(card_game).
-type Accordian struct{}
+type Accordion struct{}
 
 // Ensure that Accordion implements game.Variant.
-var _ Variant = (*Accordian)(nil)
+var _ Variant = (*Accordion)(nil)
 
 // Name - name of the variant.
-func (*Accordian) Name() string {
-	return "Accordian"
+func (*Accordion) Name() string {
+	return "Accordion"
 }
 
 // TableauGridSize - The size of the grid required by acme.
-func (*Accordian) TableauGridSize() (int, int) {
+func (*Accordion) TableauGridSize() (int, int) {
 	const (
-		accordianColumns = 13
-		accordianRows    = 4
+		accordionColumns = 13
+		accordionRows    = 4
 	)
 
-	return accordianRows, accordianColumns
+	return accordionRows, accordionColumns
 }
 
 // Decks - How many decks of cards are required to play acme.
-func (*Accordian) Decks() int {
+func (*Accordion) Decks() int {
 	return 1
 }
 
 // Reserves - how the reserves are defined.
-func (*Accordian) Reserves() []state.StackSpec {
+func (*Accordion) Reserves() []state.StackSpec {
 	// There are no reserves.
 	return []state.StackSpec{}
 }
 
 // Tableau - how the tableau are defined.
-func (accordian *Accordian) Tableau() []state.StackSpec {
+func (accordion *Accordion) Tableau() []state.StackSpec {
 	// There are 52 tableau, each has one card that is open.
 	tableau := make([]state.StackSpec, 0, state.RankCount*state.SuitCount)
 
 	for i := 0; i < state.RankCount*state.SuitCount; i++ {
 		t := state.StackSpec{
-			AddRule:   accordian.tableauRule,
+			AddRule:   accordion.tableauRule,
 			CardCount: [2]int{1, 1},
 			ShowCount: 1,
 		}
@@ -53,7 +53,7 @@ func (accordian *Accordian) Tableau() []state.StackSpec {
 	return tableau
 }
 
-func (*Accordian) tableauRule(tableau *state.Stack, _ state.SuitedCard) bool {
+func (*Accordion) tableauRule(tableau *state.Stack, _ state.SuitedCard) bool {
 	// Handle when the tableau is empty.
 	if tableau.Len() == 0 {
 		// Anything can be put onto an empty tableau.
@@ -65,13 +65,13 @@ func (*Accordian) tableauRule(tableau *state.Stack, _ state.SuitedCard) bool {
 }
 
 // Foundations - how the foundations are defined.
-func (*Accordian) Foundations() []state.StackSpec {
+func (*Accordion) Foundations() []state.StackSpec {
 	// There are no foundations.
 	return []state.StackSpec{}
 }
 
 // HowToPlay - Tell the player how to play the game.
-func (*Accordian) HowToPlay() []string {
+func (*Accordion) HowToPlay() []string {
 	//nolint:lll // Long line needed to preserve readability of game rules text.
 	lines := []string{
 		`The cards from the entire deck are spread out in a single line (displayed as 4 lines of 13).
@@ -88,14 +88,14 @@ func (*Accordian) HowToPlay() []string {
 }
 
 // MaxRedeals - how many redeals are allowed.
-func (*Accordian) MaxRedeals() int {
+func (*Accordion) MaxRedeals() int {
 	// Only one redeal is allowed.
 	return 1
 }
 
 // Move -.
-func (accordian *Accordian) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
-	if !accordian.checkMove(source, destination) {
+func (accordion *Accordion) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
+	if !accordion.checkMove(source, destination) {
 		return false
 	}
 	// Move the cards.
@@ -121,7 +121,7 @@ func (accordian *Accordian) Move(source, destination *state.Stack, _ []*state.Ta
 }
 
 // Compact.
-func (*Accordian) Compact(_, _ *state.Stack, tableau []*state.Tableau) {
+func (*Accordion) Compact(_, _ *state.Stack, tableau []*state.Tableau) {
 	// Move the card(s) to the left of an empty stack into the empty stack.
 	for readIdx := range tableau {
 		if tableau[readIdx].Len() == 0 {
@@ -161,25 +161,25 @@ func (*Accordian) Compact(_, _ *state.Stack, tableau []*state.Tableau) {
 }
 
 // Talon.
-func (*Accordian) Talon() bool {
+func (*Accordion) Talon() bool {
 	return false
 }
 
 // Redeal.
-func (*Accordian) Redeal(_ *state.Talon, _ []*state.Tableau) {}
+func (*Accordion) Redeal(_ *state.Talon, _ []*state.Tableau) {}
 
 // HasWon - How to tell if the game has been won.
-func (*Accordian) HasWon(tableau []*state.Tableau, _ []*state.Foundation) bool {
+func (*Accordion) HasWon(tableau []*state.Tableau, _ []*state.Foundation) bool {
 	// All the cards should have accumulated into the first tableau.
 	return tableau[0].Len() == state.RankCount*state.SuitCount
 }
 
 // FoundationBase.
-func (*Accordian) FoundationBase() bool {
+func (*Accordion) FoundationBase() bool {
 	return false
 }
 
-func (*Accordian) checkMove(source, destination *state.Stack) bool {
+func (*Accordion) checkMove(source, destination *state.Stack) bool {
 	// Nothing to move.
 	if source.Len() == 0 || destination.Len() == 0 {
 		return false
@@ -209,7 +209,7 @@ func (*Accordian) checkMove(source, destination *state.Stack) bool {
 }
 
 // AvailableMoves - return a list of the available moves.
-func (accordian *Accordian) AvailableMoves(
+func (accordion *Accordion) AvailableMoves(
 	tableau []state.Tableau,
 	_ []state.Foundation,
 	_ []state.Talon,
@@ -233,7 +233,7 @@ func (accordian *Accordian) AvailableMoves(
 			continue
 		}
 
-		if accordian.checkMove(tableau[checkOne].Stack, tableau[idx].Stack) {
+		if accordion.checkMove(tableau[checkOne].Stack, tableau[idx].Stack) {
 			sourceTop, _ := tableau[checkOne].Top()
 			moves = append(moves,
 				state.Move{
@@ -249,7 +249,7 @@ func (accordian *Accordian) AvailableMoves(
 			continue
 		}
 
-		if accordian.checkMove(tableau[checkThree].Stack, tableau[idx].Stack) {
+		if accordion.checkMove(tableau[checkThree].Stack, tableau[idx].Stack) {
 			sourceTop, _ := tableau[checkThree].Top()
 			moves = append(moves,
 				state.Move{

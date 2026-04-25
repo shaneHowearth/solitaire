@@ -35,7 +35,7 @@ func main() {
 	variants := []game.Variant{
 		&game.Klondike{},
 		&game.KlondikeVegas{},
-		&game.Accordian{},
+		&game.Accordion{},
 		&game.Addiction{},
 		&game.AcesAndKings{},
 		&game.AcesSquare{},
