@@ -42,6 +42,7 @@ func main() {
 		&game.AcesUp{},
 		&game.Acme{},
 		&game.Agnes{},
+		&game.Algerian{},
 		&game.Gaps{},
 		&game.Russian{},
 		&game.Yukon{},
