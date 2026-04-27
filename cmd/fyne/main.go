@@ -43,6 +43,7 @@ func main() {
 		&game.Acme{},
 		&game.Agnes{},
 		&game.Algerian{},
+		&game.AmericanToad{},
 		&game.Gaps{},
 		&game.Russian{},
 		&game.Yukon{},

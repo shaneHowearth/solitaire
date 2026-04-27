@@ -102,31 +102,65 @@ func (*Algerian) HowToPlay() []string {
 }
 
 func (a *Algerian) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
+	// Guard 1: No cards to move
 	card, err := source.Top()
 	if err != nil {
 		return false
 	}
 
-	// Logic for Foundation to Foundation transfer
-	if source.Type == state.StackFoundation && destination.Type == state.StackFoundation {
-		topDest, errDest := destination.Top()
-		if errDest == nil && card.Suit == topDest.Suit {
-			diff := int(card.Rank) - int(topDest.Rank)
-			if diff == 1 || diff == -1 {
-				c, _ := source.Deal()
-				destination.Add(c, true)
-				return true
-			}
-		}
+	// Guard 2: No manual moves back to the Stock
+	if destination.Type == state.StackTalon {
+		return false
 	}
 
-	// Use the destination's Rule (the bound func from your NewStack pattern)
+	// THE UNIVERSAL RULE:
+	// If the destination pile says the card is legal according to its own rules
+	// (Tableau rules, Foundation Up rules, or Foundation Down rules), allow it.
 	if destination.Rule(card) {
 		c, _ := source.Deal()
 		destination.Add(c, true)
 		return true
 	}
+
 	return false
+
+	// // If the destination is the Stock, we must block it.
+	// // Players should never manually move cards back to the Stock in Algerian.
+	// if destination.Type == state.StackTalon {
+	// 	return false
+	// }
+
+	// card, err := source.Top()
+	// if err != nil {
+	// 	return false
+	// }
+
+	// // Logic for Foundation to Foundation transfer
+	// if source.Type == state.StackFoundation && destination.Type == state.StackFoundation {
+	// 	// Only allow the transfer if the destination's Rule (Up or Down) accepts it
+	// 	if destination.Rule(card) {
+	// 		c, _ := source.Deal()
+	// 		destination.Add(c, true)
+	// 		return true
+	// 	}
+	// 	// topDest, errDest := destination.Top()
+	// 	// if errDest == nil && card.Suit == topDest.Suit {
+	// 	// 	diff := int(card.Rank) - int(topDest.Rank)
+	// 	// 	if diff == 1 || diff == -1 {
+	// 	// 		c, _ := source.Deal()
+	// 	// 		destination.Add(c, true)
+	// 	// 		return true
+	// 	// 	}
+	// 	// }
+	// }
+
+	// // Use the destination's Rule (the bound func from your NewStack pattern)
+	// if destination.Rule(card) {
+	// 	c, _ := source.Deal()
+	// 	destination.Add(c, true)
+	// 	return true
+	// }
+	// return false
 }
 
 func (*Algerian) Compact(_, _ *state.Stack, _ []*state.Tableau) {}
@@ -161,6 +195,10 @@ func (a *Algerian) AvailableMoves(
 
 		// 1. Check Foundation-to-Foundation transfer (special Algerian rule)
 		if srcStack.Type == state.StackFoundation && destStack.Type == state.StackFoundation {
+			if destStack.Len() == 0 && srcStack.Len() <= 1 {
+				return
+			}
+
 			topDest, errDest := destStack.Top()
 			if errDest == nil && card.Suit == topDest.Suit {
 				diff := int(card.Rank) - int(topDest.Rank)
@@ -176,6 +214,11 @@ func (a *Algerian) AvailableMoves(
 			}
 		}
 
+		if srcStack.Type == state.StackTableau && destStack.Type == state.StackTableau {
+			if destStack.Len() == 0 && srcStack.Len() <= 1 {
+				return
+			}
+		}
 		// 2. Check standard rules via the destination's bound Rule
 		if destStack.Rule(card) {
 			moves = append(moves, state.Move{
