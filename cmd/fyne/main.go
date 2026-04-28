@@ -46,6 +46,7 @@ func main() {
 		&game.AmericanToad{},
 		&game.Gaps{},
 		&game.Russian{},
+		&game.SirTommy{},
 		&game.Yukon{},
 	}
 

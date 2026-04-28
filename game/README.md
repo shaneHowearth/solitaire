@@ -372,7 +372,7 @@ func (tableau solitaire.Tableau, card solitaire.SuitedCard) bool {
 - [ ] [Shamrocks]()
 - [ ] [Simple Simon]()
 - [ ] [Simplicity]()
-- [ ] [Sir Tommy]()
+- [x] [Sir Tommy]()
 - [ ] [Six By Six]()
 - [ ] [Sixes and Sevens]()
 - [ ] [Sixty Thieves]()
