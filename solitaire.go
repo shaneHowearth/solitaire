@@ -139,23 +139,7 @@ func (instance *Instance) onComponentSelected(
 }
 
 func (instance *Instance) undo() {
-	// for i := range instance.State.Foundations {
-	// 	log.Printf("Foundation[%d] %#v", i, instance.State.Foundations[i].Stack.Cards())
-	// }
-
-	// for i := range instance.State.Tableau {
-	// 	log.Printf("Tableau[%d] %#v", i, instance.State.Tableau[i].Stack.Cards())
-	// }
-
 	instance.History.Undo(&instance.State)
-
-	// for i := range instance.State.Foundations {
-	// 	log.Printf("Foundation[%d] %#v", i, instance.State.Foundations[i].Stack.Cards())
-	// }
-
-	// for i := range instance.State.Tableau {
-	// 	log.Printf("Tableau[%d] %#v", i, instance.State.Tableau[i].Stack.Cards())
-	// }
 
 	instance.updateDisplay()
 }
@@ -234,31 +218,24 @@ func (instance *Instance) dealCards() {
 	if instance.Game.FoundationBase() {
 		card := instance.State.Deck.Deal()
 
-		toChange := 99
+		// Determine which pile the first card actually lands on based on suit
+		toChange := int(card.Suit)
 
-		switch card.Suit {
-		case state.Hearts:
-			toChange = 0
-		case state.Diamonds:
-			toChange = 1
-		case state.Clubs:
-			toChange = 2
-		case state.Spades:
-			toChange = 3
-		default:
+		// Loop through ALL foundations (handles 4 for Agnes, 8 for American Toad)
+		for i := 0; i < len(instance.State.Foundations); i++ {
+			// Calculate suit for this specific foundation (0=H, 1=D, 2=C, 3=S, 4=H...)
+			suit := state.Suit(i % 4)
+			suitedBase := state.SuitedCard{Rank: card.Rank, Suit: suit}
+
+			// Set the base on both the Foundation and the underlying Stack
+			instance.State.Foundations[i].Base = suitedBase
+			instance.State.Foundations[i].Stack.Base = suitedBase
 		}
 
+		// Add the starter card to the correct pile
 		backUpRule := instance.State.Foundations[toChange].Stack.Rule
 		instance.State.Foundations[toChange].Stack.Rule = func(state.SuitedCard) bool { return true }
 		instance.State.Foundations[toChange].Stack.Add(card, true)
-		instance.State.Foundations[0].Base = state.SuitedCard{Rank: card.Rank, Suit: state.Hearts}
-		instance.State.Foundations[1].Base = state.SuitedCard{Rank: card.Rank, Suit: state.Diamonds}
-		instance.State.Foundations[2].Base = state.SuitedCard{Rank: card.Rank, Suit: state.Clubs}
-		instance.State.Foundations[3].Base = state.SuitedCard{Rank: card.Rank, Suit: state.Spades}
-		instance.State.Foundations[0].Stack.Base = state.SuitedCard{Rank: card.Rank, Suit: state.Hearts}
-		instance.State.Foundations[1].Stack.Base = state.SuitedCard{Rank: card.Rank, Suit: state.Diamonds}
-		instance.State.Foundations[2].Stack.Base = state.SuitedCard{Rank: card.Rank, Suit: state.Clubs}
-		instance.State.Foundations[3].Stack.Base = state.SuitedCard{Rank: card.Rank, Suit: state.Spades}
 		instance.State.Foundations[toChange].Stack.Rule = backUpRule
 	}
 

@@ -58,13 +58,11 @@ func (a *AmericanToad) tableauRule(s *state.Stack, c state.SuitedCard) bool {
 	}
 
 	// Tableau builds DOWN in SUIT with wrapping.
-	// If top is 1 (Ace), next must be 13 (King).
-	prevRank := int(top.Rank) - 1
-	if prevRank < 1 {
-		prevRank = 13
+	if top.Rank == state.Ace && c.Rank == state.King {
+		return true
 	}
 
-	return int(c.Rank) == prevRank
+	return int(top.Rank)-int(c.Rank) == 1
 }
 
 func (a *AmericanToad) Foundations() []state.StackSpec {
@@ -96,12 +94,13 @@ func (a *AmericanToad) foundationRule(s *state.Stack, c state.SuitedCard) bool {
 		return false
 	}
 
-	nextRank := int(top.Rank) + 1
-	if nextRank > 13 {
-		nextRank = 1
+	// Wrap: Ace onto King
+	if top.Rank == state.King && c.Rank == state.Ace {
+		return true
 	}
 
-	return int(c.Rank) == nextRank
+	// Build up: card (e.g., Two/1) - top (e.g., Ace/0) == 1
+	return int(c.Rank)-int(top.Rank) == 1
 }
 
 func (*AmericanToad) HowToPlay() []string {
