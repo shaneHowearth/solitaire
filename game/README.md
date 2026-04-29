@@ -198,7 +198,7 @@ func (tableau solitaire.Tableau, card solitaire.SuitedCard) bool {
 - [ ] [Fifteens](https://en.wikipedia.org/wiki/Fifteens_(solitaire))
 - [ ] [Five Piles](https://en.wikipedia.org/wiki/Five_Piles_(solitaire))
 - [ ] [Florentine Patience](https://en.wikipedia.org/wiki/Florentine_Patience_(solitaire))
-- [ ] [Flower Garden](https://en.wikipedia.org/wiki/Flower_Garden_(solitaire))
+- [x] [Flower Garden](https://en.wikipedia.org/wiki/Flower_Garden_(solitaire))
 - [ ] [Fly](https://en.wikipedia.org/wiki/Fly_(solitaire))
 - [ ] [Following](https://en.wikipedia.org/wiki/Following_(solitaire))
 - [ ] [Fortress](https://en.wikipedia.org/wiki/Fortress_(solitaire))

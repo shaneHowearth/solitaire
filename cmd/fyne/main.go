@@ -44,6 +44,7 @@ func main() {
 		&game.Agnes{},
 		&game.Algerian{},
 		&game.AmericanToad{},
+		&game.FlowerGarden{},
 		&game.Gaps{},
 		&game.Russian{},
 		&game.SirTommy{},
