@@ -24,8 +24,6 @@ func (d *Display) CreateBoard(
 	d.wasteBox = container.NewHBox()
 	d.foundationBox = container.NewHBox()
 	d.reserveBox = container.NewHBox()
-
-	// Use a VBox to hold multiple rows of tableaus
 	d.tableauBox = container.NewVBox()
 
 	// 1. Initialize Talon and Waste
@@ -45,12 +43,6 @@ func (d *Display) CreateBoard(
 	// 4. Build Tableau Rows
 	for h := 0; h < tableauHeight; h++ {
 		row := container.NewHBox()
-
-		// Per TUI logic: Only add Reserves to the first row
-		if h == 0 && reserveCount > 0 {
-			row.Add(d.reserveBox)
-		}
-
 		for w := 0; w < tableauWidth; w++ {
 			tableauIdx := h*tableauWidth + w
 			row.Add(d.buildPile(nil, state.StackTableau, tableauIdx, 0, ""))
@@ -58,7 +50,7 @@ func (d *Display) CreateBoard(
 		d.tableauBox.Add(row)
 	}
 
-	// UI Component Setup (Select, Buttons, Header)
+	// 5. UI Component Setup (Select, Buttons)
 	var gameNames []string
 	for _, g := range d.games {
 		gameNames = append(gameNames, g.Name())
@@ -78,21 +70,17 @@ func (d *Display) CreateBoard(
 	})
 	gameSelector.SetSelected(name)
 
-	// Redeal button - outside so that we can set it to default greyed out.
 	d.redealBtn = widget.NewButton("Redeal", func() {
 		if d.gameRedealCallback != nil {
 			d.gameRedealCallback()
-			d.RefreshAll() // Refresh immediately to catch state changes
+			d.RefreshAll()
 		}
 	})
 	d.redealBtn.Disable()
 
-	// Button bar.
 	btnBar := container.NewHBox(
 		layout.NewSpacer(),
-		widget.NewButton("How to Play", func() {
-			d.showHowToModal(name, howTo) // Trigger the new modal
-		}),
+		widget.NewButton("How to Play", func() { d.showHowToModal(name, howTo) }),
 		widget.NewButton("Hint", func() { d.showHintModal() }),
 		widget.NewButton("New", func() {
 			d.gameRedealCallback()
@@ -109,26 +97,38 @@ func (d *Display) CreateBoard(
 		widget.NewButton("Quit", func() { d.App.Quit() }),
 	)
 
+	// --- FIX: Header Declaration ---
 	header := container.NewVBox(
 		container.NewBorder(nil, nil, gameSelector, btnBar),
 	)
 
 	d.foundationHints = make(map[int]string)
 
-	// Layout the Top Area (Talon, Waste, Foundations)
+	// 6. Layout Top Area
 	topArea := container.NewBorder(nil, nil, container.NewHBox(d.talonBox, d.wasteBox), nil, d.foundationBox)
 
-	// Create a single scrollable area for the tableau.
-	// We use container.NewScroll which handles both directions more gracefully.
-	tableauScroll := container.NewScroll(d.tableauBox)
+	// 7. Delineation Logic for Reserves
+	var mainBoard fyne.CanvasObject
+	if reserveCount > 0 {
+		reserveSection := container.NewVBox(
+			widget.NewLabelWithStyle("RESERVES", fyne.TextAlignLeading, fyne.TextStyle{Italic: true}),
+			d.reserveBox,
+			canvas.NewLine(color.RGBA{R: 255, G: 255, B: 255, A: 50}),
+		)
+		mainBoard = container.NewVBox(container.NewPadded(reserveSection), d.tableauBox)
+	} else {
+		mainBoard = d.tableauBox
+	}
 
-	// Use NewBorder instead of NewVBox for the Tabletop.
-	// This forces the 'center' object (the scroll area) to expand and fill the window.
+	tableauScroll := container.NewScroll(mainBoard)
+
+	// Construct Tabletop
 	d.Tabletop = container.NewBorder(topArea, nil, nil, nil, tableauScroll)
 
 	bg := canvas.NewRectangle(d.defaultBgColor)
 	d.CardLayer = container.NewStack(bg, d.Tabletop)
 
+	// Set the Window Content
 	d.Window.SetContent(container.NewBorder(header, nil, nil, nil, d.CardLayer))
 }
 
@@ -188,16 +188,10 @@ func (d *Display) buildPile(cards []string, sType state.StackType, idx int, show
 func (d *Display) TableauPrint(idx int, value []string, showCount int) {
 	newPile := d.buildPile(value, state.StackTableau, idx, showCount, "")
 
-	// Map the flat index to row/column
 	rowIdx := idx / d.tableauWidth
 	colInRowIdx := idx % d.tableauWidth
 
-	// Adjust for Reserve presence in the first row's layout
-	if rowIdx == 0 && len(d.reserveBox.Objects) > 0 {
-		// In row 0, index 0 is the reserveBox, so tableau columns start at index 1
-		colInRowIdx++
-	}
-
+	// Simpler logic: rowIdx now directly matches the VBox index
 	if rowIdx < len(d.tableauBox.Objects) {
 		if row, ok := d.tableauBox.Objects[rowIdx].(*fyne.Container); ok {
 			if colInRowIdx < len(row.Objects) {
