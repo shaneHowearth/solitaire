@@ -430,7 +430,7 @@ func (tableau solitaire.Tableau, card solitaire.SuitedCard) bool {
 - [ ] [Watch]()
 - [ ] [Weavers]()
 - [ ] [Westcliff]()
-- [ ] [Whitehead]()
+- [x] [Whitehead]()
 - [ ] [Wildflower]()
 - [ ] [Will o' the Wisp]()
 - [ ] [Windmill]()
