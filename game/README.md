@@ -184,7 +184,7 @@ func (tableau solitaire.Tableau, card solitaire.SuitedCard) bool {
 - [ ] [Duchess](https://en.wikipedia.org/wiki/Duchess_(solitaire))
 ### E
 - [ ] [Eagle Wing](https://en.wikipedia.org/wiki/Eagle_Wing)
-- [ ] [Easthaven](https://en.wikipedia.org/wiki/Easthaven_(solitaire))
+- [x] [Easthaven](https://en.wikipedia.org/wiki/Easthaven_(solitaire))
 - [ ] [Eight Cards](https://en.wikipedia.org/wiki/Eight_Cards)
 - [ ] [Eight Off](https://en.wikipedia.org/wiki/Eight_Off)
 - [ ] [Eighteens](https://en.wikipedia.org/wiki/Eighteens_(solitaire))
@@ -429,7 +429,8 @@ func (tableau solitaire.Tableau, card solitaire.SuitedCard) bool {
 - [ ] [Wasp]()
 - [ ] [Watch]()
 - [ ] [Weavers]()
-- [ ] [Westcliff]()
+- [x] [Westcliff (American)](https://en.wikipedia.org/wiki/Westcliff_(card_game))
+- [x] [Westcliff (Classic)](https://en.wikipedia.org/wiki/Westcliff_(card_game))
 - [x] [Whitehead]()
 - [ ] [Wildflower]()
 - [ ] [Will o' the Wisp]()

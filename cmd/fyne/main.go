@@ -44,10 +44,13 @@ func main() {
 		&game.Agnes{},
 		&game.Algerian{},
 		&game.AmericanToad{},
+		&game.Easthaven{},
 		&game.FlowerGarden{},
 		&game.Gaps{},
 		&game.Russian{},
 		&game.SirTommy{},
+		&game.WestcliffAmerican{},
+		&game.WestcliffClassic{},
 		&game.Whitehead{},
 		&game.Yukon{},
 	}
