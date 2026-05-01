@@ -2,6 +2,7 @@ package gui
 
 import (
 	"image/color"
+	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -50,25 +51,12 @@ func (d *Display) CreateBoard(
 		d.tableauBox.Add(row)
 	}
 
-	// 5. UI Component Setup (Select, Buttons)
-	var gameNames []string
-	for _, g := range d.games {
-		gameNames = append(gameNames, g.Name())
-	}
+	// --- 5. UI Component Setup (Game Library & Buttons) ---
 
-	gameSelector := widget.NewSelect(gameNames, func(selected string) {
-		if selected == name {
-			return
-		}
-		for _, g := range d.games {
-			if g.Name() == selected {
-				d.Selected = g
-				d.gameSelectedCallback(g)
-				return
-			}
-		}
+	// The Library button replaces the old unwieldy dropdown
+	gameLibraryBtn := widget.NewButton("Change Game", func() {
+		d.showGamePicker()
 	})
-	gameSelector.SetSelected(name)
 
 	d.redealBtn = widget.NewButton("Redeal", func() {
 		if d.gameRedealCallback != nil {
@@ -97,9 +85,13 @@ func (d *Display) CreateBoard(
 		widget.NewButton("Quit", func() { d.App.Quit() }),
 	)
 
-	// --- FIX: Header Declaration ---
+	// Initialize the dynamic title label
+	d.titleLabel = widget.NewLabelWithStyle("Playing "+name, fyne.TextAlignCenter, fyne.TextStyle{Bold: true, Italic: true})
+
+	// Layout the header with Library on left and Actions on right
 	header := container.NewVBox(
-		container.NewBorder(nil, nil, gameSelector, btnBar),
+		container.NewBorder(nil, nil, gameLibraryBtn, btnBar, d.titleLabel),
+		canvas.NewLine(color.RGBA{R: 255, G: 255, B: 255, A: 50}), // Subtle divider
 	)
 
 	d.foundationHints = make(map[int]string)
@@ -130,6 +122,55 @@ func (d *Display) CreateBoard(
 
 	// Set the Window Content
 	d.Window.SetContent(container.NewBorder(header, nil, nil, nil, d.CardLayer))
+}
+
+func (d *Display) switchToGame(name string) {
+	for _, g := range d.games {
+		if g.Name() == name {
+			// 1. Update the metadata and persistence
+			d.recordGamePlayed(name)
+			d.Selected = g
+
+			if d.titleLabel != nil {
+				d.titleLabel.SetText("Playing " + name)
+			}
+
+			// 2. CRITICAL: Clear the existing UI objects
+			d.ClearBoard()
+
+			// 3. TRIGGER THE ENGINE
+			// This is the bridge to your main.go or controller.
+			// It calls the variant's Setup() to generate the new deck/piles.
+			if d.gameSelectedCallback != nil {
+				d.gameSelectedCallback(g)
+			}
+
+			// 4. Refresh the visuals
+			d.RefreshAll()
+			return
+		}
+	}
+}
+
+func (d *Display) recordGamePlayed(name string) {
+	p := d.App.Preferences()
+	recent := p.StringWithFallback("recent_games", "")
+
+	var games []string
+	if recent != "" {
+		games = strings.Split(recent, ",")
+	}
+
+	// Move current game to the front
+	newRecent := []string{name}
+	for _, g := range games {
+		// Only add if it's not the current game AND not an empty string
+		if g != name && g != "" && len(newRecent) < 5 {
+			newRecent = append(newRecent, g)
+		}
+	}
+
+	p.SetString("recent_games", strings.Join(newRecent, ","))
 }
 
 func (d *Display) buildPile(cards []string, sType state.StackType, idx int, showCount int, baseCard string) fyne.CanvasObject {

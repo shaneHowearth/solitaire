@@ -9,10 +9,10 @@ import (
 	"time"
 
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"github.com/shanehowearth/solitaire/game"
 	"github.com/shanehowearth/solitaire/state"
@@ -234,6 +234,93 @@ func (d *Display) GetSelectedComponent() (state.StackType, int) {
 
 func (d *Display) ShowWinnerModal(gameName string, score int) {
 	d.LaunchFireworks()
+}
+
+func (d *Display) showGamePicker() {
+	var pickerDialog dialog.Dialog
+
+	// 1. Load Recently Played from Preferences
+	prefs := d.App.Preferences()
+	recentStr := prefs.StringWithFallback("recent_games", "")
+	recentBox := container.NewHBox()
+
+	if recentStr != "" {
+		for _, rName := range strings.Split(recentStr, ",") {
+			name := rName
+			btn := widget.NewButtonWithIcon(name, theme.HistoryIcon(), func() {
+				d.switchToGame(name)
+				pickerDialog.Hide()
+			})
+			recentBox.Add(btn)
+		}
+	} else {
+		recentBox.Add(widget.NewLabel("No recent games played yet."))
+	}
+
+	// 2. Build Categorized Accordion
+	catGroups := make(map[game.Category][]game.Variant)
+	for _, g := range d.games {
+		catGroups[g.Category()] = append(catGroups[g.Category()], g)
+	}
+
+	accordion := widget.NewAccordion()
+	displayOrder := []game.Category{
+		game.CatKlondike,
+		game.CatSpider,
+		game.CatFoundation,
+		game.CatPairing,
+		game.CatSpecialty,
+	}
+
+	for _, cat := range displayOrder {
+		games, exists := catGroups[cat]
+		if !exists {
+			continue
+		}
+
+		catContent := container.NewVBox()
+		for _, g := range games {
+			selectedGame := g // Capture for closure
+
+			// UI Elements for the row
+			nameLabel := widget.NewLabelWithStyle(selectedGame.Name(), fyne.TextAlignLeading, fyne.TextStyle{Bold: true})
+			descLabel := widget.NewLabel(selectedGame.Description())
+			descLabel.Wrapping = fyne.TextWrapWord
+
+			// Invisible-ish button to act as the click surface
+			selectBtn := widget.NewButton("", func() {
+				d.switchToGame(selectedGame.Name())
+				pickerDialog.Hide()
+			})
+
+			// Stack the labels ON TOP of the button
+			// The button fills the stack, making the whole area clickable
+			clickableRow := container.NewStack(
+				selectBtn,
+				container.NewPadded(container.NewVBox(nameLabel, descLabel)),
+			)
+
+			catContent.Add(clickableRow)
+			catContent.Add(widget.NewSeparator())
+		}
+		accordion.Append(widget.NewAccordionItem(cat.String(), catContent))
+	}
+
+	// 3. Assemble the Dashboard
+	scrollArea := container.NewVScroll(accordion)
+	scrollArea.SetMinSize(fyne.NewSize(600, 450))
+
+	dashboard := container.NewVBox(
+		widget.NewLabelWithStyle("QUICK FIND", fyne.TextAlignLeading, fyne.TextStyle{Italic: true}),
+		container.NewHScroll(recentBox),
+		widget.NewSeparator(),
+		widget.NewLabelWithStyle("GAME LIBRARY", fyne.TextAlignLeading, fyne.TextStyle{Italic: true}),
+		scrollArea,
+	)
+
+	// 4. Create and Show the Dialog
+	pickerDialog = dialog.NewCustom("Select Your Game", "Cancel", dashboard, d.Window)
+	pickerDialog.Show()
 }
 
 type particle struct {
