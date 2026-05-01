@@ -14,6 +14,13 @@ var _ Variant = (*AcesAndKings)(nil)
 func (*AcesAndKings) Name() string {
 	return "Aces and Kings"
 }
+func (*AcesAndKings) Category() Category {
+	return CatFoundation
+}
+
+func (*AcesAndKings) Description() string {
+	return "A challenging two-deck game with two sets of foundations: one building up from Ace, the other down from King. Tableau piles can only hold one card at a time."
+}
 
 // TableauGridSize - The size of the grid required by Aces and Kings.
 func (*AcesAndKings) TableauGridSize() (int, int) {

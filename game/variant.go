@@ -7,6 +7,8 @@ type Variant interface {
 	// Name of the Variant.
 	// This name is what is displayed to the user.
 	Name() string
+	Category() Category
+	Description() string
 
 	// Decks - How many decks of cards are required to play the variant.
 	Decks() int

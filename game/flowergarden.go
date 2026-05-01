@@ -13,6 +13,14 @@ func (*FlowerGarden) Name() string {
 	return "Flower Garden"
 }
 
+func (*FlowerGarden) Category() Category {
+	return CatSpecialty
+}
+
+func (*FlowerGarden) Description() string {
+	return "An open-information game where all cards are visible from the start. Use the 16-card 'bouquet' (reserve) to build long sequences in the garden."
+}
+
 func (*FlowerGarden) TableauGridSize() (int, int) {
 	// 6 columns (flower beds)
 	return 1, 6

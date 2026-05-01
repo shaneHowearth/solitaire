@@ -15,6 +15,14 @@ func (*Russian) Name() string {
 	return "Russian"
 }
 
+func (*Russian) Category() Category {
+	return CatSpider
+}
+
+func (*Russian) Description() string {
+	return "A notoriously difficult variant of Yukon. You must build down by the same suit, making it much harder to clear the tableau."
+}
+
 // TableauGridSize - The size of the grid required by klondike.
 func (*Russian) TableauGridSize() (int, int) {
 	const (

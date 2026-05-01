@@ -15,6 +15,14 @@ func (*Klondike) Name() string {
 	return "Klondike"
 }
 
+func (*Klondike) Category() Category {
+	return CatKlondike
+}
+
+func (*Klondike) Description() string {
+	return "The world's most famous solitaire. Build sequences of alternating colors and move them to the foundations to win."
+}
+
 // TableauGridSize - The size of the grid required by klondike.
 func (*Klondike) TableauGridSize() (int, int) {
 	const (

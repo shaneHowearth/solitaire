@@ -15,6 +15,14 @@ func (*Addiction) Name() string {
 	return "Addiction"
 }
 
+func (*Addiction) Category() Category {
+	return CatSpecialty
+}
+
+func (*Addiction) Description() string {
+	return "A high-speed rearrangement game. Shift cards into empty gaps to create sequential rows by suit before you run out of reshuffles."
+}
+
 const addictionColumns = 13
 const addictionRows = 4
 

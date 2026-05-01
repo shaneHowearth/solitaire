@@ -13,6 +13,14 @@ func (*Whitehead) Name() string {
 	return "Whitehead"
 }
 
+func (*Whitehead) Category() Category {
+	return CatKlondike
+}
+
+func (*Whitehead) Description() string {
+	return "A Klondike variant where all cards are dealt face up. You build down by suit color (Red on Red, Black on Black) and can move sequences of the same suit."
+}
+
 func (*Whitehead) TableauGridSize() (int, int) {
 	return 1, 7
 }

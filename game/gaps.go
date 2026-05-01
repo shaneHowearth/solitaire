@@ -15,6 +15,14 @@ func (*Gaps) Name() string {
 	return "Gaps"
 }
 
+func (*Gaps) Category() Category {
+	return CatSpecialty
+}
+
+func (*Gaps) Description() string {
+	return "A logic-heavy puzzle. Move cards into empty spaces to create four rows of sequential suits. Careful planning is required to avoid deadlocking the rows."
+}
+
 const gapsColumns = 13
 const gapsRows = 4
 

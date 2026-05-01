@@ -15,6 +15,14 @@ func (*AmericanToad) Name() string {
 	return "American Toad"
 }
 
+func (*AmericanToad) Category() Category {
+	return CatKlondike
+}
+
+func (*AmericanToad) Description() string {
+	return "A challenging Canfield variant using two decks. It features a large reserve pile and foundations that must start with a randomly dealt rank."
+}
+
 func (*AmericanToad) TableauGridSize() (int, int) {
 	return 1, 8
 }

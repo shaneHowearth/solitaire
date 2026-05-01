@@ -8,7 +8,16 @@ type Easthaven struct{}
 
 var _ Variant = (*Easthaven)(nil)
 
-func (*Easthaven) Name() string                { return "Easthaven" }
+func (*Easthaven) Name() string { return "Easthaven" }
+
+func (*Easthaven) Category() Category {
+	return CatKlondike
+}
+
+func (*Easthaven) Description() string {
+	return "A blend of Klondike and Spider. Dealing from the stock adds one card to each tableau pile, creating a unique challenge in uncovering hidden cards."
+}
+
 func (*Easthaven) Decks() int                  { return 1 }
 func (*Easthaven) TableauGridSize() (int, int) { return 1, 7 }
 func (*Easthaven) Reserves() []state.StackSpec { return []state.StackSpec{} }

@@ -15,6 +15,14 @@ func (*Accordion) Name() string {
 	return "Accordion"
 }
 
+func (*Accordion) Category() Category {
+	return CatSpecialty
+}
+
+func (*Accordion) Description() string {
+	return "A unique one-row game where you stack cards or piles on top of neighbors if they match suit or rank."
+}
+
 // TableauGridSize - The size of the grid required by acme.
 func (*Accordion) TableauGridSize() (int, int) {
 	const (

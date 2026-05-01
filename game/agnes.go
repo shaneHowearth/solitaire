@@ -15,6 +15,14 @@ func (*Agnes) Name() string {
 	return "Agnes"
 }
 
+func (*Agnes) Category() Category {
+	return CatKlondike
+}
+
+func (*Agnes) Description() string {
+	return "A Klondike relative where the foundation starting rank is determined by a random card, and the stock is dealt to a reserve."
+}
+
 // TableauGridSize - The size of the grid required by Agnes.
 func (*Agnes) TableauGridSize() (int, int) {
 	const height = 1

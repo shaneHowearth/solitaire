@@ -8,7 +8,16 @@ type WestcliffAmerican struct{}
 
 var _ Variant = (*WestcliffAmerican)(nil)
 
-func (*WestcliffAmerican) Name() string                { return "Westcliff (American)" }
+func (*WestcliffAmerican) Name() string { return "Westcliff (American)" }
+
+func (*WestcliffAmerican) Category() Category {
+	return CatKlondike
+}
+
+func (*WestcliffAmerican) Description() string {
+	return "A broader version of Klondike with ten tableau columns, offering more opportunities for movement and sequence building."
+}
+
 func (*WestcliffAmerican) Decks() int                  { return 1 }
 func (*WestcliffAmerican) TableauGridSize() (int, int) { return 1, 10 }
 func (*WestcliffAmerican) Reserves() []state.StackSpec { return []state.StackSpec{} }

@@ -15,6 +15,14 @@ func (*Yukon) Name() string {
 	return "Yukon"
 }
 
+func (*Yukon) Category() Category {
+	return CatSpider
+}
+
+func (*Yukon) Description() string {
+	return "A cult classic with no Stock pile. All cards are dealt to the Tableau. You can move any face-up group of cards, regardless of whether they are in sequence."
+}
+
 // TableauGridSize - The size of the grid required by klondike.
 func (*Yukon) TableauGridSize() (int, int) {
 	const (

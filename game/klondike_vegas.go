@@ -13,6 +13,14 @@ func (*KlondikeVegas) Name() string {
 	return "Klondike (Vegas style)"
 }
 
+func (*KlondikeVegas) Category() Category {
+	return CatKlondike
+}
+
+func (*KlondikeVegas) Description() string {
+	return "A high-stakes variation of the classic. You pay for the deck upfront and earn back 'winnings' for every card moved to the foundations."
+}
+
 // Reserves - how the reserves are defined.
 // Note that there are no reserves required in a game of KlondikeVegas.
 func (*KlondikeVegas) Reserves() []state.StackSpec {

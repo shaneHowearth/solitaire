@@ -13,6 +13,14 @@ func (*SirTommy) Name() string {
 	return "Sir Tommy"
 }
 
+func (*SirTommy) Category() Category {
+	return CatFoundation
+}
+
+func (*SirTommy) Description() string {
+	return "The ancestor of many modern games. There is no building on the tableau; you must use the four discard piles to organize cards for the foundations."
+}
+
 func (*SirTommy) TableauGridSize() (int, int) {
 	// 4 wastepiles and 4 foundations
 	return 1, 4

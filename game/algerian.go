@@ -13,6 +13,14 @@ func (*Algerian) Name() string {
 	return "Algerian"
 }
 
+func (*Algerian) Category() Category {
+	return CatFoundation
+}
+
+func (*Algerian) Description() string {
+	return "A complex two-deck game. Build foundations up from Ace and down from King. Tableau piles can be built both up and down by suit."
+}
+
 func (*Algerian) TableauGridSize() (int, int) {
 	return 1, 8
 }

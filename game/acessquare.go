@@ -15,6 +15,14 @@ func (*AcesSquare) Name() string {
 	return "Aces Square"
 }
 
+func (*AcesSquare) Category() Category {
+	return CatPairing
+}
+
+func (*AcesSquare) Description() string {
+	return "A challenging two-deck game with two sets of foundations: one building up from Ace, the other down from King. Tableau piles can only hold one card at a time."
+}
+
 const numAcesSquareRows = 5
 const numAcesSquareCols = 5
 

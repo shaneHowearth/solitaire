@@ -8,7 +8,16 @@ type WestcliffClassic struct{}
 
 var _ Variant = (*WestcliffClassic)(nil)
 
-func (*WestcliffClassic) Name() string                { return "Westcliff (Classic)" }
+func (*WestcliffClassic) Name() string { return "Westcliff (Classic)" }
+
+func (*WestcliffClassic) Category() Category {
+	return CatKlondike
+}
+
+func (*WestcliffClassic) Description() string {
+	return "The traditional Westcliff ruleset. Deal from the stock one by one to navigate through the deck and clear the tableau."
+}
+
 func (*WestcliffClassic) Decks() int                  { return 1 }
 func (*WestcliffClassic) TableauGridSize() (int, int) { return 1, 7 }
 func (*WestcliffClassic) Reserves() []state.StackSpec { return []state.StackSpec{} }

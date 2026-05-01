@@ -15,6 +15,14 @@ func (*Acme) Name() string {
 	return "Acme"
 }
 
+func (*Acme) Category() Category {
+	return CatFoundation
+}
+
+func (*Acme) Description() string {
+	return "A conservative builder where you deal cards one by one. You can build on the foundations, but once a card is placed in a tableau pile, it cannot be moved."
+}
+
 // TableauGridSize - The size of the grid required by acme.
 func (*Acme) TableauGridSize() (int, int) {
 	const (

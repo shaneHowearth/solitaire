@@ -15,6 +15,14 @@ func (*AcesUp) Name() string {
 	return "Aces Up"
 }
 
+func (*AcesUp) Category() Category {
+	return CatPairing // Or CatSpecialty, but since it involves rank comparison, Pairing fits well.
+}
+
+func (*AcesUp) Description() string {
+	return "A fast-paced elimination game. If two top cards have the same suit, discard the one with the lower rank. Try to leave only the four Aces."
+}
+
 // TableauGridSize - The size of the grid required by Aces Up.
 func (*AcesUp) TableauGridSize() (int, int) {
 	const (
