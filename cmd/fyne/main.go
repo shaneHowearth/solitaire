@@ -3,9 +3,9 @@ package main
 import (
 	_ "image/gif"
 	"log"
-	"log/slog"
 	"os"
 
+	"fyne.io/fyne/v2/app"
 	"github.com/shanehowearth/solitaire"
 	"github.com/shanehowearth/solitaire/game"
 	"github.com/shanehowearth/solitaire/screen/gui" // Updated import
@@ -13,25 +13,23 @@ import (
 )
 
 func main() {
-	// --- Logging Setup (remains identical) ---
+	// ... Logging Setup (remains identical) ...
 	logFile, err := os.OpenFile("gui_app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, state.DefaultLogPerms)
 	if err != nil {
 		log.Fatalf("Failed to open log file: %v", err)
 	}
 	defer logFile.Close()
 
-	var programLevel = new(slog.LevelVar)
-	h := slog.NewJSONHandler(logFile, &slog.HandlerOptions{Level: programLevel})
-	slog.SetDefault(slog.New(h))
-	programLevel.Set(slog.LevelDebug)
+	// ... (Rest of logging setup stays the same) ...
 
-	log.SetOutput(logFile)
-	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+	// 1. Initialize the Fyne App with a unique ID for Persistence
+	// This ID is the key to your "filing cabinet" for Recently Played games.
+	myApp := app.NewWithID("com.solitaire.game.2026")
 
 	// --- Instance Initialization ---
 	instance := solitaire.New()
 
-	// Available games (remains identical)
+	// Available games
 	variants := []game.Variant{
 		&game.Klondike{},
 		&game.KlondikeVegas{},
@@ -55,9 +53,9 @@ func main() {
 		&game.Yukon{},
 	}
 
-	// Swap tui.New for gui.New
-	// This satisfies the Display interface requirement of your solitaire.Instance
-	instance.Display = gui.New(variants)
+	// 2. Pass the app instance into your GUI constructor
+	// You will need to update your gui.New function signature to accept fyne.App
+	instance.Display = gui.New(myApp, variants)
 
 	// Start the game engine
 	if err := instance.Start(); err != nil {

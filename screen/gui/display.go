@@ -43,9 +43,10 @@ type Display struct {
 	tableauBox    *fyne.Container
 	reserveBox    *fyne.Container // Added for Reserve support
 
-	Selected game.Variant
-	games    []game.Variant
-	screens  map[string]fyne.CanvasObject
+	Selected   game.Variant
+	games      []game.Variant
+	screens    map[string]fyne.CanvasObject
+	titleLabel *widget.Label
 
 	// Store dimensions for index mapping
 	tableauWidth  int
@@ -69,14 +70,14 @@ type Display struct {
 	redealBtn *widget.Button
 }
 
-func New(variants []game.Variant) *Display {
-	myApp := app.New()
-	window := myApp.NewWindow("Irate Sol")
+func New(app fyne.App, variants []game.Variant) *Display {
+	// myApp := app.New()
+	window := app.NewWindow("Irate Sol")
 
 	greenFelt := color.RGBA{R: greenR, G: greenG, B: greenB, A: greenA}
 
 	d := &Display{
-		App:             myApp,
+		App:             app,
 		Window:          window,
 		games:           variants,
 		screens:         make(map[string]fyne.CanvasObject),
