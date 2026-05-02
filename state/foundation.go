@@ -16,8 +16,8 @@ type Foundation struct {
 
 // CreateFoundations - Create the foundations that will host the cards.
 func CreateFoundations(foundationSpec []StackSpec) []*Foundation {
-	if len(foundationSpec)%SuitCount != 0 {
-		panic("Number of foundations must be a multiple of the number of suits in a deck")
+	if len(foundationSpec) > 0 && len(foundationSpec) != 1 && len(foundationSpec)%SuitCount != 0 {
+		panic("Number of foundations must be 1 or a multiple of 4")
 	}
 
 	foundations := make([]*Foundation, 0, len(foundationSpec))

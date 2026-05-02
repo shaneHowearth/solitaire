@@ -109,6 +109,8 @@ func (*Russian) Tableau() []state.StackSpec {
 	}
 }
 
+func (*Russian) Fanned() bool { return false }
+
 // TableauPosition - Where does each tableau go in the grid, and what angle (relative to.
 // straight up and down) should the tableau be twisted.
 // Tableau and Grid are 0 indexed.

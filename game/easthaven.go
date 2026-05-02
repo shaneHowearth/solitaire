@@ -34,6 +34,8 @@ func (e *Easthaven) Tableau() []state.StackSpec {
 	}
 }
 
+func (*Easthaven) Fanned() bool { return true }
+
 func (e *Easthaven) easthavenRule(s *state.Stack, c state.SuitedCard) bool {
 	if s.Len() == 0 {
 		return c.Rank == state.King

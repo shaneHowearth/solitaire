@@ -53,6 +53,8 @@ func (a *AmericanToad) Tableau() []state.StackSpec {
 	return tableaus
 }
 
+func (*AmericanToad) Fanned() bool { return true }
+
 func (a *AmericanToad) tableauRule(s *state.Stack, c state.SuitedCard) bool {
 	if s.Len() == 0 {
 		// Technically anything can land here, but the Move/AvailableMoves

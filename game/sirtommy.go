@@ -49,6 +49,8 @@ func (s *SirTommy) Tableau() []state.StackSpec {
 	return wastepiles
 }
 
+func (*SirTommy) Fanned() bool { return false }
+
 func (s *SirTommy) Foundations() []state.StackSpec {
 	foundations := make([]state.StackSpec, 4)
 	for i := 0; i < 4; i++ {

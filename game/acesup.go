@@ -112,6 +112,8 @@ func (*AcesUp) Tableau() []state.StackSpec {
 	}
 }
 
+func (*AcesUp) Fanned() bool { return false }
+
 // TableauPosition - Where does each tableau go in the grid, and what angle (relative to
 // straight up and down) should the tableau be twisted.
 func (*AcesUp) TableauPosition(tableauNumber int) (int, int, int) {

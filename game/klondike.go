@@ -33,6 +33,8 @@ func (*Klondike) TableauGridSize() (int, int) {
 	return height, numKlondikeTableau
 }
 
+func (*Klondike) Fanned() bool { return true }
+
 // Decks - How many decks of cards are required to play klondike.
 func (*Klondike) Decks() int {
 	return 1

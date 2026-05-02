@@ -223,6 +223,8 @@ func (*AcesSquare) Tableau() []state.StackSpec {
 	}
 }
 
+func (*AcesSquare) Fanned() bool { return false }
+
 // Foundations - how the foundations are defined.
 func (*AcesSquare) Foundations() []state.StackSpec {
 	return []state.StackSpec{}

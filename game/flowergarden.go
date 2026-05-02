@@ -57,6 +57,8 @@ func (f *FlowerGarden) Tableau() []state.StackSpec {
 	return flowerBeds
 }
 
+func (*FlowerGarden) Fanned() bool { return true }
+
 func (*FlowerGarden) tableauRule(s *state.Stack, c state.SuitedCard) bool {
 	if s.Len() == 0 {
 		// Empty flower beds can be filled with any card.

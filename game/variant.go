@@ -67,4 +67,8 @@ type Variant interface {
 
 	// Compact.
 	Compact(stock, waste *state.Stack, tableaus []*state.Tableau)
+
+	// Fanned - Should the tableau cards be displayed as a fan, or just the top
+	// card.
+	Fanned() bool
 }

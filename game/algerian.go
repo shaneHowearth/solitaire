@@ -51,6 +51,8 @@ func (a *Algerian) Tableau() []state.StackSpec {
 	return tableaus
 }
 
+func (*Algerian) Fanned() bool { return true }
+
 func (*Algerian) tableauRule(tableau *state.Stack, card state.SuitedCard) bool {
 	if tableau.Len() == 0 {
 		return true

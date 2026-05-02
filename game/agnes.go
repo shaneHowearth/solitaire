@@ -111,6 +111,8 @@ func (*Agnes) Tableau() []state.StackSpec {
 	}
 }
 
+func (*Agnes) Fanned() bool { return true }
+
 // Foundations - how the foundations are defined.
 func (*Agnes) Foundations() []state.StackSpec {
 	var AgnesPlusOneRule = func(foundation *state.Stack, card state.SuitedCard) bool {

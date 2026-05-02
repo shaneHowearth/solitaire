@@ -85,6 +85,8 @@ func (*Yukon) Tableau() []state.StackSpec {
 	}
 }
 
+func (*Yukon) Fanned() bool { return true }
+
 // TableauPosition - Where does each tableau go in the grid, and what angle (relative to.
 // straight up and down) should the tableau be twisted.
 // Tableau and Grid are 0 indexed.

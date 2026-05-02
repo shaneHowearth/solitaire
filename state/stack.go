@@ -112,6 +112,11 @@ func (stack *Stack) Cards() []string {
 	return cardPile
 }
 
+// GetCards returns the slice of SuitedCards directly.
+func (stack *Stack) GetCards() []SuitedCard {
+	return *stack.cards
+}
+
 // CanReceiveMore - returns whether the stack is allowed to receive another.
 // bunch. Used to check if there has been more redeals than the game specifies.
 // are allowed.

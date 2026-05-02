@@ -33,6 +33,8 @@ func (*Accordion) TableauGridSize() (int, int) {
 	return accordionRows, accordionColumns
 }
 
+func (*Accordion) Fanned() bool { return false }
+
 // Decks - How many decks of cards are required to play acme.
 func (*Accordion) Decks() int {
 	return 1

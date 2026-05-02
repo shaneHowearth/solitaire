@@ -34,6 +34,8 @@ func (w *WestcliffClassic) Tableau() []state.StackSpec {
 	}
 }
 
+func (*WestcliffClassic) Fanned() bool { return true }
+
 func (*WestcliffClassic) buildRule(s *state.Stack, c state.SuitedCard) bool {
 	if s.Len() == 0 {
 		return true

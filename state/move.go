@@ -15,6 +15,14 @@ func (stack *Stack) Add(card SuitedCard, visible bool) {
 	*stack.cards = append(*stack.cards, card)
 }
 
+// AddBottom - adds a suited card to the very bottom of the stack (index 0).
+func (stack *Stack) AddBottom(card SuitedCard, visible bool) {
+	card.Visible = visible
+	// Prepend the card to the slice
+	newCards := append([]SuitedCard{card}, *stack.cards...)
+	stack.cards = &newCards
+}
+
 // Deal removes and returns the final card in the deck.
 func (stack *Stack) Deal() (SuitedCard, error) {
 	if stack.Len() == 0 {

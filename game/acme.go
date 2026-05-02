@@ -77,6 +77,8 @@ func (acme *Acme) Tableau() []state.StackSpec {
 	}
 }
 
+func (*Acme) Fanned() bool { return false }
+
 func (*Acme) tableauRule(tableau *state.Stack, card state.SuitedCard) bool {
 	// Handle when the tableau is empty.
 	if tableau.Len() == 0 {

@@ -174,29 +174,26 @@ func (d *Display) recordGamePlayed(name string) {
 }
 
 func (d *Display) buildPile(cards []string, sType state.StackType, idx int, showCount int, baseCard string) fyne.CanvasObject {
-	// 1. Handle Empty Piles (Placeholders)
+	// 1. Handle Empty Piles
 	if len(cards) == 0 {
 		c := NewCardWidget(baseCard, sType, idx, d)
 		c.IsPlaceholder = true
 		return container.NewVBox(c, layout.NewSpacer())
 	}
 
-	// 2. Handle Multi-Row Tableau (Foundation-style: Single card, no fan)
-	if d.tableauHeight > 1 && sType == state.StackTableau {
-		topFace := "--"
-		// If showCount allows it, show the actual face of the last card
-		if showCount == 0 || len(cards) > 0 {
-			topFace = cards[len(cards)-1]
-		}
+	// 2. Determine if this specific stack should fan
+	// Foundations and Talon almost never fan in this engine.
+	// Tableau only fans if the Game Variant says so.
+	shouldFan := sType == state.StackTableau && d.Selected.Fanned()
 
+	if !shouldFan {
+		topFace := cards[len(cards)-1]
 		cWidget := NewCardWidget(topFace, sType, idx, d)
 		cWidget.Resize(fyne.NewSize(float32(cardWidth), float32(cardHeight)))
-		// No Move() call needed, it defaults to (0,0)
-
 		return container.NewVBox(cWidget, layout.NewSpacer())
 	}
 
-	// 3. Handle Standard Fanned Tableau (Klondike-style) or other stacks (Waste/Talon)
+	// 3. Handle Fanned Logic
 	cardContainer := container.NewWithoutLayout()
 	currentHeight := float32(cardHeight)
 
@@ -209,10 +206,8 @@ func (d *Display) buildPile(cards []string, sType state.StackType, idx int, show
 		cWidget := NewCardWidget(cardFace, sType, idx, d)
 		cWidget.Resize(fyne.NewSize(float32(cardWidth), float32(cardHeight)))
 
-		yPos := float32(0)
-		if sType == state.StackTableau {
-			yPos = float32(i * verticalFan)
-		}
+		// Calculate vertical offset
+		yPos := float32(i * verticalFan)
 		cWidget.Move(fyne.NewPos(0, yPos))
 
 		if yPos+float32(cardHeight) > currentHeight {

@@ -64,6 +64,8 @@ func (gaps *Gaps) Tableau() []state.StackSpec {
 	return tableau
 }
 
+func (*Gaps) Fanned() bool { return false }
+
 func (*Gaps) tableauRule(tableau *state.Stack, _ state.SuitedCard) bool {
 	// Handle when the tableau is empty.
 	if tableau.Len() == 0 {

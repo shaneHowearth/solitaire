@@ -79,10 +79,10 @@ func (instance *Instance) onComponentSelected(
 	fromComponentType state.StackType, fromIndex int,
 	toComponentType state.StackType, toIndex int,
 ) {
-	if fromComponentType == toComponentType && fromIndex == toIndex {
-		// Nothing to do.
-		return
-	}
+	// if fromComponentType == toComponentType && fromIndex == toIndex {
+	// 	// Nothing to do.
+	// 	return
+	// }
 
 	var fromStack *state.Stack
 

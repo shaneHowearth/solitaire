@@ -92,6 +92,8 @@ func (*AcesAndKings) Tableau() []state.StackSpec {
 	}
 }
 
+func (*AcesAndKings) Fanned() bool { return false }
+
 // Foundations - how the foundations are defined.
 func (*AcesAndKings) Foundations() []state.StackSpec {
 	const foundationCount = 8

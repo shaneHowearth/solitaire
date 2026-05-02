@@ -25,7 +25,7 @@ func Test_CreateFoundations(t *testing.T) {
 			"WHEN Create foundation is called " +
 			"THEN the code will panic.": {
 			Number: 2, WillPanic: true,
-			PanicMessage: "Number of foundations must be a multiple of the number of suits in a deck",
+			PanicMessage: "Number of foundations must be 1 or a multiple of 4",
 		},
 		"GIVEN that the number of foundation requested is Four " +
 			"WHEN Create foundation is called " +

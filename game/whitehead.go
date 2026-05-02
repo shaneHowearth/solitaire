@@ -45,6 +45,8 @@ func (w *Whitehead) Tableau() []state.StackSpec {
 	}
 }
 
+func (*Whitehead) Fanned() bool { return true }
+
 func (*Whitehead) sameColorRule(s *state.Stack, c state.SuitedCard) bool {
 	if s.Len() == 0 {
 		return true
