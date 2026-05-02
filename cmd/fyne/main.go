@@ -47,6 +47,7 @@ func main() {
 		&game.Gaps{},
 		&game.Russian{},
 		&game.SirTommy{},
+		&game.Travellers{},
 		&game.WestcliffAmerican{},
 		&game.WestcliffClassic{},
 		&game.Whitehead{},

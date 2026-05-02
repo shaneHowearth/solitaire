@@ -414,7 +414,7 @@ func (tableau solitaire.Tableau, card solitaire.SuitedCard) bool {
 - [ ] [Tournament]()
 - [ ] [Tower of Hanoy (Tower of Hanoi)]()
 - [ ] [Tower of Pisa]()
-- [ ] [Travellers]()
+- [x] [Travellers]()
 - [ ] [Trefoil]()
 - [ ] [Triangle]()
 - [ ] [Tri Peaks]()
