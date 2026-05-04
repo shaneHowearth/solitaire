@@ -1,8 +1,6 @@
 package game
 
 import (
-	"log"
-
 	"github.com/shanehowearth/solitaire/state"
 )
 
@@ -71,10 +69,10 @@ func CanMove(source, destination *state.Stack, keepSequence bool) (bool, int) {
 
 		temp.Add(sourceTop, true)
 
-		_, err = sourceClone.Deal()
-		if err != nil {
-			log.Printf("Stack Deal err %v", err)
-		}
+		_, _ = sourceClone.Deal()
+		// if err != nil {
+		// log.Printf("Stack Deal err %v", err)
+		// }
 
 		if destination.Rule(sourceTop) && destination.Type != state.StackTalon {
 			canMove = true
@@ -182,16 +180,16 @@ func Move(source, destination *state.Stack, keepSequence bool) bool {
 		card, err := source.Top()
 		if err != nil {
 			// This shouldn't happen since CanMove validated it.
-			log.Printf("Error getting card from source: %v", err)
+			// log.Printf("Error getting card from source: %v", err)
 			break
 		}
 
 		temp.Add(card, true)
 
-		_, err = source.Deal()
-		if err != nil {
-			log.Printf("Error dealing card from source: %v", err)
-		}
+		_, _ = source.Deal()
+		// if err != nil {
+		// log.Printf("Error dealing card from source: %v", err)
+		// }
 	}
 
 	// Handle reversal for waste->talon moves.

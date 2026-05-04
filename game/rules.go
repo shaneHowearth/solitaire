@@ -54,3 +54,42 @@ var MinusOneRule = func(tableau *state.Stack, card state.SuitedCard) bool {
 	// All other cases the card should not be added to the tableau.
 	return false
 }
+
+// PlusOneWraparoundRule handles sequences like Q-K-A-2.
+func PlusOneWraparoundRule(foundation *state.Stack, card state.SuitedCard) bool {
+	if foundation.Len() == 0 {
+		return true
+	}
+	top, _ := foundation.Top()
+
+	// Ensure suits match
+	if top.Suit != card.Suit {
+		return false
+	}
+
+	// Logic: (TopRank + 1) % 13 == CardRank % 13
+	// Using the next rank in the sequence with wraparound
+	nextRank := state.Rank((int(top.Rank) + 1) % 13)
+
+	return card.Rank == nextRank
+}
+
+func isRed(s state.Suit) bool {
+	return s == state.Hearts || s == state.Diamonds
+}
+
+func MinusOneWraparoundRule(s *state.Stack, c state.SuitedCard) bool {
+	if s.Len() == 0 {
+		return true
+	}
+	top, _ := s.Top()
+
+	// Alternating colors check
+	if isRed(top.Suit) == isRed(c.Suit) {
+		return false
+	}
+
+	// Logic: (TopRank - 1) % 13.
+	targetRank := state.Rank((int(top.Rank) + 12) % 13)
+	return c.Rank == targetRank
+}
