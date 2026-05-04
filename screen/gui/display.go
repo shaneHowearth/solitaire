@@ -3,10 +3,7 @@ package gui
 import (
 	"fmt"
 	"image/color"
-	"math"
-	"math/rand/v2"
 	"strings"
-	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -14,6 +11,7 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"github.com/shanehowearth/solitaire"
 	"github.com/shanehowearth/solitaire/game"
 	"github.com/shanehowearth/solitaire/state"
 )
@@ -170,7 +168,25 @@ func (d *Display) RefreshAll() {
 		d.reserveBox.Refresh()
 	}
 }
+func (d *Display) getCardResource(card string) fyne.Resource {
+	// 1. Get the relative path using your existing logic
+	path := d.getCardFilename(card)
 
+	// 2. Read the bytes from the embedded filesystem
+	// Replace 'solitaire' with the actual name of your root package if different
+	data, err := solitaire.ResourceFS.ReadFile(path)
+	if err != nil {
+		// Log the error or return a fallback resource (like the card back)
+		// so the app doesn't crash or show empty space
+		fallback, _ := solitaire.ResourceFS.ReadFile("assets/cards/PySolFC/back131.gif")
+		return fyne.NewStaticResource("fallback.gif", fallback)
+	}
+
+	// 3. Return as a Fyne resource
+	return fyne.NewStaticResource(path, data)
+}
+
+// Keep this as a private helper for the mapping logic
 func (d *Display) getCardFilename(card string) string {
 	if card == "" || card == "--" || card == "🂠" {
 		return "assets/cards/PySolFC/back131.gif"
@@ -323,140 +339,6 @@ func (d *Display) showGamePicker() {
 	pickerDialog.Show()
 }
 
-type particle struct {
-	shape *canvas.Circle
-	velX  float32
-	velY  float32
-	clr   color.RGBA
-}
-
-func (d *Display) LaunchFireworks() {
-	// Particle tracker to manage movement and color per spark
-	type particle struct {
-		shape *canvas.Circle
-		velX  float32
-		velY  float32
-		clr   color.RGBA
-	}
-
-	// Create a dedicated overlay layer for fireworks so they don't interfere with card widgets
-	fireworkLayer := container.NewWithoutLayout()
-	d.CardLayer.Add(fireworkLayer)
-
-	// Launch multiple bursts at staggered intervals for a better show
-	for i := 0; i < 6; i++ {
-		go func(burstIdx int) {
-			// Delay each burst slightly
-			time.Sleep(time.Duration(burstIdx) * 500 * time.Millisecond)
-
-			// Randomize the origin point within the window bounds (with padding)
-			size := d.Window.Canvas().Size()
-			origin := fyne.NewPos(
-				150+rand.Float32()*(size.Width-300),
-				150+rand.Float32()*(size.Height-300),
-			)
-
-			count := 45 // Number of sparks per burst
-			burst := make([]particle, count)
-
-			for j := 0; j < count; j++ {
-				// Generate a bright, high-saturation random color
-				sparkColor := color.RGBA{
-					R: uint8(rand.IntN(155) + 100),
-					G: uint8(rand.IntN(155) + 100),
-					B: uint8(rand.IntN(155) + 100),
-					A: 255,
-				}
-
-				p := canvas.NewCircle(sparkColor)
-				p.Resize(fyne.NewSize(4, 4))
-				p.Move(origin)
-
-				// Physics: Random angle and initial speed
-				angle := rand.Float64() * 2 * math.Pi
-				speed := 2.0 + rand.Float64()*5.0
-
-				burst[j] = particle{
-					shape: p,
-					velX:  float32(math.Cos(angle) * speed),
-					velY:  float32(math.Sin(angle) * speed),
-					clr:   sparkColor,
-				}
-				fireworkLayer.Add(p)
-			}
-
-			// Define the 2-second animation sequence
-			anim := fyne.NewAnimation(time.Second*2, func(v float32) {
-				for j := range burst {
-					p := &burst[j]
-
-					// 1. Update Position based on velocity
-					p.shape.Move(p.shape.Position().Add(fyne.NewPos(p.velX, p.velY)))
-
-					// 2. Apply Gravity (pulls velY downward over time)
-					p.velY += 0.12
-
-					// 3. Apply Air Friction (optional, slows them down slightly)
-					p.velX *= 0.99
-					p.velY *= 0.99
-
-					// 4. Fade Alpha based on animation progress (v goes from 0.0 to 1.0)
-					newAlpha := uint8(255 * (1.0 - v))
-					fadeColor := p.clr
-					fadeColor.A = newAlpha
-
-					p.shape.FillColor = fadeColor
-					p.shape.Refresh()
-				}
-
-				// 5. Cleanup: Remove objects from the canvas tree once animation completes
-				if v == 1.0 {
-					for _, p := range burst {
-						fireworkLayer.Remove(p.shape)
-					}
-					// Optional: if all bursts are done, you could remove fireworkLayer itself
-				}
-			})
-
-			anim.Start()
-		}(i)
-	}
-}
-
-func (d *Display) showHintModal() {
-	if d.gameHint == nil {
-		return
-	}
-
-	moves := d.gameHint()
-	if len(moves) == 0 {
-		dialog.ShowInformation("Hints", "No moves available! Try drawing from the Stock.", d.Window)
-		return
-	}
-
-	// Create a container to hold our hint rows
-	hintList := container.NewVBox()
-
-	for i, m := range moves {
-		// Create a descriptive string for the move
-		// e.g., "1) A♠ from Waste → Foundation 1"
-		src := d.formatLocation(m.Source)
-		dst := d.formatLocation(m.Destination)
-
-		cardStr := m.SourceCardTop.String()
-		if m.NumberMoving > 1 {
-			cardStr = fmt.Sprintf("%s (+%d cards)", cardStr, m.NumberMoving-1)
-		}
-
-		hintLabel := widget.NewLabel(fmt.Sprintf("%d) %s: %s → %s", i+1, cardStr, src, dst))
-		hintList.Add(hintLabel)
-	}
-
-	styledContent := d.styledModalContent(hintList, 500, 350)
-
-	dialog.ShowCustom("Available Hints", "Close", styledContent, d.Window)
-}
-
 func (d *Display) formatLocation(stack state.Stack) string {
 	switch stack.Type {
 	case state.StackTableau:
@@ -479,35 +361,4 @@ func (d *Display) formatLocation(stack state.Stack) string {
 	}
 
 	return ""
-}
-
-func (d *Display) showHowToModal(gameName string, howTo []string) {
-	fullText := strings.Join(howTo, "\n\n")
-	// Create a text label with the instructions
-	content := widget.NewLabel(fullText)
-	// content := widget.NewRichTextFromMarkdown(strings.Join(howTo, "\n\n"))
-	content.Wrapping = fyne.TextWrapWord
-
-	styledContent := d.styledModalContent(content, 600, 450)
-
-	// Show it as a modal dialog
-	title := fmt.Sprintf("How to Play: %s", gameName)
-	dialog.ShowCustom(title, "Back to Game", styledContent, d.Window)
-}
-
-func (d *Display) styledModalContent(content fyne.CanvasObject, width, height float32) fyne.CanvasObject {
-	// 1. Consistent Background: Deep Grey
-	bg := canvas.NewRectangle(color.RGBA{R: 30, G: 30, B: 30, A: 255})
-
-	// 2. Consistent Border: Gold
-	bg.StrokeColor = color.RGBA{R: 255, G: 215, B: 0, A: 255}
-	bg.StrokeWidth = 2
-	bg.CornerRadius = 4
-
-	// 3. Wrap content in Scroll + Padding
-	scroll := container.NewVScroll(container.NewPadded(content))
-	scroll.SetMinSize(fyne.NewSize(width, height))
-
-	// 4. Stack them
-	return container.NewStack(bg, scroll)
 }

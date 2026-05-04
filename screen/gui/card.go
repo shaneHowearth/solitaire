@@ -2,7 +2,6 @@ package gui
 
 import (
 	"image/color"
-	"os"
 	"strings"
 
 	"fyne.io/fyne/v2"
@@ -57,8 +56,6 @@ func (c *CardWidget) CreateRenderer() fyne.WidgetRenderer {
 			}
 
 			// Split the face (e.g., "A♠") into "A" and "♠"
-			// We assume the first character is the Rank (A, K, Q, J, 1, 9...)
-			// and the rest is the Suit symbol.
 			rankPart := string(c.Face[0])
 			suitPart := ""
 			if len(c.Face) > 1 {
@@ -71,23 +68,25 @@ func (c *CardWidget) CreateRenderer() fyne.WidgetRenderer {
 			rankText.TextStyle.Bold = true
 
 			suitText := canvas.NewText(suitPart, textColor)
-			suitText.TextSize = 32 // Make the suit symbol larger
+			suitText.TextSize = 32
 			suitText.Alignment = fyne.TextAlignCenter
 			suitText.TextStyle.Bold = true
 
-			// Stack them vertically and center the whole group
 			textStack := container.NewVBox(rankText, suitText)
 			mainContent = container.NewStack(placeholder, container.NewCenter(textStack))
 		} else {
 			mainContent = placeholder
 		}
 	} else {
-		filename := c.Display.getCardFilename(c.Face)
-		if _, err := os.Stat(filename); err == nil {
-			img := canvas.NewImageFromFile(filename)
+		// Use the resource mapping instead of os.Stat and NewImageFromFile
+		// This ensures compatibility with Android APK packaging
+		res := c.Display.getCardResource(c.Face)
+		if res != nil {
+			img := canvas.NewImageFromResource(res)
 			img.FillMode = canvas.ImageFillStretch
 			mainContent = img
 		} else {
+			// Fallback if the resource is missing from the bundle
 			txt := canvas.NewText(c.Face, color.White)
 			txt.Alignment = fyne.TextAlignCenter
 			mainContent = txt

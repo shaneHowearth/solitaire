@@ -3,22 +3,20 @@ package main
 import (
 	_ "image/gif"
 	"log"
-	"os"
 
 	"fyne.io/fyne/v2/app"
 	"github.com/shanehowearth/solitaire"
 	"github.com/shanehowearth/solitaire/game"
 	"github.com/shanehowearth/solitaire/screen/gui" // Updated import
-	"github.com/shanehowearth/solitaire/state"
 )
 
 func main() {
 	// ... Logging Setup (remains identical) ...
-	logFile, err := os.OpenFile("gui_app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, state.DefaultLogPerms)
-	if err != nil {
-		log.Fatalf("Failed to open log file: %v", err)
-	}
-	defer logFile.Close()
+	// logFile, err := os.OpenFile("gui_app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, state.DefaultLogPerms)
+	// if err != nil {
+	// 	log.Fatalf("Failed to open log file: %v", err)
+	// }
+	// defer logFile.Close()
 
 	// ... (Rest of logging setup stays the same) ...
 
