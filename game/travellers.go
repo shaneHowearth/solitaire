@@ -19,7 +19,8 @@ func (*Travellers) Decks() int { return 1 }
 
 func (*Travellers) TableauGridSize() (int, int) {
 	// 13 piles fit well in a 3x5 or 2x7 layout
-	return 3, 5
+	// We use a 3row, 6 col layout so the King pile is in its own row.
+	return 3, 6
 }
 
 func (*Travellers) Tableau() []state.StackSpec {
