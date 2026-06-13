@@ -79,17 +79,18 @@ func (instance *Instance) onComponentSelected(
 	fromComponentType state.StackType, fromIndex int,
 	toComponentType state.StackType, toIndex int,
 ) {
-	// if fromComponentType == toComponentType && fromIndex == toIndex {
-	// 	// Nothing to do.
-	// 	return
-	// }
-
 	var fromStack *state.Stack
 
 	switch fromComponentType {
 	case state.StackFoundation:
+		if fromIndex < 0 || fromIndex >= len(instance.State.Foundations) {
+			return // Out of bounds filler foundation, drop event smoothly
+		}
 		fromStack = instance.State.Foundations[fromIndex].Stack
 	case state.StackTableau:
+		if fromIndex < 0 || fromIndex >= len(instance.State.Tableau) {
+			return // Out of bounds filler grid slot, drop event smoothly
+		}
 		fromStack = instance.State.Tableau[fromIndex].Stack
 	case state.StackTalon:
 		fromStack = instance.State.Talon.Stock
@@ -99,6 +100,9 @@ func (instance *Instance) onComponentSelected(
 	case state.StackWaste:
 		fromStack = instance.State.Talon.Waste
 	case state.StackReserve:
+		if fromIndex < 0 || fromIndex >= len(instance.State.Reserves) {
+			return // Out of bounds filler reserve slot, drop event smoothly
+		}
 		fromStack = instance.State.Reserves[fromIndex].Stack
 	default:
 		panic(fmt.Sprintf("Got impossible 'fromComponentType' %d", fromComponentType))
@@ -108,14 +112,23 @@ func (instance *Instance) onComponentSelected(
 
 	switch toComponentType {
 	case state.StackFoundation:
+		if toIndex < 0 || toIndex >= len(instance.State.Foundations) {
+			return // Out of bounds filler foundation target, drop event smoothly
+		}
 		toStack = instance.State.Foundations[toIndex].Stack
 	case state.StackTableau:
+		if toIndex < 0 || toIndex >= len(instance.State.Tableau) {
+			return // Out of bounds filler grid target, drop event smoothly
+		}
 		toStack = instance.State.Tableau[toIndex].Stack
 	case state.StackTalon:
 		toStack = instance.State.Talon.Stock
 	case state.StackWaste:
 		toStack = instance.State.Talon.Waste
 	case state.StackReserve:
+		if toIndex < 0 || toIndex >= len(instance.State.Reserves) {
+			return // Out of bounds filler reserve target, drop event smoothly
+		}
 		toStack = instance.State.Reserves[toIndex].Stack
 	default:
 		panic(fmt.Sprintf("Got impossible 'toComponentType' %d", toComponentType))
