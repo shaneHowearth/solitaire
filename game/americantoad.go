@@ -98,6 +98,11 @@ func (a *AmericanToad) foundationRule(s *state.Stack, c state.SuitedCard) bool {
 		return c.Rank == s.Base.Rank
 	}
 
+	// Foundation is complete once it holds a full 13-rank cycle.
+	if s.Len() >= int(state.RankCount) {
+		return false
+	}
+
 	// Building UP in SUIT with wrapping
 	top, _ := s.Top()
 	if c.Suit != top.Suit {
