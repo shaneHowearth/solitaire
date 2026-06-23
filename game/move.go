@@ -38,9 +38,11 @@ func CanMove(source, destination *state.Stack, keepSequence bool) (bool, int) {
 	)
 
 	count := 0
-	canMove := true
+	canMove := false
 
 	if destination.Type == state.StackTalon {
+		canMove = true
+
 		// Stock can only be given cards when it is empty.
 		if destination.Len() != 0 {
 			return false, 0

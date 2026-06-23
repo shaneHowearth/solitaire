@@ -212,49 +212,60 @@ func (a *AmericanToad) AvailableMoves(
 ) []state.Move {
 	var moves []state.Move
 
-	check := func(src *state.Stack, dest *state.Stack) {
-		if card, err := src.Top(); err == nil {
-			if dest.Rule(card) {
-				// CRITICAL RULE: Empty spaces cannot be filled from another tableau pile.
-				if dest.Type == state.StackTableau && dest.Len() == 0 && src.Type == state.StackTableau {
-					return
-				}
-				moves = append(moves, state.Move{
-					Source: *src, Destination: *dest, NumberMoving: 1, SourceCardTop: card,
-				})
-			}
-		}
-	}
-
 	// 1. Sources: Tableau
 	for i := range tableaus {
+		// Tableau to Foundations
 		for j := range foundations {
-			check(tableaus[i].Stack, foundations[j].Stack)
+			if move := checkMove(tableaus[i].Stack, foundations[j].Stack, false, true); move.NumberMoving > 0 {
+				moves = append(moves, move)
+			}
 		}
+
+		// Tableau to Tableau
 		for j := range tableaus {
 			if i != j {
-				check(tableaus[i].Stack, tableaus[j].Stack)
+				if move := checkMove(tableaus[i].Stack, tableaus[j].Stack, false, true); move.NumberMoving > 0 {
+					// CRITICAL RULE: Empty spaces cannot be filled from another tableau pile.
+					if tableaus[j].Stack.Len() == 0 {
+						continue
+					}
+
+					// CRITICAL RULE: Move only the top card or the entire tableau pile.
+					if move.NumberMoving != 1 && move.NumberMoving != tableaus[i].Stack.Len() {
+						continue
+					}
+
+					moves = append(moves, move)
+				}
 			}
 		}
 	}
 
 	// 2. Sources: Reserve
 	for i := range reserves {
+		top, err := reserves[i].Stack.Top()
+		if err != nil {
+			continue // reserve empty
+		}
 		for j := range foundations {
-			check(reserves[i].Stack, foundations[j].Stack)
+			if foundations[j].Stack.Rule(top) {
+				moves = append(moves, state.Move{
+					Source:        *reserves[i].Stack,
+					Destination:   *foundations[j].Stack,
+					NumberMoving:  1,
+					SourceCardTop: top,
+				})
+			}
 		}
 		for j := range tableaus {
-			check(reserves[i].Stack, tableaus[j].Stack)
-		}
-	}
-
-	// 3. Sources: Waste (from Talon)
-	for i := range talons {
-		for j := range foundations {
-			check(talons[i].Waste, foundations[j].Stack)
-		}
-		for j := range tableaus {
-			check(talons[i].Waste, tableaus[j].Stack)
+			if tableaus[j].Stack.Rule(top) {
+				moves = append(moves, state.Move{
+					Source:        *reserves[i].Stack,
+					Destination:   *tableaus[j].Stack,
+					NumberMoving:  1,
+					SourceCardTop: top,
+				})
+			}
 		}
 	}
 
