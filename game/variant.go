@@ -60,7 +60,7 @@ type Variant interface {
 	MaxRedeals() int
 
 	// Redeal.
-	Redeal(foundations *state.Talon, tableau []*state.Tableau)
+	Redeal(stockAndWaste *state.Talon, tableau []*state.Tableau)
 
 	// Move - how cards are moved from one stack to another.
 	Move(source, destination *state.Stack, tableaus []*state.Tableau) bool

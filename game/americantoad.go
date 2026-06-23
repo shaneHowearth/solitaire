@@ -130,22 +130,37 @@ func (*AmericanToad) HowToPlay() []string {
 }
 
 func (a *AmericanToad) Move(source, destination *state.Stack, tableaus []*state.Tableau) bool {
-	card, err := source.Top()
-	if err != nil {
+	// Let checkMove validate and determine how many cards. This guarantees 1:1 behavior with the engine.
+	move := checkMove(source, destination, true, true)
+	if move.NumberMoving == 0 {
 		return false
 	}
 
-	if destination.Rule(card) {
-		// Rule for filling empty spaces once reserve is empty:
-		// "spaces in the tableau can be filled with a card from the pack, but NOT from another tableau pile."
-		if destination.Type == state.StackTableau && destination.Len() == 0 && source.Type == state.StackTableau {
-			return false
-		}
-
-		c, _ := source.Deal()
-		destination.Add(c, true)
-		return true
+	// Rule for filling empty spaces once reserve is empty:
+	// "spaces in the tableau can be filled with a card from the pack, but NOT from another tableau pile."
+	if destination.Type == state.StackTableau && destination.Len() == 0 && source.Type == state.StackTableau {
+		return false
 	}
+
+	// Rule: Move only the top card or the entire tableau pile.
+	if source.Type == state.StackTableau && move.NumberMoving != 1 && move.NumberMoving != source.Len() {
+		return false
+	}
+
+	canMove := true
+	if source.Type == state.StackWaste && destination.Type == state.StackTalon {
+		if destination.Len() != 0 {
+			canMove = false
+		} else {
+			canMove = destination.CanReceiveMore()
+		}
+	}
+
+	// Execute the physical move
+	if canMove {
+		return Move(source, destination, true)
+	}
+
 	return false
 }
 
@@ -175,8 +190,8 @@ func (*AmericanToad) MaxRedeals() int {
 	return 1 // Two passes total = 1 redeal.
 }
 
-func (a *AmericanToad) Redeal(talon *state.Talon, _ []*state.Tableau) {
-	// standard recycling logic from waste to stock.
+func (a *AmericanToad) Redeal(talon *state.Talon, tableaus []*state.Tableau) {
+	a.Move(talon.Waste, talon.Stock, tableaus)
 }
 
 func (*AmericanToad) HasWon(_ []*state.Tableau, foundations []*state.Foundation) bool {
