@@ -38,7 +38,7 @@ func CanMove(source, destination *state.Stack, keepSequence bool) (bool, int) {
 	)
 
 	count := 0
-	canMove := false
+	canMove := true
 
 	if destination.Type == state.StackTalon {
 		// Stock can only be given cards when it is empty.
@@ -58,10 +58,16 @@ func CanMove(source, destination *state.Stack, keepSequence bool) (bool, int) {
 	for {
 		sourceTop, err := sourceClone.Top()
 		if err != nil {
+			if destination.Type != state.StackTalon {
+				canMove = false
+			}
 			break
 		}
 
+		// Only move cards that are visible, except if they come from the Talon
+		// which has all cards face down.
 		if !sourceTop.Visible && (sourceClone.Type != state.StackTalon) {
+			canMove = false
 			break
 		}
 
@@ -70,9 +76,6 @@ func CanMove(source, destination *state.Stack, keepSequence bool) (bool, int) {
 		temp.Add(sourceTop, true)
 
 		_, _ = sourceClone.Deal()
-		// if err != nil {
-		// log.Printf("Stack Deal err %v", err)
-		// }
 
 		if destination.Rule(sourceTop) && destination.Type != state.StackTalon {
 			canMove = true
@@ -93,14 +96,7 @@ func CanMove(source, destination *state.Stack, keepSequence bool) (bool, int) {
 		if source.Type == state.StackTalon {
 			break
 		}
-	}
 
-	if source.Type == state.StackWaste && destination.Type == state.StackTalon {
-		if destination.CanReceiveMore() {
-			canMove = true
-		} else {
-			canMove = false
-		}
 	}
 
 	// Check that all the cards on the temp stack can be moved.
@@ -180,16 +176,12 @@ func Move(source, destination *state.Stack, keepSequence bool) bool {
 		card, err := source.Top()
 		if err != nil {
 			// This shouldn't happen since CanMove validated it.
-			// log.Printf("Error getting card from source: %v", err)
 			break
 		}
 
 		temp.Add(card, true)
 
 		_, _ = source.Deal()
-		// if err != nil {
-		// log.Printf("Error dealing card from source: %v", err)
-		// }
 	}
 
 	// Handle reversal for waste->talon moves.
