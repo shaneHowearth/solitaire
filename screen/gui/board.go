@@ -53,7 +53,6 @@ func (d *Display) CreateBoard(
 
 	// --- 5. UI Component Setup (Game Library & Buttons) ---
 
-	// The Library button replaces the old unwieldy dropdown
 	gameLibraryBtn := widget.NewButton("Change Game", func() {
 		d.showGamePicker()
 	})
@@ -85,19 +84,26 @@ func (d *Display) CreateBoard(
 		widget.NewButton("Quit", func() { d.App.Quit() }),
 	)
 
-	// Initialize the dynamic title label
 	d.titleLabel = widget.NewLabelWithStyle("Playing "+name, fyne.TextAlignCenter, fyne.TextStyle{Bold: true, Italic: true})
 
-	// Layout the header with Library on left and Actions on right
 	header := container.NewVBox(
 		container.NewBorder(nil, nil, gameLibraryBtn, btnBar, d.titleLabel),
-		canvas.NewLine(color.RGBA{R: 255, G: 255, B: 255, A: 50}), // Subtle divider
+		canvas.NewLine(color.RGBA{R: 255, G: 255, B: 255, A: 50}),
 	)
 
 	d.foundationHints = make(map[int]string)
 
 	// 6. Layout Top Area
-	topArea := container.NewBorder(nil, nil, container.NewHBox(d.talonBox, d.wasteBox), nil, d.foundationBox)
+	// Calculate the gap between Talon/Waste and Foundations (1/8 card width)
+	gapSize := float32(cardWidth) / 8
+	gapSpacer := canvas.NewRectangle(color.Transparent)
+	gapSpacer.SetMinSize(fyne.NewSize(gapSize, 1))
+
+	// Group Talon/Waste with the gap
+	leftTopSection := container.NewHBox(d.talonBox, d.wasteBox, gapSpacer)
+
+	// Foundations are set to Center, allowing the gap to push them right
+	topArea := container.NewBorder(nil, nil, leftTopSection, nil, d.foundationBox)
 
 	// 7. Delineation Logic for Reserves
 	var mainBoard fyne.CanvasObject
@@ -114,8 +120,21 @@ func (d *Display) CreateBoard(
 
 	tableauScroll := container.NewScroll(mainBoard)
 
-	// Construct Tabletop
-	d.Tabletop = container.NewBorder(topArea, nil, nil, nil, tableauScroll)
+	// --- Global Padding (Left and Top) ---
+	padSize := float32(cardWidth) / 4
+
+	leftSpacer := canvas.NewRectangle(color.Transparent)
+	leftSpacer.SetMinSize(fyne.NewSize(padSize, 1))
+
+	topSpacer := canvas.NewRectangle(color.Transparent)
+	topSpacer.SetMinSize(fyne.NewSize(1, padSize))
+
+	// Assemble the entire board content
+	gameBoard := container.NewBorder(topArea, nil, nil, nil, tableauScroll)
+
+	// Wrap the entire game board in a border with both global spacers
+	d.Tabletop = container.NewBorder(topSpacer, nil, leftSpacer, nil, gameBoard)
+	// ------------------------------------------
 
 	bg := canvas.NewRectangle(d.defaultBgColor)
 	d.CardLayer = container.NewStack(bg, d.Tabletop)
