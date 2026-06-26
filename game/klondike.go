@@ -166,7 +166,9 @@ func (*Klondike) Talon() bool {
 }
 
 // Redeal.
-func (*Klondike) Redeal(_ *state.Talon, _ []*state.Tableau) {}
+func (k *Klondike) Redeal(talon *state.Talon, tableaus []*state.Tableau) {
+	k.Move(talon.Waste, talon.Stock, tableaus)
+}
 
 // FoundationBase.
 func (*Klondike) FoundationBase() bool {
