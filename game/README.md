@@ -108,7 +108,8 @@ func (tableau solitaire.Tableau, card solitaire.SuitedCard) bool {
 - [ ] [Acquaintance](https://en.wikipedia.org/wiki/Acquaintance_(solitaire))
 - [ ] [Archway](https://en.wikipedia.org/wiki/Archway_(solitaire))
 - [ ] [Auld Lang Syne](https://en.wikipedia.org/wiki/Auld_Lang_Syne_(solitaire))
-- [ ] [Australian Patience](https://en.wikipedia.org/wiki/Australian_Patience)
+- [x] [Australian Patience (Canberra)](https://en.wikipedia.org/wiki/Australian_Patience)
+- [x] [Australian Patience (Tasmanian)](https://en.wikipedia.org/wiki/Australian_Patience)
 ### B
 - [ ] [Babette](https://en.wikipedia.org/wiki/Babette_(card_game))
 - [ ] [Backbone](https://en.wikipedia.org/wiki/Backbone_(solitaire))
