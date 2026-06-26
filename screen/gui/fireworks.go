@@ -8,6 +8,7 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
+	"fyne.io/fyne/v2/container"
 )
 
 type particle struct {
@@ -18,82 +19,70 @@ type particle struct {
 }
 
 func (d *Display) LaunchFireworks() {
-	type spark struct {
-		x, y   float32
-		vx, vy float32
-		clr    color.RGBA
-		active bool
+	const maxSparks = 100
+	const sparkRadius = 4.0
+
+	sparkLayer := container.NewWithoutLayout()
+	sparks := make([]*canvas.Circle, maxSparks)
+	velocities := make([]fyne.Position, maxSparks)
+
+	for i := 0; i < maxSparks; i++ {
+		c := canvas.NewCircle(color.Transparent)
+		c.Resize(fyne.NewSize(sparkRadius*2, sparkRadius*2))
+		c.Hide()
+		sparks[i] = c
+		sparkLayer.Add(c)
 	}
 
-	// We'll use a fixed pool of sparks to avoid memory allocation during animation
-	const maxSparks = 100
-	sparks := make([]spark, maxSparks)
-	var activeCount int
+	d.CardLayer.Add(sparkLayer)
 
-	// Create a Raster: it calls a function to determine the color of every pixel
-	// This is the fastest way to do custom drawing in Fyne
-	raster := canvas.NewRasterWithPixels(func(x, y, w, h int) color.Color {
-		// Default background for the raster is transparent
-		for i := 0; i < activeCount; i++ {
-			s := sparks[i]
-			if !s.active {
-				continue
-			}
-			// If pixel (x,y) is within the spark radius, color it
-			// Note: We use simple square-bounds check for speed
-			dx := float32(x) - s.x
-			dy := float32(y) - s.y
-			if dx*dx+dy*dy < 16 { // 4px radius
-				return s.clr
-			}
-		}
-		return color.Transparent
-	})
-
-	d.CardLayer.Add(raster)
-	raster.Hide() // Hide until first burst
-
-	// Simple physics loop
-	anim := fyne.NewAnimation(time.Second*3, func(v float32) {
-		if v == 0 {
-			raster.Show()
+	// Fyne's Animation constructor
+	anim := fyne.NewAnimation(time.Second*2, func(v float32) {
+		// 1. Cleanup check: If animation is finished, remove layer
+		if v >= 1.0 {
+			d.CardLayer.Remove(sparkLayer)
+			return
 		}
 
-		// 1. Every few frames, "spawn" a new burst if needed
-		if int(v*100)%20 == 0 && activeCount < maxSparks-20 {
+		// 2. Burst trigger
+		if int(v*10)%2 == 0 {
 			size := d.Window.Canvas().Size()
 			ox := 150 + rand.Float32()*(size.Width-300)
 			oy := 150 + rand.Float32()*(size.Height-300)
 
 			for i := 0; i < 20; i++ {
+				idx := (int(v*10)/2)*20 + i
+				if idx >= maxSparks {
+					break
+				}
+
 				angle := rand.Float64() * 2 * math.Pi
 				speed := 2.0 + rand.Float64()*5.0
-				sparks[activeCount] = spark{
-					x: ox, y: oy,
-					vx:     float32(math.Cos(angle) * speed),
-					vy:     float32(math.Sin(angle) * speed),
-					clr:    color.RGBA{uint8(rand.IntN(155) + 100), uint8(rand.IntN(155) + 100), uint8(rand.IntN(155) + 100), 255},
-					active: true,
-				}
-				activeCount++
+
+				sparks[idx].FillColor = color.RGBA{uint8(rand.IntN(155) + 100), uint8(rand.IntN(155) + 100), uint8(rand.IntN(155) + 100), 255}
+				sparks[idx].Move(fyne.NewPos(ox, oy))
+				sparks[idx].Show()
+
+				velocities[idx] = fyne.NewPos(float32(math.Cos(angle)*speed), float32(math.Sin(angle)*speed))
 			}
 		}
 
-		// 2. Update positions
-		for i := 0; i < activeCount; i++ {
-			if !sparks[i].active {
+		// 3. Physics update
+		for i := 0; i < maxSparks; i++ {
+			if !sparks[i].Visible() {
 				continue
 			}
-			sparks[i].x += sparks[i].vx
-			sparks[i].y += sparks[i].vy
-			sparks[i].vy += 0.15 // Gravity
-			sparks[i].clr.A = uint8(255 * (1.0 - v))
-		}
 
-		raster.Refresh()
+			pos := sparks[i].Position()
+			velocities[i].Y += 0.15
+			sparks[i].Move(fyne.NewPos(pos.X+velocities[i].X, pos.Y+velocities[i].Y))
 
-		if v == 1.0 {
-			d.CardLayer.Remove(raster)
+			// Fading: modify alpha
+			fade := uint8(255 * (1.0 - v))
+			c := sparks[i].FillColor.(color.RGBA)
+			c.A = fade
+			sparks[i].FillColor = c
+			sparks[i].Refresh()
 		}
 	})
 
