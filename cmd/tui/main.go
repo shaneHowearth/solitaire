@@ -32,19 +32,7 @@ func main() {
 	instance := solitaire.New()
 
 	// Available games.
-	variants := []game.Variant{}
-	variants = append(variants, &game.Klondike{})
-	variants = append(variants, &game.KlondikeVegas{})
-	variants = append(variants, &game.Accordion{})
-	variants = append(variants, &game.Addiction{})
-	variants = append(variants, &game.AcesAndKings{})
-	variants = append(variants, &game.AcesSquare{})
-	variants = append(variants, &game.AcesUp{})
-	variants = append(variants, &game.Acme{})
-	variants = append(variants, &game.Agnes{})
-	variants = append(variants, &game.Gaps{})
-	variants = append(variants, &game.Russian{})
-	variants = append(variants, &game.Yukon{})
+	variants := game.AllVariants()
 
 	instance.Display = tui.New(variants)
 

@@ -28,34 +28,7 @@ func main() {
 	instance := solitaire.New()
 
 	// Available games
-	variants := []game.Variant{
-		&game.Klondike{},
-		&game.KlondikeVegas{},
-		&game.Accordion{},
-		&game.Addiction{},
-		&game.AcesAndKings{},
-		&game.AcesSquare{},
-		&game.AcesUp{},
-		&game.Acme{},
-		&game.Agnes{},
-		&game.Algerian{},
-		&game.AmericanToad{},
-		&game.Canberra{},
-		&game.Easthaven{},
-		&game.FlowerGarden{},
-		&game.Gaps{},
-		&game.Kuipers{},
-		&game.Russian{},
-		&game.SirTommy{},
-		&game.Somerset{},
-		&game.Tasmanian{},
-		&game.Travellers{},
-		&game.WestcliffAmerican{},
-		&game.WestcliffClassic{},
-		&game.Whitehead{},
-		&game.Yukon{},
-	}
-
+	variants := game.AllVariants()
 	// 2. Pass the app instance into your GUI constructor
 	// You will need to update your gui.New function signature to accept fyne.App
 	instance.Display = gui.New(myApp, variants)

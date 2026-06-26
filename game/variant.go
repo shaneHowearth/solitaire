@@ -72,3 +72,34 @@ type Variant interface {
 	// card.
 	Fanned() bool
 }
+
+// AllVariants returns a slice of all registered game variants.
+func AllVariants() []Variant {
+	return []Variant{
+		&Klondike{},
+		&KlondikeVegas{},
+		&Accordion{},
+		&Addiction{},
+		&AcesAndKings{},
+		&AcesSquare{},
+		&AcesUp{},
+		&Acme{},
+		&Agnes{},
+		&Algerian{},
+		&AmericanToad{},
+		&Canberra{},
+		&Easthaven{},
+		&FlowerGarden{},
+		&Gaps{},
+		&Kuipers{},
+		&Russian{},
+		&SirTommy{},
+		&Somerset{},
+		&Tasmanian{},
+		&Travellers{},
+		&WestcliffAmerican{},
+		&WestcliffClassic{},
+		&Whitehead{},
+		&Yukon{},
+	}
+}
