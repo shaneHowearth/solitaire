@@ -55,8 +55,8 @@ func (*Easthaven) Foundations() []state.StackSpec {
 	}
 }
 
-func (e *Easthaven) Move(s, d *state.Stack, _ []*state.Tableau) bool {
-	return Move(s, d, false)
+func (e *Easthaven) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
+	return Move(source, destination, false)
 }
 
 func (e *Easthaven) AvailableMoves(tableau []state.Tableau, foundations []state.Foundation, talon []state.Talon, _ []state.Reserve) []state.Move {
@@ -121,12 +121,8 @@ func (e *Easthaven) AvailableMoves(tableau []state.Tableau, foundations []state.
 	return moves
 }
 
-func (*Easthaven) Redeal(talon *state.Talon, tableau []*state.Tableau) {
-	for i := 0; i < len(tableau); i++ {
-		if card, err := talon.Stock.Deal(); err == nil {
-			tableau[i].Stack.Add(card, true)
-		}
-	}
+func (e *Easthaven) Redeal(talon *state.Talon, tableaus []*state.Tableau) {
+	e.Move(talon.Waste, talon.Stock, tableaus)
 }
 
 func (*Easthaven) HowToPlay() []string {
@@ -145,4 +141,4 @@ func (*Easthaven) HasWon(_ []*state.Tableau, f []*state.Foundation) bool {
 func (*Easthaven) Compact(_, _ *state.Stack, _ []*state.Tableau) {}
 func (*Easthaven) Talon() bool                                   { return true }
 func (*Easthaven) FoundationBase() bool                          { return false }
-func (*Easthaven) MaxRedeals() int                               { return 0 }
+func (*Easthaven) MaxRedeals() int                               { return -1 }
