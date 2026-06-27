@@ -139,7 +139,7 @@ func (tableau solitaire.Tableau, card solitaire.SuitedCard) bool {
 - [ ] [Broken Intervals](https://en.wikipedia.org/wiki/Broken_Intervals)
 - [ ] [Busy Aces](https://en.wikipedia.org/wiki/Busy_Aces_(solitaire))
 ### C
-- [ ] [Calculation](https://en.wikipedia.org/wiki/Calculation_(card_game))
+- [x] [Calculation](https://en.wikipedia.org/wiki/Calculation_(card_game))
 - [ ] [Canfield](https://en.wikipedia.org/wiki/Canfield_(solitaire))
 - [ ] [Capricieuse](https://en.wikipedia.org/wiki/Capricieuse)
 - [ ] [Carpet](https://en.wikipedia.org/wiki/Carpet_(solitaire))

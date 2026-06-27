@@ -87,6 +87,7 @@ func AllVariants() []Variant {
 		&Agnes{},
 		&Algerian{},
 		&AmericanToad{},
+		&Calculation{},
 		&Canberra{},
 		&Easthaven{},
 		&FlowerGarden{},
