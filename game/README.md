@@ -104,7 +104,7 @@ func (tableau solitaire.Tableau, card solitaire.SuitedCard) bool {
 - [ ] [Amazons](https://en.wikipedia.org/wiki/Amazons_(solitaire))
 - [x] [American Toad](https://en.wikipedia.org/wiki/American_Toad_(solitaire))
 - [ ] [Apophis](https://en.wikipedia.org/wiki/Apophis_(solitaire))
-- [ ] [Appreciate](https://en.wikipedia.org/wiki/Appreciate_(solitaire))
+- [x] [Appreciate](https://en.wikipedia.org/wiki/Appreciate_(solitaire))
 - [ ] [Acquaintance](https://en.wikipedia.org/wiki/Acquaintance_(solitaire))
 - [ ] [Archway](https://en.wikipedia.org/wiki/Archway_(solitaire))
 - [ ] [Auld Lang Syne](https://en.wikipedia.org/wiki/Auld_Lang_Syne_(solitaire))
