@@ -92,6 +92,7 @@ func AllVariants() []Variant {
 		&Canberra{},
 		&Easthaven{},
 		&FlowerGarden{},
+		&FreeCell{},
 		&Gaps{},
 		&Kuipers{},
 		&Russian{},

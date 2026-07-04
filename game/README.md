@@ -210,7 +210,7 @@ func (tableau solitaire.Tableau, card solitaire.SuitedCard) bool {
 - [ ] [Four Winds](https://en.wikipedia.org/wiki/Four_Winds_(solitaire))
 - [ ] [Fourteen Out](https://en.wikipedia.org/wiki/Fourteen_Out)
 - [ ] [Fourteens](https://en.wikipedia.org/wiki/Fourteens_(solitaire))
-- [ ] [FreeCell](https://en.wikipedia.org/wiki/FreeCell)
+- [x] [FreeCell](https://en.wikipedia.org/wiki/FreeCell)
 - [ ] [Frog](https://en.wikipedia.org/wiki/Frog_(patience))
 - [ ] [Frustration](https://en.wikipedia.org/wiki/Frustration_(solitaire))
 ### G
