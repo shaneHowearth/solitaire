@@ -106,7 +106,7 @@ func (*FlowerGarden) HowToPlay() []string {
 	}
 }
 
-func (f *FlowerGarden) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
+func (f *FlowerGarden) Move(source, destination *state.Stack, _ []*state.Tableau, _ []*state.Reserve) bool {
 	card, err := source.Top()
 	if err != nil {
 		return false
@@ -139,10 +139,10 @@ func (*FlowerGarden) HasWon(_ []*state.Tableau, foundations []*state.Foundation)
 func (*FlowerGarden) FoundationBase() bool { return false }
 
 func (f *FlowerGarden) AvailableMoves(
-	tableaus []state.Tableau,
-	foundations []state.Foundation,
-	talons []state.Talon,
-	reserves []state.Reserve,
+	tableaus []*state.Tableau,
+	foundations []*state.Foundation,
+	talons []*state.Talon,
+	reserves []*state.Reserve,
 ) []state.Move {
 	var moves []state.Move
 

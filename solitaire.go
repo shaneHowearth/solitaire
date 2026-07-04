@@ -134,7 +134,7 @@ func (instance *Instance) onComponentSelected(
 		panic(fmt.Sprintf("Got impossible 'toComponentType' %d", toComponentType))
 	}
 
-	change := instance.Game.Move(fromStack, toStack, instance.State.Tableau)
+	change := instance.Game.Move(fromStack, toStack, instance.State.Tableau, instance.State.Reserves)
 
 	instance.Game.Compact(instance.State.Talon.Stock, instance.State.Talon.Waste, instance.State.Tableau)
 
@@ -265,29 +265,29 @@ func (instance *Instance) dealCards() {
 func (instance *Instance) onHints() []state.Move {
 	// TODO - fix this hack.
 	hints := instance.Game.AvailableMoves(
-		func() []state.Tableau {
-			values := make([]state.Tableau, len(instance.State.Tableau))
+		func() []*state.Tableau {
+			values := make([]*state.Tableau, len(instance.State.Tableau))
 			for i, p := range instance.State.Tableau {
-				values[i] = *p
+				values[i] = p
 			}
 
 			return values
 		}(),
-		func() []state.Foundation {
-			values := make([]state.Foundation, len(instance.State.Foundations))
+		func() []*state.Foundation {
+			values := make([]*state.Foundation, len(instance.State.Foundations))
 			for i, p := range instance.State.Foundations {
-				values[i] = *p
+				values[i] = p
 			}
 
 			return values
 		}(),
-		func() []state.Talon {
-			return []state.Talon{*instance.State.Talon}
+		func() []*state.Talon {
+			return []*state.Talon{instance.State.Talon}
 		}(),
-		func() []state.Reserve {
-			values := make([]state.Reserve, len(instance.State.Reserves))
+		func() []*state.Reserve {
+			values := make([]*state.Reserve, len(instance.State.Reserves))
 			for i, p := range instance.State.Reserves {
-				values[i] = *p
+				values[i] = p
 			}
 
 			return values

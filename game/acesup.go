@@ -187,7 +187,7 @@ func (*AcesUp) MaxRedeals() int {
 }
 
 // Move - handles moving cards between piles.
-func (a *AcesUp) Move(source, destination *state.Stack, allTableaus []*state.Tableau) bool {
+func (a *AcesUp) Move(source, destination *state.Stack, allTableaus []*state.Tableau, _ []*state.Reserve) bool {
 	card, _ := source.Top()
 
 	// 1. DISCARD LOGIC
@@ -254,10 +254,10 @@ func rankStrength(r state.Rank) int {
 
 // AvailableMoves - return a list of the available moves.
 func (*AcesUp) AvailableMoves(
-	tableau []state.Tableau,
-	foundations []state.Foundation,
-	_ []state.Talon,
-	_ []state.Reserve,
+	tableau []*state.Tableau,
+	foundations []*state.Foundation,
+	_ []*state.Talon,
+	_ []*state.Reserve,
 ) []state.Move {
 	moves := []state.Move{}
 

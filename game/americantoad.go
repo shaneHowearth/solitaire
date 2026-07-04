@@ -129,7 +129,7 @@ func (*AmericanToad) HowToPlay() []string {
 	}
 }
 
-func (a *AmericanToad) Move(source, destination *state.Stack, tableaus []*state.Tableau) bool {
+func (a *AmericanToad) Move(source, destination *state.Stack, tableaus []*state.Tableau, reserves []*state.Reserve) bool {
 	// Let checkMove validate and determine how many cards. This guarantees 1:1 behavior with the engine.
 	move := checkMove(source, destination, true, true)
 	if move.NumberMoving == 0 {
@@ -191,7 +191,7 @@ func (*AmericanToad) MaxRedeals() int {
 }
 
 func (a *AmericanToad) Redeal(talon *state.Talon, tableaus []*state.Tableau) {
-	a.Move(talon.Waste, talon.Stock, tableaus)
+	a.Move(talon.Waste, talon.Stock, tableaus, nil)
 }
 
 func (*AmericanToad) HasWon(_ []*state.Tableau, foundations []*state.Foundation) bool {
@@ -205,10 +205,10 @@ func (*AmericanToad) HasWon(_ []*state.Tableau, foundations []*state.Foundation)
 func (*AmericanToad) FoundationBase() bool { return true }
 
 func (a *AmericanToad) AvailableMoves(
-	tableaus []state.Tableau,
-	foundations []state.Foundation,
-	talons []state.Talon,
-	reserves []state.Reserve,
+	tableaus []*state.Tableau,
+	foundations []*state.Foundation,
+	talons []*state.Talon,
+	reserves []*state.Reserve,
 ) []state.Move {
 	var moves []state.Move
 

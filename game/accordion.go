@@ -104,7 +104,7 @@ func (*Accordion) MaxRedeals() int {
 }
 
 // Move -.
-func (accordion *Accordion) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
+func (accordion *Accordion) Move(source, destination *state.Stack, _ []*state.Tableau, _ []*state.Reserve) bool {
 	if !accordion.checkMove(source, destination) {
 		return false
 	}
@@ -220,10 +220,10 @@ func (*Accordion) checkMove(source, destination *state.Stack) bool {
 
 // AvailableMoves - return a list of the available moves.
 func (accordion *Accordion) AvailableMoves(
-	tableau []state.Tableau,
-	_ []state.Foundation,
-	_ []state.Talon,
-	_ []state.Reserve,
+	tableau []*state.Tableau,
+	_ []*state.Foundation,
+	_ []*state.Talon,
+	_ []*state.Reserve,
 ) []state.Move {
 	moves := []state.Move{}
 	// create a map of all tableau, with a key of their current value.

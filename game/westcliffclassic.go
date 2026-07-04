@@ -55,11 +55,11 @@ func (*WestcliffClassic) Foundations() []state.StackSpec {
 	}
 }
 
-func (w *WestcliffClassic) Move(s, d *state.Stack, _ []*state.Tableau) bool {
+func (w *WestcliffClassic) Move(s, d *state.Stack, _ []*state.Tableau, _ []*state.Reserve) bool {
 	return Move(s, d, true)
 }
 
-func (w *WestcliffClassic) AvailableMoves(tableau []state.Tableau, foundations []state.Foundation, talon []state.Talon, _ []state.Reserve) []state.Move {
+func (w *WestcliffClassic) AvailableMoves(tableau []*state.Tableau, foundations []*state.Foundation, talon []*state.Talon, _ []*state.Reserve) []state.Move {
 	moves := []state.Move{}
 
 	// 1. Check Waste

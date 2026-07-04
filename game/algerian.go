@@ -111,7 +111,7 @@ func (*Algerian) HowToPlay() []string {
 	}
 }
 
-func (a *Algerian) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
+func (a *Algerian) Move(source, destination *state.Stack, _ []*state.Tableau, _ []*state.Reserve) bool {
 	// Guard 1: No cards to move
 	card, err := source.Top()
 	if err != nil {
@@ -189,10 +189,10 @@ func (*Algerian) HasWon(_ []*state.Tableau, foundations []*state.Foundation) boo
 
 // AvailableMoves - return a list of the available moves.
 func (a *Algerian) AvailableMoves(
-	tableaus []state.Tableau,
-	foundations []state.Foundation,
-	_ []state.Talon,
-	reserves []state.Reserve,
+	tableaus []*state.Tableau,
+	foundations []*state.Foundation,
+	_ []*state.Talon,
+	reserves []*state.Reserve,
 ) []state.Move {
 	var moves []state.Move
 

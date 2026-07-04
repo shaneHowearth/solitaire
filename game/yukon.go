@@ -152,7 +152,7 @@ func (*Yukon) MaxRedeals() int {
 }
 
 // Move -.
-func (*Yukon) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
+func (*Yukon) Move(source, destination *state.Stack, _ []*state.Tableau, _ []*state.Reserve) bool {
 	return Move(source, destination, false)
 }
 
@@ -172,10 +172,11 @@ func (*Yukon) FoundationBase() bool {
 	return false
 }
 
-func (*Yukon) AvailableMoves(tableau []state.Tableau,
-	foundations []state.Foundation,
-	_ []state.Talon,
-	_ []state.Reserve,
+func (*Yukon) AvailableMoves(
+	tableau []*state.Tableau,
+	foundations []*state.Foundation,
+	_ []*state.Talon,
+	_ []*state.Reserve,
 ) []state.Move {
 	moves := []state.Move{}
 

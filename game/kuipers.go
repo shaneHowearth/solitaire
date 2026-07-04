@@ -66,11 +66,13 @@ func (*Kuipers) HowToPlay() []string {
 	}
 }
 
-func (k *Kuipers) Move(s, d *state.Stack, t []*state.Tableau) bool { return Move(s, d, true) }
+func (k *Kuipers) Move(s, d *state.Stack, t []*state.Tableau, _ []*state.Reserve) bool {
+	return Move(s, d, true)
+}
 
 func (*Kuipers) Compact(_, _ *state.Stack, _ []*state.Tableau) {}
 
-func (k *Kuipers) AvailableMoves(t []state.Tableau, f []state.Foundation, tal []state.Talon, _ []state.Reserve) []state.Move {
+func (k *Kuipers) AvailableMoves(t []*state.Tableau, f []*state.Foundation, tal []*state.Talon, _ []*state.Reserve) []state.Move {
 	moves := []state.Move{}
 	for fIdx := range f {
 		for tIdx := range t {

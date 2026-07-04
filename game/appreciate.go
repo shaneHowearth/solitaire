@@ -66,7 +66,7 @@ func (*Appreciate) HasWon(_ []*state.Tableau, foundations []*state.Foundation) b
 }
 
 func (*Appreciate) MaxRedeals() int { return 0 }
-func (*Appreciate) Move(src, dest *state.Stack, _ []*state.Tableau) bool {
+func (*Appreciate) Move(src, dest *state.Stack, _ []*state.Tableau, _ []*state.Reserve) bool {
 	// Once a card is placed on a tableau, it stays there or goes on a
 	// foundation.
 	if src.Type == state.StackTableau && dest.Type != state.StackFoundation {
@@ -94,7 +94,7 @@ func (*Appreciate) Talon() bool                                   { return true 
 func (*Appreciate) Redeal(_ *state.Talon, _ []*state.Tableau)     {}
 func (*Appreciate) FoundationBase() bool                          { return false }
 
-func (*Appreciate) AvailableMoves(t []state.Tableau, f []state.Foundation, talons []state.Talon, _ []state.Reserve) []state.Move {
+func (*Appreciate) AvailableMoves(t []*state.Tableau, f []*state.Foundation, talons []*state.Talon, _ []*state.Reserve) []state.Move {
 	moves := []state.Move{}
 	for _, talon := range talons {
 		for i := range t {

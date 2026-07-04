@@ -197,7 +197,7 @@ func (*AcesAndKings) MaxRedeals() int {
 }
 
 // Move -.
-func (*AcesAndKings) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
+func (*AcesAndKings) Move(source, destination *state.Stack, _ []*state.Tableau, _ []*state.Reserve) bool {
 	return Move(source, destination, true)
 }
 
@@ -219,10 +219,10 @@ func (*AcesAndKings) FoundationBase() bool {
 
 // AvailableMoves - return a list of the available moves.
 func (*AcesAndKings) AvailableMoves(
-	tableau []state.Tableau,
-	foundations []state.Foundation,
-	talons []state.Talon,
-	reserves []state.Reserve,
+	tableau []*state.Tableau,
+	foundations []*state.Foundation,
+	talons []*state.Talon,
+	reserves []*state.Reserve,
 ) []state.Move {
 	moves := []state.Move{}
 

@@ -74,19 +74,21 @@ func (*Tasmanian) HasWon(_ []*state.Tableau, foundations []*state.Foundation) bo
 
 func (*Tasmanian) MaxRedeals() int { return -1 }
 
-func (*Tasmanian) Move(s, d *state.Stack, _ []*state.Tableau) bool { return Move(s, d, true) }
+func (*Tasmanian) Move(s, d *state.Stack, _ []*state.Tableau, _ []*state.Reserve) bool {
+	return Move(s, d, true)
+}
 
 func (*Tasmanian) Compact(_, _ *state.Stack, _ []*state.Tableau) {}
 
 func (*Tasmanian) Talon() bool { return true }
 
 func (t *Tasmanian) Redeal(talon *state.Talon, tableaus []*state.Tableau) {
-	t.Move(talon.Waste, talon.Stock, tableaus)
+	t.Move(talon.Waste, talon.Stock, tableaus, nil)
 }
 
 func (*Tasmanian) FoundationBase() bool { return false }
 
-func (*Tasmanian) AvailableMoves(t []state.Tableau, f []state.Foundation, _ []state.Talon, _ []state.Reserve) []state.Move {
+func (*Tasmanian) AvailableMoves(t []*state.Tableau, f []*state.Foundation, _ []*state.Talon, _ []*state.Reserve) []state.Move {
 	moves := []state.Move{}
 	for fIdx := range f {
 		for tIdx := range t {

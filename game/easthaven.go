@@ -55,11 +55,11 @@ func (*Easthaven) Foundations() []state.StackSpec {
 	}
 }
 
-func (e *Easthaven) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
+func (e *Easthaven) Move(source, destination *state.Stack, _ []*state.Tableau, _ []*state.Reserve) bool {
 	return Move(source, destination, false)
 }
 
-func (e *Easthaven) AvailableMoves(tableau []state.Tableau, foundations []state.Foundation, talon []state.Talon, _ []state.Reserve) []state.Move {
+func (e *Easthaven) AvailableMoves(tableau []*state.Tableau, foundations []*state.Foundation, talon []*state.Talon, _ []*state.Reserve) []state.Move {
 	moves := []state.Move{}
 
 	// 1. Check Waste
@@ -122,7 +122,7 @@ func (e *Easthaven) AvailableMoves(tableau []state.Tableau, foundations []state.
 }
 
 func (e *Easthaven) Redeal(talon *state.Talon, tableaus []*state.Tableau) {
-	e.Move(talon.Waste, talon.Stock, tableaus)
+	e.Move(talon.Waste, talon.Stock, tableaus, nil)
 }
 
 func (*Easthaven) HowToPlay() []string {

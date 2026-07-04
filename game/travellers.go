@@ -61,7 +61,7 @@ func (*Travellers) HowToPlay() []string {
 	}
 }
 
-func (t *Travellers) Move(source, destination *state.Stack, allTableaus []*state.Tableau) bool {
+func (t *Travellers) Move(source, destination *state.Stack, allTableaus []*state.Tableau, _ []*state.Reserve) bool {
 	if source.Len() == 0 || destination.Type != state.StackTableau {
 		return false
 	}
@@ -134,7 +134,7 @@ func (*Travellers) Redeal(talon *state.Talon, tableau []*state.Tableau) {}
 func (*Travellers) Compact(_, _ *state.Stack, _ []*state.Tableau)       {}
 func (*Travellers) FoundationBase() bool                                { return false }
 
-func (t *Travellers) AvailableMoves(tableau []state.Tableau, _ []state.Foundation, _ []state.Talon, _ []state.Reserve) []state.Move {
+func (t *Travellers) AvailableMoves(tableau []*state.Tableau, _ []*state.Foundation, _ []*state.Talon, _ []*state.Reserve) []state.Move {
 	moves := []state.Move{}
 
 	// Priority: Only the "Intruder" (card on the wrong pile) is moveable.

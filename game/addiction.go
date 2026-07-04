@@ -109,7 +109,7 @@ func (*Addiction) MaxRedeals() int {
 }
 
 // Move -.
-func (addiction *Addiction) Move(source, destination *state.Stack, tableau []*state.Tableau) bool {
+func (addiction *Addiction) Move(source, destination *state.Stack, tableau []*state.Tableau, _ []*state.Reserve) bool {
 	// Nothing to move.
 	if source.Len() == 0 {
 		return false
@@ -261,10 +261,10 @@ func (*Addiction) FoundationBase() bool {
 
 // AvailableMoves - return a list of the available moves.
 func (addiction *Addiction) AvailableMoves(
-	tableau []state.Tableau,
-	_ []state.Foundation,
-	_ []state.Talon,
-	_ []state.Reserve,
+	tableau []*state.Tableau,
+	_ []*state.Foundation,
+	_ []*state.Talon,
+	_ []*state.Reserve,
 ) []state.Move {
 	moves := []state.Move{}
 
@@ -279,7 +279,7 @@ func (addiction *Addiction) AvailableMoves(
 			continue
 		}
 
-		tableauCards[card] = tableau[idx]
+		tableauCards[card] = *tableau[idx]
 	}
 
 	for emptyIdx := range empties {
@@ -306,7 +306,7 @@ func (addiction *Addiction) AvailableMoves(
 		// TODO fix the pointer to tableau problem.
 		hackedTableau := make([]*state.Tableau, 0, len(tableau))
 		for tableauIdx := range tableau {
-			hackedTableau = append(hackedTableau, &tableau[tableauIdx])
+			hackedTableau = append(hackedTableau, tableau[tableauIdx])
 		}
 
 		for tableauIdx := range tableau {

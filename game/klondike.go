@@ -153,7 +153,7 @@ func (*Klondike) MaxRedeals() int {
 }
 
 // Move -.
-func (*Klondike) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
+func (*Klondike) Move(source, destination *state.Stack, _ []*state.Tableau, _ []*state.Reserve) bool {
 	return Move(source, destination, true)
 }
 
@@ -167,7 +167,7 @@ func (*Klondike) Talon() bool {
 
 // Redeal.
 func (k *Klondike) Redeal(talon *state.Talon, tableaus []*state.Tableau) {
-	k.Move(talon.Waste, talon.Stock, tableaus)
+	k.Move(talon.Waste, talon.Stock, tableaus, nil)
 }
 
 // FoundationBase.
@@ -177,10 +177,10 @@ func (*Klondike) FoundationBase() bool {
 
 // AvailableMoves - return a list of the available moves.
 func (*Klondike) AvailableMoves(
-	tableau []state.Tableau,
-	foundations []state.Foundation,
-	talon []state.Talon,
-	_ []state.Reserve,
+	tableau []*state.Tableau,
+	foundations []*state.Foundation,
+	talon []*state.Talon,
+	_ []*state.Reserve,
 ) []state.Move {
 	moves := []state.Move{}
 

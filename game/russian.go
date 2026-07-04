@@ -176,7 +176,7 @@ func (*Russian) MaxRedeals() int {
 }
 
 // Move -.
-func (*Russian) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
+func (*Russian) Move(source, destination *state.Stack, _ []*state.Tableau, _ []*state.Reserve) bool {
 	return Move(source, destination, false)
 }
 
@@ -198,10 +198,10 @@ func (*Russian) FoundationBase() bool {
 
 // AvailableMoves - return a list of the available moves.
 func (*Russian) AvailableMoves(
-	tableau []state.Tableau,
-	foundations []state.Foundation,
-	_ []state.Talon,
-	_ []state.Reserve,
+	tableau []*state.Tableau,
+	foundations []*state.Foundation,
+	_ []*state.Talon,
+	_ []*state.Reserve,
 ) []state.Move {
 	moves := []state.Move{}
 

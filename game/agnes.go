@@ -182,7 +182,7 @@ func (*Agnes) MaxRedeals() int {
 }
 
 // Move -
-func (*Agnes) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
+func (*Agnes) Move(source, destination *state.Stack, _ []*state.Tableau, _ []*state.Reserve) bool {
 	return Move(source, destination, true)
 }
 
@@ -238,10 +238,10 @@ func (*Agnes) FoundationBase() bool {
 
 // AvailableMoves - return a list of the available moves.
 func (*Agnes) AvailableMoves(
-	tableau []state.Tableau,
-	foundations []state.Foundation,
-	talon []state.Talon,
-	reserves []state.Reserve,
+	tableau []*state.Tableau,
+	foundations []*state.Foundation,
+	talon []*state.Talon,
+	reserves []*state.Reserve,
 ) []state.Move {
 	moves := []state.Move{}
 

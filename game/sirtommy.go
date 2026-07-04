@@ -84,7 +84,7 @@ func (*SirTommy) HowToPlay() []string {
 	}
 }
 
-func (s *SirTommy) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
+func (s *SirTommy) Move(source, destination *state.Stack, _ []*state.Tableau, _ []*state.Reserve) bool {
 	card, err := source.Top()
 	if err != nil {
 		return false
@@ -124,10 +124,10 @@ func (*SirTommy) HasWon(_ []*state.Tableau, foundations []*state.Foundation) boo
 func (*SirTommy) FoundationBase() bool { return false }
 
 func (s *SirTommy) AvailableMoves(
-	tableaus []state.Tableau,
-	foundations []state.Foundation,
-	talons []state.Talon,
-	_ []state.Reserve,
+	tableaus []*state.Tableau,
+	foundations []*state.Foundation,
+	talons []*state.Talon,
+	_ []*state.Reserve,
 ) []state.Move {
 	var moves []state.Move
 

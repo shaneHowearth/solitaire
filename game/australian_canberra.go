@@ -78,19 +78,21 @@ func (*Canberra) HasWon(_ []*state.Tableau, foundations []*state.Foundation) boo
 
 func (*Canberra) MaxRedeals() int { return 1 }
 
-func (*Canberra) Move(s, d *state.Stack, _ []*state.Tableau) bool { return Move(s, d, true) }
+func (*Canberra) Move(s, d *state.Stack, _ []*state.Tableau, _ []*state.Reserve) bool {
+	return Move(s, d, true)
+}
 
 func (*Canberra) Compact(_, _ *state.Stack, _ []*state.Tableau) {}
 
 func (*Canberra) Talon() bool { return true }
 
 func (c *Canberra) Redeal(talon *state.Talon, tableaus []*state.Tableau) {
-	c.Move(talon.Waste, talon.Stock, tableaus)
+	c.Move(talon.Waste, talon.Stock, tableaus, nil)
 }
 
 func (*Canberra) FoundationBase() bool { return false }
 
-func (*Canberra) AvailableMoves(t []state.Tableau, f []state.Foundation, _ []state.Talon, _ []state.Reserve) []state.Move {
+func (*Canberra) AvailableMoves(t []*state.Tableau, f []*state.Foundation, _ []*state.Talon, _ []*state.Reserve) []state.Move {
 	moves := []state.Move{}
 	for fIdx := range f {
 		for tIdx := range t {

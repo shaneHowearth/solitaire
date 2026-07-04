@@ -91,7 +91,7 @@ func (*Whitehead) MaxRedeals() int {
 	return -1
 }
 
-func (w *Whitehead) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
+func (w *Whitehead) Move(source, destination *state.Stack, _ []*state.Tableau, _ []*state.Reserve) bool {
 	if destination == nil || source == nil || source.Len() == 0 {
 		return false
 	}
@@ -178,10 +178,10 @@ func (w *Whitehead) performManualMove(source, destination *state.Stack, count in
 }
 
 func (w *Whitehead) AvailableMoves(
-	tableau []state.Tableau,
-	foundations []state.Foundation,
-	talon []state.Talon,
-	_ []state.Reserve,
+	tableau []*state.Tableau,
+	foundations []*state.Foundation,
+	talon []*state.Talon,
+	_ []*state.Reserve,
 ) []state.Move {
 	moves := []state.Move{}
 

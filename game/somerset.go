@@ -66,11 +66,13 @@ func (*Somerset) HowToPlay() []string {
 	}
 }
 
-func (s *Somerset) Move(src, dst *state.Stack, t []*state.Tableau) bool { return Move(src, dst, true) }
+func (s *Somerset) Move(src, dst *state.Stack, t []*state.Tableau, _ []*state.Reserve) bool {
+	return Move(src, dst, true)
+}
 
 func (*Somerset) Compact(_, _ *state.Stack, _ []*state.Tableau) {}
 
-func (s *Somerset) AvailableMoves(t []state.Tableau, f []state.Foundation, _ []state.Talon, _ []state.Reserve) []state.Move {
+func (s *Somerset) AvailableMoves(t []*state.Tableau, f []*state.Foundation, _ []*state.Talon, _ []*state.Reserve) []state.Move {
 	moves := []state.Move{}
 	for fIdx := range f {
 		for tIdx := range t {

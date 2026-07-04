@@ -153,7 +153,7 @@ func (*KlondikeVegas) MaxRedeals() int {
 }
 
 // Move -.
-func (*KlondikeVegas) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
+func (*KlondikeVegas) Move(source, destination *state.Stack, _ []*state.Tableau, _ []*state.Reserve) bool {
 	return Move(source, destination, true)
 }
 
@@ -175,10 +175,10 @@ func (*KlondikeVegas) FoundationBase() bool {
 
 // AvailableMoves - return a list of the available moves.
 func (*KlondikeVegas) AvailableMoves(
-	[]state.Tableau,
-	[]state.Foundation,
-	[]state.Talon,
-	[]state.Reserve,
+	[]*state.Tableau,
+	[]*state.Foundation,
+	[]*state.Talon,
+	[]*state.Reserve,
 ) []state.Move {
 	// There are no hints available foir Vegas style.
 	return []state.Move{}

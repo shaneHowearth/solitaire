@@ -144,7 +144,7 @@ func (*Acme) MaxRedeals() int {
 }
 
 // Move -.
-func (*Acme) Move(source, destination *state.Stack, _ []*state.Tableau) bool {
+func (*Acme) Move(source, destination *state.Stack, _ []*state.Tableau, _ []*state.Reserve) bool {
 	return Move(source, destination, true)
 }
 
@@ -166,10 +166,10 @@ func (*Acme) FoundationBase() bool {
 
 // AvailableMoves - return a list of the available moves.
 func (*Acme) AvailableMoves(
-	tableau []state.Tableau,
-	foundations []state.Foundation,
-	talons []state.Talon,
-	reserves []state.Reserve) []state.Move {
+	tableau []*state.Tableau,
+	foundations []*state.Foundation,
+	talons []*state.Talon,
+	reserves []*state.Reserve) []state.Move {
 	moves := []state.Move{}
 
 	for foundationIdx := range foundations {

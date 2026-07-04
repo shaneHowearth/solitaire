@@ -264,7 +264,7 @@ func (*AcesSquare) MaxRedeals() int {
 }
 
 // Move -.
-func (acessquare *AcesSquare) Move(first, second *state.Stack, _ []*state.Tableau) bool {
+func (acessquare *AcesSquare) Move(first, second *state.Stack, _ []*state.Tableau, _ []*state.Reserve) bool {
 	if acessquare.checkMove(first, second) {
 		_, _ = first.Deal()
 		_, _ = second.Deal()
@@ -390,10 +390,10 @@ func (*AcesSquare) FoundationBase() bool {
 
 // AvailableMoves - return a list of the available moves.
 func (acessquare *AcesSquare) AvailableMoves(
-	tableau []state.Tableau,
-	_ []state.Foundation,
-	_ []state.Talon,
-	_ []state.Reserve,
+	tableau []*state.Tableau,
+	_ []*state.Foundation,
+	_ []*state.Talon,
+	_ []*state.Reserve,
 ) []state.Move {
 	moves := []state.Move{}
 
