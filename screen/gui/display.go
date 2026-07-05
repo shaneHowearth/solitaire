@@ -23,9 +23,6 @@ const (
 	greenA       = 255
 	windowWidth  = 1200
 	windowHeight = 900
-	cardWidth    = 100
-	cardHeight   = 145
-	verticalFan  = 30
 )
 
 type Display struct {
@@ -50,11 +47,12 @@ type Display struct {
 	tableauWidth  int
 	tableauHeight int
 
-	gameHint                  func() []state.Move
-	gameSelectedCallback      func(game.Variant)
-	gameRedealCallback        func()
-	gameUndoCallback          func()
-	componentSelectedCallback func(state.StackType, int, state.StackType, int)
+	gameHint                   func() []state.Move
+	gameSelectedCallback       func(game.Variant)
+	gameRedealCallback         func()
+	gameUndoCallback           func()
+	componentSelectedCallback  func(state.StackType, int, state.StackType, int)
+	gameRefreshVisualsCallback func()
 
 	selectedComponentType state.StackType
 	selectedIndex         int
@@ -66,6 +64,14 @@ type Display struct {
 	foundationHints map[int]string
 
 	redealBtn *widget.Button
+
+	// Zoom properties
+	zoomLevel   float32
+	baseWidth   float32
+	baseHeight  float32
+	cardWidth   float32
+	cardHeight  float32
+	verticalFan float32
 }
 
 func New(app fyne.App, variants []game.Variant) *Display {
@@ -82,6 +88,12 @@ func New(app fyne.App, variants []game.Variant) *Display {
 		defaultBgColor:  greenFelt,
 		selectedBgColor: color.RGBA{R: 255, G: 0, B: 0, A: 255},
 		selectedIndex:   -1,
+		zoomLevel:       1.0,
+		baseWidth:       100.0,
+		baseHeight:      145.0,
+		cardWidth:       100.0,
+		cardHeight:      145.0,
+		verticalFan:     30.0,
 	}
 
 	if len(variants) > 0 {
@@ -361,4 +373,68 @@ func (d *Display) formatLocation(stack state.Stack) string {
 	}
 
 	return ""
+}
+
+func (d *Display) SetGameRefreshVisualsCallback(cb func()) {
+	d.gameRefreshVisualsCallback = cb
+}
+
+func (d *Display) SetZoom(level float32) {
+	if level < 0.5 {
+		level = 0.5
+	} else if level > 2.0 {
+		level = 2.0
+	}
+
+	d.zoomLevel = level
+	d.cardWidth = d.baseWidth * d.zoomLevel
+	d.cardHeight = d.baseHeight * d.zoomLevel
+	d.verticalFan = 30.0 * d.zoomLevel
+
+	// 1. Update the layout of existing cards
+	if d.tableauBox != nil {
+		d.RecomputeTableauPiles()
+		d.tableauBox.Refresh()
+	}
+
+	// 2. Trigger a full refresh if needed
+	if d.gameRefreshVisualsCallback != nil {
+		d.gameRefreshVisualsCallback()
+	}
+
+	// 3. Force Fyne to re-layout the window
+	if d.Window != nil && d.Window.Content() != nil {
+		d.Window.Content().Refresh()
+	}
+}
+
+func (d *Display) RecomputeTableauPiles() {
+	// Walk the tableauBox to find all fanned containers
+	for _, row := range d.tableauBox.Objects {
+		if rowContainer, ok := row.(*fyne.Container); ok {
+			for _, pile := range rowContainer.Objects {
+				// Dig into the VBox to find the Stack (where cards live)
+				if vbox, ok := pile.(*fyne.Container); ok {
+					for _, obj := range vbox.Objects {
+						if stack, ok := obj.(*fyne.Container); ok {
+							// This is the container with NoLayout
+							d.repositionCardsInStack(stack)
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+func (d *Display) repositionCardsInStack(stack *fyne.Container) {
+	for i, obj := range stack.Objects {
+		if card, ok := obj.(*CardWidget); ok {
+			// 1. Resize to new zoom
+			card.Resize(fyne.NewSize(d.cardWidth, d.cardHeight))
+			// 2. Re-calculate fan position based on NEW d.verticalFan
+			yPos := float32(i) * d.verticalFan
+			card.Move(fyne.NewPos(0, yPos))
+		}
+	}
 }

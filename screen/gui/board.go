@@ -67,6 +67,8 @@ func (d *Display) CreateBoard(
 
 	btnBar := container.NewHBox(
 		layout.NewSpacer(),
+		widget.NewButton("-", func() { d.SetZoom(d.zoomLevel - 0.1) }), // Zoom Out
+		widget.NewButton("+", func() { d.SetZoom(d.zoomLevel + 0.1) }), // Zoom In
 		widget.NewButton("How to Play", func() { d.showHowToModal(name, howTo) }),
 		widget.NewButton("Hint", func() { d.showHintModal() }),
 		widget.NewButton("New", func() {
@@ -95,7 +97,7 @@ func (d *Display) CreateBoard(
 
 	// 6. Layout Top Area
 	// Calculate the gap between Talon/Waste and Foundations (1/8 card width)
-	gapSize := float32(cardWidth) / 8
+	gapSize := d.cardWidth / 8
 	gapSpacer := canvas.NewRectangle(color.Transparent)
 	gapSpacer.SetMinSize(fyne.NewSize(gapSize, 1))
 
@@ -121,7 +123,7 @@ func (d *Display) CreateBoard(
 	tableauScroll := container.NewScroll(mainBoard)
 
 	// --- Global Padding (Left and Top) ---
-	padSize := float32(cardWidth) / 4
+	padSize := d.cardWidth / 4
 
 	leftSpacer := canvas.NewRectangle(color.Transparent)
 	leftSpacer.SetMinSize(fyne.NewSize(padSize, 1))
@@ -208,13 +210,13 @@ func (d *Display) buildPile(cards []string, sType state.StackType, idx int, show
 	if !shouldFan {
 		topFace := cards[len(cards)-1]
 		cWidget := NewCardWidget(topFace, sType, idx, d)
-		cWidget.Resize(fyne.NewSize(float32(cardWidth), float32(cardHeight)))
+		cWidget.Resize(fyne.NewSize(float32(d.cardWidth), float32(d.cardHeight)))
 		return container.NewVBox(cWidget, layout.NewSpacer())
 	}
 
 	// 3. Handle Fanned Logic
 	cardContainer := container.NewWithoutLayout()
-	currentHeight := float32(cardHeight)
+	currentHeight := float32(d.cardHeight)
 
 	for i, face := range cards {
 		cardFace := "--"
@@ -223,20 +225,20 @@ func (d *Display) buildPile(cards []string, sType state.StackType, idx int, show
 		}
 
 		cWidget := NewCardWidget(cardFace, sType, idx, d)
-		cWidget.Resize(fyne.NewSize(float32(cardWidth), float32(cardHeight)))
+		cWidget.Resize(fyne.NewSize(float32(d.cardWidth), float32(d.cardHeight)))
 
 		// Calculate vertical offset
-		yPos := float32(i * verticalFan)
+		yPos := float32(i) * d.verticalFan
 		cWidget.Move(fyne.NewPos(0, yPos))
 
-		if yPos+float32(cardHeight) > currentHeight {
-			currentHeight = yPos + float32(cardHeight)
+		if yPos+float32(d.cardHeight) > currentHeight {
+			currentHeight = yPos + float32(d.cardHeight)
 		}
 		cardContainer.Add(cWidget)
 	}
 
 	spacer := canvas.NewRectangle(color.Transparent)
-	spacer.SetMinSize(fyne.NewSize(float32(cardWidth), currentHeight))
+	spacer.SetMinSize(fyne.NewSize(float32(d.cardWidth), currentHeight))
 	return container.NewVBox(container.NewStack(spacer, cardContainer), layout.NewSpacer())
 }
 

@@ -117,7 +117,7 @@ func (r *cardRenderer) Layout(size fyne.Size) {
 }
 
 func (r *cardRenderer) MinSize() fyne.Size {
-	return fyne.NewSize(float32(cardWidth), float32(cardHeight))
+	return fyne.NewSize(r.card.Display.cardWidth, r.card.Display.cardHeight)
 }
 
 func (r *cardRenderer) Refresh() {
