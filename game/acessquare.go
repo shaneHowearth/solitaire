@@ -268,9 +268,9 @@ func (acessquare *AcesSquare) Move(first, second *state.Stack, _ []*state.Tablea
 	if acessquare.checkMove(first, second) {
 		_, _ = first.Deal()
 		_, _ = second.Deal()
+		return true
 	}
-
-	return true
+	return false
 }
 
 func (*AcesSquare) checkMove(first, second *state.Stack) bool {
@@ -297,6 +297,9 @@ func (*AcesSquare) checkMove(first, second *state.Stack) bool {
 
 	// First and Second have to be 'next' to each other.
 	// They can be on top of one another, side by side, or on an angle.
+	if first.TableauPosition == second.TableauPosition {
+		return false
+	}
 
 	// Convert 1D indices to 2D coordinates.
 	row1, col1 := first.TableauPosition/numAcesSquareCols, first.TableauPosition%numAcesSquareCols
@@ -320,6 +323,7 @@ func (*AcesSquare) checkMove(first, second *state.Stack) bool {
 }
 
 func (AcesSquare) Compact(stock, waste *state.Stack, tableaus []*state.Tableau) {
+	count := 0
 	for readIdx := 0; readIdx < numAcesSquareCols*numAcesSquareRows; readIdx++ {
 		if tableaus[readIdx].Len() == 0 {
 			sourceIdx := -1
@@ -336,6 +340,7 @@ func (AcesSquare) Compact(stock, waste *state.Stack, tableaus []*state.Tableau) 
 				break
 			}
 
+			count++
 			// Shift everything from sourceIdx down to readIdx.
 			for j := sourceIdx; j > readIdx; j-- {
 				if tableaus[j].Len() > 0 {
@@ -349,6 +354,10 @@ func (AcesSquare) Compact(stock, waste *state.Stack, tableaus []*state.Tableau) 
 
 			readIdx--
 		}
+	}
+
+	if count == 0 {
+		return
 	}
 
 	// Take the waste card and put it onto the second to last grid cell.
