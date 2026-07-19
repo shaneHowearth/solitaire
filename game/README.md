@@ -100,7 +100,7 @@ func (tableau solitaire.Tableau, card solitaire.SuitedCard) bool {
 - [x] [Agnes](https://en.wikipedia.org/wiki/Agnes_(card_game))
 - [ ] [Alaska](https://en.wikipedia.org/wiki/Alaska_(solitaire))
 - [x] [Algerian](https://en.wikipedia.org/wiki/Algerian_(solitaire))
-- [ ] [Alhambra](https://en.wikipedia.org/wiki/Alhambra_(solitaire))
+- [x] [Alhambra](https://en.wikipedia.org/wiki/Alhambra_(solitaire))
 - [ ] [Amazons](https://en.wikipedia.org/wiki/Amazons_(solitaire))
 - [x] [American Toad](https://en.wikipedia.org/wiki/American_Toad_(solitaire))
 - [ ] [Apophis](https://en.wikipedia.org/wiki/Apophis_(solitaire))

@@ -11,10 +11,6 @@ type Tableau struct {
 
 // CreateTableaus - Create the tableaus that will host the cards.
 func CreateTableaus(tableauSpec []StackSpec) []*Tableau {
-	if len(tableauSpec) < 1 {
-		panic("Cannot have zero tableaus")
-	}
-
 	tableaus := make([]*Tableau, 0, len(tableauSpec))
 
 	for idx := 0; idx < len(tableauSpec); idx++ {

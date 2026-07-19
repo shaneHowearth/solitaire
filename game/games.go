@@ -13,6 +13,7 @@ func AllVariants() []Variant {
 		&Acme{},
 		&Agnes{},
 		&Algerian{},
+		&Alhambra{},
 		&AmericanToad{},
 		&Appreciate{},
 		&Calculation{},
